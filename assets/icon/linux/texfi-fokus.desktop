@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=Application
+Name=TexFi f0kus
+GenericName=Focus timer and habit tracker
+Comment=Adaptive focus sessions and habits that hold you to your word
+Categories=Utility;Office;ProjectManagement;
+Keywords=focus;pomodoro;habits;timer;productivity;
+Terminal=false
+StartupNotify=true
+StartupWMClass=texfi_fokus
+
+# Заготовка: заменить на реальные пути при упаковке.
+#   Exec — путь к бинарнику из `flutter build linux`
+#   Icon — имя темы иконок, если PNG разложены по
+#          /usr/share/icons/hicolor/<size>x<size>/apps/texfi-fokus.png
+# Установка иконок из этой папки:
+#   for s in 16 32 64 128 256 512; do
+#     install -Dm644 texfi-fokus-$s.png \
+#       /usr/share/icons/hicolor/${s}x${s}/apps/texfi-fokus.png
+#   done
+Exec=/opt/texfi-fokus/texfi_fokus
+Icon=texfi-fokus

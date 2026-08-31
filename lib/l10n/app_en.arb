@@ -1,0 +1,241 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "TexFi f0kus",
+
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonEdit": "Edit",
+  "commonNext": "Next",
+  "commonBack": "Back",
+  "commonDone": "Done",
+  "commonStart": "Start",
+  "commonSkip": "Skip",
+  "commonAdd": "Add",
+  "commonClose": "Close",
+  "commonMinutes": "min",
+  "commonMinutesFull": "{count} min",
+  "@commonMinutesFull": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "onboardingWelcomeTitle": "TexFi f0kus",
+  "onboardingWelcomeBody": "A focus timer that learns how you actually work — and a habit tracker that does not let you off the hook.",
+  "onboardingMoodTitle": "Start with your mood",
+  "onboardingMoodBody": "Before every session you flip a switch: bad, normal, good, full f0kus. The app picks a technique and a length that fit that state.",
+  "onboardingLearningTitle": "It learns from you",
+  "onboardingLearningBody": "Every finished or abandoned session teaches the app which technique works for you in which mood. Recommendations get sharper over time.",
+  "onboardingHabitsTitle": "Habits with consequences",
+  "onboardingHabitsBody": "Set a daily goal and write down what you owe yourself if you miss it. The app remembers it and reminds you.",
+  "onboardingThemeTitle": "Pick your look",
+  "onboardingThemeBody": "Pixel-art in the dark, warm and sunny in the light.",
+  "onboardingFirstHabitTitle": "Your first habit",
+  "onboardingFirstHabitBody": "Name one thing you want to do every day. You can add more later.",
+  "onboardingNotificationsTitle": "Reminders",
+  "onboardingNotificationsBody": "Let TexFi f0kus notify you about unfinished goals at the end of the day.",
+  "onboardingAllowNotifications": "Allow notifications",
+  "onboardingFinish": "Let's go",
+
+  "homeTitle": "f0kus",
+  "homeStreakLabel": "Streak",
+  "homeStreakValue": "{days} d",
+  "@homeStreakValue": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "homeTodayHabits": "Today",
+  "homeHabitsEmpty": "No habits yet. Add your first one.",
+  "homeStartFocus": "Start focus session",
+  "homeFocusToday": "Today",
+  "homeFocusWeek": "This week",
+  "homeSummaryTitle": "In focus",
+  "homeAllDone": "All goals done today. Respect.",
+  "homePending": "{count} of {total} goals left",
+  "@homePending": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "navHome": "Home",
+  "navHabits": "Habits",
+  "navStats": "Stats",
+  "navSettings": "Settings",
+
+  "moodTitle": "How are you right now?",
+  "moodBad": "bad",
+  "moodNeutral": "normal",
+  "moodGood": "good",
+  "moodFullFokus": "full f0kus",
+  "moodHint": "Slide or tap to switch. Each state has its own vibration.",
+  "moodPickTaskTitle": "What are you working on?",
+  "moodTaskHint": "Task name",
+  "moodNewTask": "New task",
+  "moodCategory": "Category",
+  "moodDifficulty": "Difficulty",
+  "moodDifficultyEasy": "Easy",
+  "moodDifficultyMedium": "Medium",
+  "moodDifficultyHard": "Hard",
+  "moodContinue": "Continue",
+  "moodTaskRequired": "Enter a task name",
+
+  "categoryStudy": "Study",
+  "categoryWork": "Work",
+  "categoryCreative": "Creative",
+  "categoryChores": "Chores",
+  "categorySport": "Sport",
+  "categoryOther": "Other",
+
+  "recommendationTitle": "Recommended for you",
+  "recommendationColdStart": "A safe default for this mood — the app has not seen enough of your sessions yet.",
+  "recommendationLearned": "Based on your past sessions with a similar mood and task.",
+  "recommendationConfidence": "Confidence: {percent}%",
+  "@recommendationConfidence": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "recommendationStart": "Start",
+  "recommendationManual": "Set up manually",
+  "recommendationManualTitle": "Custom timer",
+  "recommendationFocusLength": "Focus length",
+  "recommendationBreakLength": "Break length",
+  "recommendationCycles": "Cycles",
+  "recommendationSoundOnEnd": "Sound when a cycle ends",
+  "recommendationAutoStart": "Auto-start the next cycle",
+
+  "techniqueSprint15": "Sprint 15",
+  "techniqueSprint15Desc": "15 min of work, 5 min off. Gentle start when nothing works.",
+  "techniquePomodoro2505": "Pomodoro 25/5",
+  "techniquePomodoro2505Desc": "The classic. 25 min of work, 5 min off, four cycles.",
+  "techniquePomodoro5010": "Pomodoro 50/10",
+  "techniquePomodoro5010Desc": "50 min of work, 10 min off. For tasks that need momentum.",
+  "techniqueDeepWork90": "Deep work 90",
+  "techniqueDeepWork90Desc": "90 min without interruptions. Only when you are truly on.",
+
+  "timerFocusPhase": "FOCUS",
+  "timerBreakPhase": "BREAK",
+  "timerPause": "Pause",
+  "timerResume": "Resume",
+  "timerStop": "Stop",
+  "timerSkip": "Skip",
+  "timerCycleOf": "Cycle {current} of {total}",
+  "@timerCycleOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "timerDialHint": "Drag the dial to adjust the remaining time",
+  "timerStopConfirmTitle": "Stop the session?",
+  "timerStopConfirmBody": "It will be logged as interrupted — that is also useful data.",
+  "timerStopConfirmYes": "Stop",
+  "timerDoneTitle": "Session finished",
+  "timerAbortedTitle": "Session interrupted",
+  "timerRateQuestion": "How productive was it?",
+  "timerRateSave": "Save",
+  "timerFullscreen": "Fullscreen",
+  "timerExitFullscreen": "Exit fullscreen",
+
+  "habitsTitle": "Habits",
+  "habitsEmpty": "No habits yet.",
+  "habitsEmptyHint": "A habit is a daily goal plus what you owe yourself if you skip it.",
+  "habitsAdd": "New habit",
+  "habitEditTitle": "Edit habit",
+  "habitNameLabel": "Name",
+  "habitNameHint": "Read for 30 minutes",
+  "habitNameRequired": "Enter a name",
+  "habitFrequency": "Frequency",
+  "habitDaily": "Every day",
+  "habitCustomDays": "Selected days",
+  "habitPunishmentLabel": "If you miss it",
+  "habitPunishmentHint": "50 push-ups, no coffee tomorrow…",
+  "habitPunishmentRequired": "Write down what you owe yourself",
+  "habitPunishmentExplainer": "You write it, the app just remembers it and reminds you. Nothing is automated.",
+  "habitReminderTime": "Reminder time",
+  "habitReminderOff": "Off",
+  "habitDeleteConfirmTitle": "Delete habit?",
+  "habitDeleteConfirmBody": "Its history will be removed too.",
+  "habitStreakLabel": "Streak: {days} d",
+  "@habitStreakLabel": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "habitDaysShort": "Mon Tue Wed Thu Fri Sat Sun",
+
+  "statsTitle": "Statistics",
+  "statsWeek": "Week",
+  "statsMonth": "Month",
+  "statsActivity": "Activity",
+  "statsActivityHint": "Every square is a day. The brighter it is, the more time in focus.",
+  "statsFocusByDay": "Focus time by day",
+  "statsMoodBreakdown": "Mood and results",
+  "statsMoodBreakdownHint": "How often you finish a session started in each mood.",
+  "statsByCategory": "By task category",
+  "statsHabitSuccess": "Habit success",
+  "statsTotalFocus": "Total in focus",
+  "statsSessions": "Sessions",
+  "statsCompletionRate": "Finished",
+  "statsEmpty": "Not enough data yet. Run a couple of sessions.",
+
+  "settingsTitle": "Settings",
+  "settingsAppearance": "Appearance",
+  "settingsTheme": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsFeedback": "Sound and vibration",
+  "settingsSounds": "Sounds",
+  "settingsVibration": "Vibration",
+  "settingsVibrationIntensity": "Vibration intensity",
+  "settingsLanguage": "Language",
+  "settingsLanguageSystem": "System",
+  "settingsNotifications": "Notifications",
+  "settingsNotificationsEnabled": "Habit reminders",
+  "settingsDailyReminderTime": "Daily summary at",
+  "settingsData": "Data",
+  "settingsExport": "Export data to JSON",
+  "settingsExportDone": "Saved to {path}",
+  "@settingsExportDone": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "settingsExportFailed": "Export failed",
+  "settingsAbout": "About",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsAboutBody": "Part of the TexFi ecosystem. Works fully offline — your data never leaves the device.",
+
+  "notificationHabitTitle": "Goal not done: {habit}",
+  "@notificationHabitTitle": {
+    "placeholders": {
+      "habit": { "type": "String" }
+    }
+  },
+  "notificationHabitBody": "You promised yourself: {punishment}",
+  "@notificationHabitBody": {
+    "placeholders": {
+      "punishment": { "type": "String" }
+    }
+  },
+  "notificationDailyTitle": "End of the day",
+  "notificationDailyBody": "{count} goals are still unfinished. Still time.",
+  "@notificationDailyBody": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "notificationChannelHabits": "Habit reminders",
+  "notificationChannelHabitsDesc": "Reminders about unfinished daily goals"
+}

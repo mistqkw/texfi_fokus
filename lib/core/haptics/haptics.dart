@@ -1,0 +1,170 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
+
+/// Вибро-отклик приложения.
+///
+/// У каждого события — свой ритм, а не один универсальный «бз». Настроение
+/// на переключателе ощущается по-разному: «плохое» — один короткий слабый
+/// импульс, «full f0kus» — нарастающая очередь. Крутилка таймера отбивает
+/// щелчок на каждые N минут.
+///
+/// Там, где вибромотора нет (десктоп, часть планшетов) или пакет `vibration`
+/// не поддерживает произвольные паттерны, мы откатываемся на встроенный
+/// [HapticFeedback] — он есть на всех платформах и просто ничего не делает
+/// там, где отклик недоступен.
+abstract final class Haptics {
+  /// Общий выключатель вибрации из настроек.
+  static bool enabled = true;
+
+  /// 0.0–1.0, настраивается пользователем. Масштабирует amplitude там,
+  /// где платформа это поддерживает.
+  static double _intensity = 1.0;
+
+  static bool? _hasVibrator;
+  static bool? _hasAmplitudeControl;
+  static bool? _hasCustomVibrationsSupport;
+
+  static double get intensity => _intensity;
+
+  static set intensity(double value) => _intensity = value.clamp(0.0, 1.0);
+
+  /// Опрашивает возможности устройства один раз при старте. Безопасно
+  /// вызывать повторно и на платформах без плагина — любые ошибки
+  /// проглатываются, приложение просто останется на HapticFeedback.
+  static Future<void> init() async {
+    try {
+      _hasVibrator = await Vibration.hasVibrator();
+      _hasAmplitudeControl = await Vibration.hasAmplitudeControl();
+      _hasCustomVibrationsSupport = await Vibration.hasCustomVibrationsSupport();
+    } catch (error, stack) {
+      debugPrint('Haptics.init failed: $error\n$stack');
+      _hasVibrator = false;
+      _hasAmplitudeControl = false;
+      _hasCustomVibrationsSupport = false;
+    }
+  }
+
+  static bool get _canPattern =>
+      enabled &&
+      (_hasVibrator ?? false) &&
+      (_hasCustomVibrationsSupport ?? false);
+
+  static int _amplitude(int base) =>
+      (base * _intensity).round().clamp(1, 255);
+
+  static Future<void> _pattern(
+    List<int> pattern,
+    List<int> intensities,
+    Future<void> Function() fallback,
+  ) async {
+    if (!enabled) return;
+    if (!_canPattern) {
+      await fallback();
+      return;
+    }
+    try {
+      await Vibration.vibrate(
+        pattern: pattern,
+        intensities: (_hasAmplitudeControl ?? false)
+            ? intensities.map(_amplitude).toList()
+            : const [],
+      );
+    } catch (error) {
+      debugPrint('Haptics pattern failed: $error');
+      await fallback();
+    }
+  }
+
+  // --- Настроение: четыре разных характера ---
+
+  /// Плохое — один короткий слабый импульс. Не бодрит, а признаёт.
+  static Future<void> moodBad() => _pattern(
+        const [0, 30],
+        const [0, 70],
+        HapticFeedback.selectionClick,
+      );
+
+  /// Нормальное — ровный средний тычок.
+  static Future<void> moodNeutral() => _pattern(
+        const [0, 45],
+        const [0, 120],
+        HapticFeedback.lightImpact,
+      );
+
+  /// Хорошее — два коротких: уже с настроением.
+  static Future<void> moodGood() => _pattern(
+        const [0, 35, 40, 45],
+        const [0, 140, 0, 170],
+        HapticFeedback.mediumImpact,
+      );
+
+  /// full f0kus — нарастающая очередь: разгон перед сессией.
+  static Future<void> moodFullFokus() => _pattern(
+        const [0, 25, 30, 35, 30, 50, 30, 80],
+        const [0, 90, 0, 140, 0, 190, 0, 255],
+        HapticFeedback.heavyImpact,
+      );
+
+  static Future<void> mood(int index) => switch (index) {
+        0 => moodBad(),
+        1 => moodNeutral(),
+        2 => moodGood(),
+        _ => moodFullFokus(),
+      };
+
+  // --- Таймер и общие события ---
+
+  /// Щелчок крутилки — на каждый шаг в N минут. Должен быть очень коротким:
+  /// пользователь получает их десятками за один жест.
+  static Future<void> dialTick() => _pattern(
+        const [0, 12],
+        const [0, 90],
+        HapticFeedback.selectionClick,
+      );
+
+  /// Конец фокус-цикла — заметный двойной импульс.
+  static Future<void> cycleComplete() => _pattern(
+        const [0, 60, 60, 120],
+        const [0, 200, 0, 255],
+        HapticFeedback.heavyImpact,
+      );
+
+  /// Конец всей сессии — финальный тройной аккорд.
+  static Future<void> sessionComplete() => _pattern(
+        const [0, 80, 60, 80, 60, 160],
+        const [0, 200, 0, 220, 0, 255],
+        HapticFeedback.heavyImpact,
+      );
+
+  /// Привычка отмечена выполненной.
+  static Future<void> success() => _pattern(
+        const [0, 25, 35, 55],
+        const [0, 130, 0, 200],
+        HapticFeedback.mediumImpact,
+      );
+
+  /// Лёгкое подтверждение нажатия.
+  static Future<void> tap() async {
+    if (!enabled) return;
+    await HapticFeedback.selectionClick();
+  }
+
+  /// Отмена, удаление, ошибка ввода.
+  static Future<void> warning() => _pattern(
+        const [0, 90],
+        const [0, 220],
+        HapticFeedback.vibrate,
+      );
+
+  /// Останавливает всё, что сейчас играет — например, при выходе с экрана
+  /// таймера во время длинного паттерна.
+  static Future<void> cancel() async {
+    if (!(_hasVibrator ?? false)) return;
+    try {
+      await Vibration.cancel();
+    } catch (error) {
+      debugPrint('Haptics.cancel failed: $error');
+    }
+  }
+}

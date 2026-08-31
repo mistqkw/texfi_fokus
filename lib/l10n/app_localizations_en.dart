@@ -1,0 +1,555 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'TexFi f0kus';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get commonEdit => 'Edit';
+
+  @override
+  String get commonNext => 'Next';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonDone => 'Done';
+
+  @override
+  String get commonStart => 'Start';
+
+  @override
+  String get commonSkip => 'Skip';
+
+  @override
+  String get commonAdd => 'Add';
+
+  @override
+  String get commonClose => 'Close';
+
+  @override
+  String get commonMinutes => 'min';
+
+  @override
+  String commonMinutesFull(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get onboardingWelcomeTitle => 'TexFi f0kus';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'A focus timer that learns how you actually work — and a habit tracker that does not let you off the hook.';
+
+  @override
+  String get onboardingMoodTitle => 'Start with your mood';
+
+  @override
+  String get onboardingMoodBody =>
+      'Before every session you flip a switch: bad, normal, good, full f0kus. The app picks a technique and a length that fit that state.';
+
+  @override
+  String get onboardingLearningTitle => 'It learns from you';
+
+  @override
+  String get onboardingLearningBody =>
+      'Every finished or abandoned session teaches the app which technique works for you in which mood. Recommendations get sharper over time.';
+
+  @override
+  String get onboardingHabitsTitle => 'Habits with consequences';
+
+  @override
+  String get onboardingHabitsBody =>
+      'Set a daily goal and write down what you owe yourself if you miss it. The app remembers it and reminds you.';
+
+  @override
+  String get onboardingThemeTitle => 'Pick your look';
+
+  @override
+  String get onboardingThemeBody =>
+      'Pixel-art in the dark, warm and sunny in the light.';
+
+  @override
+  String get onboardingFirstHabitTitle => 'Your first habit';
+
+  @override
+  String get onboardingFirstHabitBody =>
+      'Name one thing you want to do every day. You can add more later.';
+
+  @override
+  String get onboardingNotificationsTitle => 'Reminders';
+
+  @override
+  String get onboardingNotificationsBody =>
+      'Let TexFi f0kus notify you about unfinished goals at the end of the day.';
+
+  @override
+  String get onboardingAllowNotifications => 'Allow notifications';
+
+  @override
+  String get onboardingFinish => 'Let\'s go';
+
+  @override
+  String get homeTitle => 'f0kus';
+
+  @override
+  String get homeStreakLabel => 'Streak';
+
+  @override
+  String homeStreakValue(int days) {
+    return '$days d';
+  }
+
+  @override
+  String get homeTodayHabits => 'Today';
+
+  @override
+  String get homeHabitsEmpty => 'No habits yet. Add your first one.';
+
+  @override
+  String get homeStartFocus => 'Start focus session';
+
+  @override
+  String get homeFocusToday => 'Today';
+
+  @override
+  String get homeFocusWeek => 'This week';
+
+  @override
+  String get homeSummaryTitle => 'In focus';
+
+  @override
+  String get homeAllDone => 'All goals done today. Respect.';
+
+  @override
+  String homePending(int count, int total) {
+    return '$count of $total goals left';
+  }
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navHabits => 'Habits';
+
+  @override
+  String get navStats => 'Stats';
+
+  @override
+  String get navSettings => 'Settings';
+
+  @override
+  String get moodTitle => 'How are you right now?';
+
+  @override
+  String get moodBad => 'bad';
+
+  @override
+  String get moodNeutral => 'normal';
+
+  @override
+  String get moodGood => 'good';
+
+  @override
+  String get moodFullFokus => 'full f0kus';
+
+  @override
+  String get moodHint =>
+      'Slide or tap to switch. Each state has its own vibration.';
+
+  @override
+  String get moodPickTaskTitle => 'What are you working on?';
+
+  @override
+  String get moodTaskHint => 'Task name';
+
+  @override
+  String get moodNewTask => 'New task';
+
+  @override
+  String get moodCategory => 'Category';
+
+  @override
+  String get moodDifficulty => 'Difficulty';
+
+  @override
+  String get moodDifficultyEasy => 'Easy';
+
+  @override
+  String get moodDifficultyMedium => 'Medium';
+
+  @override
+  String get moodDifficultyHard => 'Hard';
+
+  @override
+  String get moodContinue => 'Continue';
+
+  @override
+  String get moodTaskRequired => 'Enter a task name';
+
+  @override
+  String get categoryStudy => 'Study';
+
+  @override
+  String get categoryWork => 'Work';
+
+  @override
+  String get categoryCreative => 'Creative';
+
+  @override
+  String get categoryChores => 'Chores';
+
+  @override
+  String get categorySport => 'Sport';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get recommendationTitle => 'Recommended for you';
+
+  @override
+  String get recommendationColdStart =>
+      'A safe default for this mood — the app has not seen enough of your sessions yet.';
+
+  @override
+  String get recommendationLearned =>
+      'Based on your past sessions with a similar mood and task.';
+
+  @override
+  String recommendationConfidence(int percent) {
+    return 'Confidence: $percent%';
+  }
+
+  @override
+  String get recommendationStart => 'Start';
+
+  @override
+  String get recommendationManual => 'Set up manually';
+
+  @override
+  String get recommendationManualTitle => 'Custom timer';
+
+  @override
+  String get recommendationFocusLength => 'Focus length';
+
+  @override
+  String get recommendationBreakLength => 'Break length';
+
+  @override
+  String get recommendationCycles => 'Cycles';
+
+  @override
+  String get recommendationSoundOnEnd => 'Sound when a cycle ends';
+
+  @override
+  String get recommendationAutoStart => 'Auto-start the next cycle';
+
+  @override
+  String get techniqueSprint15 => 'Sprint 15';
+
+  @override
+  String get techniqueSprint15Desc =>
+      '15 min of work, 5 min off. Gentle start when nothing works.';
+
+  @override
+  String get techniquePomodoro2505 => 'Pomodoro 25/5';
+
+  @override
+  String get techniquePomodoro2505Desc =>
+      'The classic. 25 min of work, 5 min off, four cycles.';
+
+  @override
+  String get techniquePomodoro5010 => 'Pomodoro 50/10';
+
+  @override
+  String get techniquePomodoro5010Desc =>
+      '50 min of work, 10 min off. For tasks that need momentum.';
+
+  @override
+  String get techniqueDeepWork90 => 'Deep work 90';
+
+  @override
+  String get techniqueDeepWork90Desc =>
+      '90 min without interruptions. Only when you are truly on.';
+
+  @override
+  String get timerFocusPhase => 'FOCUS';
+
+  @override
+  String get timerBreakPhase => 'BREAK';
+
+  @override
+  String get timerPause => 'Pause';
+
+  @override
+  String get timerResume => 'Resume';
+
+  @override
+  String get timerStop => 'Stop';
+
+  @override
+  String get timerSkip => 'Skip';
+
+  @override
+  String timerCycleOf(int current, int total) {
+    return 'Cycle $current of $total';
+  }
+
+  @override
+  String get timerDialHint => 'Drag the dial to adjust the remaining time';
+
+  @override
+  String get timerStopConfirmTitle => 'Stop the session?';
+
+  @override
+  String get timerStopConfirmBody =>
+      'It will be logged as interrupted — that is also useful data.';
+
+  @override
+  String get timerStopConfirmYes => 'Stop';
+
+  @override
+  String get timerDoneTitle => 'Session finished';
+
+  @override
+  String get timerAbortedTitle => 'Session interrupted';
+
+  @override
+  String get timerRateQuestion => 'How productive was it?';
+
+  @override
+  String get timerRateSave => 'Save';
+
+  @override
+  String get timerFullscreen => 'Fullscreen';
+
+  @override
+  String get timerExitFullscreen => 'Exit fullscreen';
+
+  @override
+  String get habitsTitle => 'Habits';
+
+  @override
+  String get habitsEmpty => 'No habits yet.';
+
+  @override
+  String get habitsEmptyHint =>
+      'A habit is a daily goal plus what you owe yourself if you skip it.';
+
+  @override
+  String get habitsAdd => 'New habit';
+
+  @override
+  String get habitEditTitle => 'Edit habit';
+
+  @override
+  String get habitNameLabel => 'Name';
+
+  @override
+  String get habitNameHint => 'Read for 30 minutes';
+
+  @override
+  String get habitNameRequired => 'Enter a name';
+
+  @override
+  String get habitFrequency => 'Frequency';
+
+  @override
+  String get habitDaily => 'Every day';
+
+  @override
+  String get habitCustomDays => 'Selected days';
+
+  @override
+  String get habitPunishmentLabel => 'If you miss it';
+
+  @override
+  String get habitPunishmentHint => '50 push-ups, no coffee tomorrow…';
+
+  @override
+  String get habitPunishmentRequired => 'Write down what you owe yourself';
+
+  @override
+  String get habitPunishmentExplainer =>
+      'You write it, the app just remembers it and reminds you. Nothing is automated.';
+
+  @override
+  String get habitReminderTime => 'Reminder time';
+
+  @override
+  String get habitReminderOff => 'Off';
+
+  @override
+  String get habitDeleteConfirmTitle => 'Delete habit?';
+
+  @override
+  String get habitDeleteConfirmBody => 'Its history will be removed too.';
+
+  @override
+  String habitStreakLabel(int days) {
+    return 'Streak: $days d';
+  }
+
+  @override
+  String get habitDaysShort => 'Mon Tue Wed Thu Fri Sat Sun';
+
+  @override
+  String get statsTitle => 'Statistics';
+
+  @override
+  String get statsWeek => 'Week';
+
+  @override
+  String get statsMonth => 'Month';
+
+  @override
+  String get statsActivity => 'Activity';
+
+  @override
+  String get statsActivityHint =>
+      'Every square is a day. The brighter it is, the more time in focus.';
+
+  @override
+  String get statsFocusByDay => 'Focus time by day';
+
+  @override
+  String get statsMoodBreakdown => 'Mood and results';
+
+  @override
+  String get statsMoodBreakdownHint =>
+      'How often you finish a session started in each mood.';
+
+  @override
+  String get statsByCategory => 'By task category';
+
+  @override
+  String get statsHabitSuccess => 'Habit success';
+
+  @override
+  String get statsTotalFocus => 'Total in focus';
+
+  @override
+  String get statsSessions => 'Sessions';
+
+  @override
+  String get statsCompletionRate => 'Finished';
+
+  @override
+  String get statsEmpty => 'Not enough data yet. Run a couple of sessions.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsFeedback => 'Sound and vibration';
+
+  @override
+  String get settingsSounds => 'Sounds';
+
+  @override
+  String get settingsVibration => 'Vibration';
+
+  @override
+  String get settingsVibrationIntensity => 'Vibration intensity';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageSystem => 'System';
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get settingsNotificationsEnabled => 'Habit reminders';
+
+  @override
+  String get settingsDailyReminderTime => 'Daily summary at';
+
+  @override
+  String get settingsData => 'Data';
+
+  @override
+  String get settingsExport => 'Export data to JSON';
+
+  @override
+  String settingsExportDone(String path) {
+    return 'Saved to $path';
+  }
+
+  @override
+  String get settingsExportFailed => 'Export failed';
+
+  @override
+  String get settingsAbout => 'About';
+
+  @override
+  String settingsVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get settingsAboutBody =>
+      'Part of the TexFi ecosystem. Works fully offline — your data never leaves the device.';
+
+  @override
+  String notificationHabitTitle(String habit) {
+    return 'Goal not done: $habit';
+  }
+
+  @override
+  String notificationHabitBody(String punishment) {
+    return 'You promised yourself: $punishment';
+  }
+
+  @override
+  String get notificationDailyTitle => 'End of the day';
+
+  @override
+  String notificationDailyBody(int count) {
+    return '$count goals are still unfinished. Still time.';
+  }
+
+  @override
+  String get notificationChannelHabits => 'Habit reminders';
+
+  @override
+  String get notificationChannelHabitsDesc =>
+      'Reminders about unfinished daily goals';
+}

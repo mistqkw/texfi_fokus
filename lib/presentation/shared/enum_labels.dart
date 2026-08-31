@@ -1,0 +1,54 @@
+import '../../domain/entities/focus_technique.dart';
+import '../../domain/entities/mood.dart';
+import '../../domain/entities/task_category.dart';
+import '../../l10n/app_localizations.dart';
+
+/// Перевод доменных перечислений в подписи интерфейса. Держим в одном месте,
+/// чтобы экраны не собирали switch-и по l10n каждый по-своему.
+extension MoodLabel on Mood {
+  String label(AppLocalizations l10n) => switch (this) {
+        Mood.bad => l10n.moodBad,
+        Mood.neutral => l10n.moodNeutral,
+        Mood.good => l10n.moodGood,
+        Mood.fullFokus => l10n.moodFullFokus,
+      };
+}
+
+extension TaskCategoryLabel on TaskCategory {
+  String label(AppLocalizations l10n) => switch (this) {
+        TaskCategory.study => l10n.categoryStudy,
+        TaskCategory.work => l10n.categoryWork,
+        TaskCategory.creative => l10n.categoryCreative,
+        TaskCategory.chores => l10n.categoryChores,
+        TaskCategory.sport => l10n.categorySport,
+        TaskCategory.other => l10n.categoryOther,
+      };
+}
+
+extension TaskDifficultyLabel on TaskDifficulty {
+  String label(AppLocalizations l10n) => switch (this) {
+        TaskDifficulty.easy => l10n.moodDifficultyEasy,
+        TaskDifficulty.medium => l10n.moodDifficultyMedium,
+        TaskDifficulty.hard => l10n.moodDifficultyHard,
+      };
+}
+
+extension FocusTechniqueLabel on FocusTechnique {
+  String label(AppLocalizations l10n) => switch (this) {
+        FocusTechnique.sprint15 => l10n.techniqueSprint15,
+        FocusTechnique.pomodoro2505 => l10n.techniquePomodoro2505,
+        FocusTechnique.pomodoro5010 => l10n.techniquePomodoro5010,
+        FocusTechnique.deepWork90 => l10n.techniqueDeepWork90,
+      };
+
+  String description(AppLocalizations l10n) => switch (this) {
+        FocusTechnique.sprint15 => l10n.techniqueSprint15Desc,
+        FocusTechnique.pomodoro2505 => l10n.techniquePomodoro2505Desc,
+        FocusTechnique.pomodoro5010 => l10n.techniquePomodoro5010Desc,
+        FocusTechnique.deepWork90 => l10n.techniqueDeepWork90Desc,
+      };
+}
+
+/// Список подписей настроений в порядке [Mood.values] — для переключателя.
+List<String> moodLabels(AppLocalizations l10n) =>
+    Mood.values.map((m) => m.label(l10n)).toList();
