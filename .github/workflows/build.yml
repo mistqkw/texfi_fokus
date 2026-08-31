@@ -1,0 +1,173 @@
+name: Build & Release
+
+# Локально приложение не собирается — все билды идут здесь.
+#  • пуш тега версии:  git tag v1.0.0 && git push origin v1.0.0
+#      → соберёт все четыре платформы и выпустит релиз с артефактами
+#  • вручную: вкладка Actions → Run workflow
+#      → просто соберёт, без релиза
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Версия Flutter одна на все джобы: расхождение между раннерами — самая
+# частая причина «на Windows собралось, на Linux нет».
+env:
+  FLUTTER_VERSION: "3.47.2"
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      # SDK кеширует flutter-action; отдельно держим pub-пакеты, они
+      # тянутся дольше всего на холодном раннере.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+      - run: flutter pub get
+
+      # Как подключить настоящий релизный keystore:
+      #   1. keytool -genkey -v -keystore texfi-release.jks -keyalg RSA \
+      #        -keysize 2048 -validity 10000 -alias texfi
+      #   2. base64 -w0 texfi-release.jks   → в секрет ANDROID_KEYSTORE_BASE64
+      #   3. пароли → в секреты ANDROID_STORE_PASSWORD и ANDROID_KEY_PASSWORD
+      # Пока секретов нет, APK подписывается debug-ключом: поставить и
+      # запустить можно, распространять — нет.
+      - name: Set up release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/texfi-release.jks
+            cat > android/key.properties <<EOF
+          storeFile=texfi-release.jks
+          storePassword=$STORE_PASSWORD
+          keyAlias=texfi
+          keyPassword=$KEY_PASSWORD
+          EOF
+          else
+            echo "::warning::No release keystore secret set — building with debug signing (do not distribute)."
+          fi
+
+      - run: flutter build apk --release
+      - name: Rename APK
+        run: |
+          mkdir -p out
+          cp build/app/outputs/flutter-apk/app-release.apk \
+             out/TexFi-fokus-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: texfi-fokus-android
+          path: out/TexFi-fokus-android.apk
+          if-no-files-found: error
+
+  build-windows:
+    # windows-2022, а не latest: на новых образах MSVC ломает часть плагинов,
+    # у соседних проектов TexFi та же фиксация.
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - name: Package
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* `
+            -DestinationPath TexFi-fokus-windows-x64.zip -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: texfi-fokus-windows
+          path: TexFi-fokus-windows-x64.zip
+          if-no-files-found: error
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      # Тулчейн для десктопной сборки под GTK. sqlite3 нужен drift.
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev libsqlite3-dev
+      - run: flutter pub get
+      - run: flutter build linux --release
+      - name: Package
+        run: |
+          mkdir -p out
+          tar -czf out/TexFi-fokus-linux-x64.tar.gz \
+            -C build/linux/x64/release/bundle .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: texfi-fokus-linux
+          path: out/TexFi-fokus-linux-x64.tar.gz
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build macos --release
+      # Приложение не подписано Developer ID — при первом запуске macOS
+      # потребует «Открыть всё равно» в настройках безопасности.
+      - name: Package
+        run: |
+          mkdir -p out
+          cd build/macos/Build/Products/Release
+          zip -r -y "$GITHUB_WORKSPACE/out/TexFi-fokus-macos.zip" \
+            "texfi_fokus.app"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: texfi-fokus-macos
+          path: out/TexFi-fokus-macos.zip
+          if-no-files-found: error
+
+  # Релиз создаётся только на пуш тега vX.Y.Z, но не на ручной запуск.
+  release:
+    needs: [build-android, build-windows, build-linux, build-macos]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          # Без `name` скачиваются все артефакты сборки, каждый в свою
+          # подпапку — их и отдаём в релиз маской.
+          path: dist
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: TexFi f0kus ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/**/*
