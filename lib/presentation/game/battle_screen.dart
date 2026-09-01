@@ -85,6 +85,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
         notifications: _notifications,
         l10n: context.l10n,
         state: state,
+        signal: ref.read(timerAlarmSignalProvider),
       );
 
   Future<void> _confirmStop() async {

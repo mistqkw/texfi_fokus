@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/haptics/haptics.dart';
+import '../../core/notifications/notification_service.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/phase_clock.dart';
@@ -505,23 +506,46 @@ enum _PhaseOutcome {
 /// План устанавливается до перехода на экран таймера.
 final timerPlanProvider = StateProvider<TimerPlan?>((ref) => null);
 
+/// Чем конец сессии обозначит себя в системе.
+///
+/// Собирается из тех же настроек, что и звук внутри приложения, и уходит в
+/// канал уведомления. Это принципиальный момент: выбранный пресет должен
+/// попасть именно в систему — она играет его тогда, когда нашего процесса
+/// уже нет, а плеер приложения в этот момент не существует.
+final timerAlarmSignalProvider = Provider<TimerAlarmSignal>((ref) {
+  final plan = ref.watch(timerPlanProvider);
+  final soundOn =
+      (plan?.soundOnEnd ?? true) && ref.watch(soundsEnabledProvider);
+  return TimerAlarmSignal(
+    sound: soundOn ? ref.watch(alarmSoundProvider) : null,
+    vibrate: ref.watch(vibrationEnabledProvider),
+  );
+});
+
 final timerControllerProvider =
     StateNotifierProvider.autoDispose<TimerController, TimerState>((ref) {
   final plan = ref.watch(timerPlanProvider);
   if (plan == null) {
     throw StateError('timerPlanProvider must be set before opening the timer');
   }
-  // Настройки звука читаются в момент сигнала, а не подписываются: смена
-  // пресета посреди сессии не должна пересоздавать контроллер и обнулять
-  // отсчёт.
-  final controller = TimerController(
-    plan,
-    onAlarm: () {
-      if (!plan.soundOnEnd) return;
-      if (!ref.read(soundsEnabledProvider)) return;
-      ref.read(alarmSoundPlayerProvider).play(ref.read(alarmSoundProvider));
-    },
-  );
+  // Звук конца сессии здесь больше не проигрывается.
+  //
+  // Раньше это был единственный его источник — и ровно в этом была причина
+  // «в фоне звука нет»: колбэк приходит из тика Dart-таймера, а тик живёт
+  // только пока изолят приложения активен на переднем плане. Стоило погасить
+  // экран или свернуть приложение, как играть сигнал становилось некому:
+  // система про выбранный пресет ничего не знала, в канал уведомления он не
+  // попадал никогда.
+  //
+  // Теперь звук и вибрацию даёт сам канал уведомления (см.
+  // [TimerAlarmSignal]), и он звучит одинаково во всех состояниях —
+  // на переднем плане, в фоне и при выгруженном процессе. Оставить рядом
+  // ещё и плеер значило бы просто слышать сигнал дважды, когда приложение
+  // открыто.
+  //
+  // `AlarmSoundPlayer` при этом никуда не делся: он проигрывает пресет при
+  // выборе в настройках, где никакого уведомления нет и быть не должно.
+  final controller = TimerController(plan);
   ref.onDispose(controller.dispose);
   return controller;
 });

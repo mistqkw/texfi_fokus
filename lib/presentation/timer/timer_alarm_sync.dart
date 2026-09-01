@@ -14,6 +14,7 @@ Future<void> syncTimerAlarms({
   required NotificationService notifications,
   required AppLocalizations l10n,
   required TimerState state,
+  required TimerAlarmSignal signal,
 }) async {
   final alarms = state.alarms;
 
@@ -27,5 +28,6 @@ Future<void> syncTimerAlarms({
     totalCycles: state.plan.cycles,
     focusMinutes: state.plan.focusMinutes * state.plan.cycles,
     copy: timerNotificationCopyFrom(l10n),
+    signal: signal,
   );
 }

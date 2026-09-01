@@ -22,11 +22,18 @@ import wave
 SAMPLE_RATE = 44100
 AMPLITUDE = 0.42
 
-OUT_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "assets",
-    "audio",
-)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+OUT_DIR = os.path.join(ROOT, "assets", "audio")
+
+# Тот же набор нужен Android как ресурсы: звук уведомления система берёт из
+# res/raw, а не из flutter-ассетов, — до них ей в принципе не дотянуться, когда
+# приложение выгружено. Пишем в оба места одним прогоном, иначе копии
+# разъедутся ровно в тот момент, когда пресет поправят.
+#
+# Имена пресетов уже годятся в имена ресурсов Android (нижний регистр,
+# подчёркивания, без дефисов) — переименовывать ничего не приходится.
+RAW_DIR = os.path.join(ROOT, "android", "app", "src", "main", "res", "raw")
 
 
 def square(phase, duty=0.5):
@@ -174,6 +181,7 @@ PRESETS = {
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
+    os.makedirs(RAW_DIR, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         for name, build in PRESETS.items():
             samples = build()
@@ -181,6 +189,7 @@ def main():
             mp3_path = os.path.join(OUT_DIR, name + ".mp3")
             write_wav(samples, wav_path)
             encode_mp3(wav_path, mp3_path)
+            shutil.copyfile(mp3_path, os.path.join(RAW_DIR, name + ".mp3"))
             seconds = len(samples) / SAMPLE_RATE
             print(f"{name}.mp3  {seconds:.2f}s  {os.path.getsize(mp3_path)} B")
 
