@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/notifications/notification_service.dart';
+import '../../core/screen/focus_screen_mode.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
@@ -18,6 +19,7 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
+import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
 import 'session_finish_flow.dart';
 import 'timer_alarm_sync.dart';
@@ -35,6 +37,16 @@ class TimerScreen extends ConsumerStatefulWidget {
 class _TimerScreenState extends ConsumerState<TimerScreen> {
   /// Полноэкранный минималистичный режим: остаются только цифры и кольцо.
   bool _fullscreen = false;
+
+  /// Тихий режим: монохромный вид и приглушённая яркость.
+  bool _quiet = false;
+
+  /// Экран не гаснет, пока открыт таймер; он же ведёт тихий режим.
+  ///
+  /// Поле, а не провайдер: снятие обязано отработать в `dispose()`, а
+  /// читать провайдеры оттуда уже поздно — ровно та же причина, по которой
+  /// полем держится [_notifications].
+  final FocusScreenMode _screen = FocusScreenMode();
 
   bool _finishHandled = false;
 
@@ -54,13 +66,25 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
       if (!mounted) return;
       _syncAlarms(ref.read(timerControllerProvider));
     });
+    // На таймер смотрят — гасить экран посреди сессии незачем.
+    _screen.enter();
   }
 
   @override
   void dispose() {
     // Экран закрыт — будильников быть не должно ни при каком исходе.
     _notifications.cancelTimerAlarms();
+    // Единственный путь снятия: `dispose()` отрабатывает и при жесте «назад»,
+    // и при системной кнопке, и при программном уходе после конца сессии.
+    // Пониженная яркость, забытая здесь, пережила бы сам экран.
+    _screen.release();
     super.dispose();
+  }
+
+  Future<void> _setQuiet(bool value) async {
+    Haptics.tap();
+    await _screen.setQuiet(value);
+    if (mounted) setState(() => _quiet = value);
   }
 
   Future<void> _syncAlarms(TimerState state) => syncTimerAlarms(
@@ -147,6 +171,22 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     final isFocus = state.phase == TimerPhase.focus;
     final phaseColor = isFocus ? colors.accent : colors.success;
 
+    if (_quiet) {
+      return PopScope(
+        // «Назад» из тихого режима возвращает обычный вид, а не выходит из
+        // сессии: человек приглушил экран, а не закончил работать.
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _setQuiet(false);
+        },
+        child: QuietTimerView(
+          remaining: state.remaining,
+          hint: l10n.timerQuietModeHint,
+          onExit: () => _setQuiet(false),
+        ),
+      );
+    }
+
     return PopScope(
       // Уход назад посреди сессии — это тоже прерывание, и оно должно
       // попасть в статистику, а не потеряться.
@@ -173,6 +213,11 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                     style: context.text.sectionTitle,
                   ),
                   actions: [
+                    IconButton(
+                      tooltip: l10n.timerQuietMode,
+                      icon: const Icon(Icons.nightlight_round),
+                      onPressed: () => _setQuiet(true),
+                    ),
                     IconButton(
                       tooltip: l10n.timerFullscreen,
                       icon: const Icon(Icons.fullscreen),
