@@ -80,9 +80,11 @@ class HabitsScreen extends ConsumerWidget {
         ),
         body: habits.when(
           loading: () => const Center(child: PixelSpinner()),
-          error: (error, _) => Padding(
+          // Текст исключения пользователю ничего не говорит и читается как
+          // поломка. Дампы остаются логам.
+          error: (_, _) => Padding(
             padding: AppSpacing.screen,
-            child: Text('$error', style: context.text.body),
+            child: Text(l10n.commonLoadError, style: context.text.body),
           ),
           data: (items) {
             if (items.isEmpty) {

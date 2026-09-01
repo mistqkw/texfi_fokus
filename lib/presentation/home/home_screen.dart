@@ -73,8 +73,11 @@ class HomeScreen extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
                 child: Center(child: PixelSpinner()),
               ),
-              error: (error, _) =>
-                  PixelCard(child: Text('$error', style: context.text.body)),
+              // Текст исключения пользователю ничего не говорит и читается
+              // как поломка. Дампы остаются логам.
+              error: (_, _) => PixelCard(
+                child: Text(l10n.commonLoadError, style: context.text.body),
+              ),
               data: (items) => _HabitsList(items: items),
             ),
           ],
@@ -283,7 +286,17 @@ class _HabitsListState extends ConsumerState<_HabitsList>
 
     if (items.isEmpty) {
       return PixelCard(
-        child: Text(l10n.homeHabitsEmpty, style: context.text.body),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.homeHabitsEmpty, style: context.text.body),
+            AppSpacing.gapSm,
+            // Та же двухчастная форма, что на экране привычек: строка
+            // состояния плюс объяснение самого понятия. На домашнем экране
+            // она нужнее — это первое, что видит новый пользователь.
+            Text(l10n.homeHabitsEmptyHint, style: context.text.caption),
+          ],
+        ),
       );
     }
 

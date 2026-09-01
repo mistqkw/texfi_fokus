@@ -104,7 +104,14 @@ class _DayPlanScreenState extends ConsumerState<DayPlanScreen> {
             PixelSectionHeader(title: l10n.planToday),
             if (plan.isEmpty)
               PixelCard(
-                child: Text(l10n.planEmpty, style: context.text.body),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.planEmpty, style: context.text.body),
+                    AppSpacing.gapSm,
+                    Text(l10n.planEmptyHint, style: context.text.caption),
+                  ],
+                ),
               )
             else
               for (var i = 0; i < plan.length; i++)
