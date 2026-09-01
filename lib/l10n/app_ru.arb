@@ -566,7 +566,7 @@
   "homeHabitsEmptyHint": "Привычка — это дневная цель плюс то, что ты себе должен, если её пропустишь.",
   "planEmptyHint": "План — это короткий список на сегодня, а не на всю неделю: три строки уже план.",
   "commonUndo": "Отменить",
-  "habitUndone": "Отметка снята",
+  "habitUndone": "Привычка отмечена",
   "habitsSearchHint": "Найти привычку",
   "habitsSearchNothing": "Ни одна привычка не подходит.",
   "settingsBurnoutStreakValue": "{count, plural, one{{count} сессия} few{{count} сессии} other{{count} сессий}}"

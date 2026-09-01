@@ -971,7 +971,7 @@
   "@commonUndo": {
     "description": "TexFi f0kus polish pass 2: commonUndo"
   },
-  "habitUndone": "Habit unmarked",
+  "habitUndone": "Habit marked done",
   "@habitUndone": {
     "description": "TexFi f0kus polish pass 2: habitUndone"
   },

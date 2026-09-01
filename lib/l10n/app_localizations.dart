@@ -2871,7 +2871,7 @@ abstract class AppLocalizations {
   /// TexFi f0kus polish pass 2: habitUndone
   ///
   /// In en, this message translates to:
-  /// **'Habit unmarked'**
+  /// **'Habit marked done'**
   String get habitUndone;
 
   /// TexFi f0kus polish pass 2: habitsSearchHint

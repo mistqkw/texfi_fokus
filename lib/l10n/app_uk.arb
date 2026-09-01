@@ -566,7 +566,7 @@
   "homeHabitsEmptyHint": "Звичка — це денна ціль плюс те, що ти собі винен, якщо її пропустиш.",
   "planEmptyHint": "План — це короткий список на сьогодні, а не на весь тиждень: три рядки вже план.",
   "commonUndo": "Скасувати",
-  "habitUndone": "Позначку знято",
+  "habitUndone": "Звичку позначено",
   "habitsSearchHint": "Знайти звичку",
   "habitsSearchNothing": "Жодна звичка не підходить.",
   "settingsBurnoutStreakValue": "{count, plural, one{{count} сесія} few{{count} сесії} other{{count} сесій}}"

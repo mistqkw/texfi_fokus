@@ -1578,7 +1578,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonUndo => 'Скасувати';
 
   @override
-  String get habitUndone => 'Позначку знято';
+  String get habitUndone => 'Звичку позначено';
 
   @override
   String get habitsSearchHint => 'Знайти звичку';

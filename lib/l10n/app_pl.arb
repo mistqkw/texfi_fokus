@@ -566,7 +566,7 @@
   "homeHabitsEmptyHint": "Nawyk to dzienny cel plus to, co jesteś sobie winien, jeśli go pominiesz.",
   "planEmptyHint": "Plan to krótka lista na dziś, nie na cały tydzień — trzy linijki to już plan.",
   "commonUndo": "Cofnij",
-  "habitUndone": "Odznaczono nawyk",
+  "habitUndone": "Nawyk odznaczony jako zrobiony",
   "habitsSearchHint": "Znajdź nawyk",
   "habitsSearchNothing": "Żaden nawyk nie pasuje.",
   "settingsBurnoutStreakValue": "{count, plural, one{{count} sesja} few{{count} sesje} other{{count} sesji}}"
