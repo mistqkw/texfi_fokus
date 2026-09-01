@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="TexFi f0kus" width="100%">
+</p>
+
 <h1 align="center">TexFi f0kus</h1>
 
 <p align="center">
