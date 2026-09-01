@@ -1,0 +1,55 @@
+import '../entities/game_entities.dart';
+import '../entities/mood.dart';
+import '../entities/task_category.dart';
+
+/// Игровой слой: опыт, карта, противники.
+///
+/// Читает результаты обычного трекера, но ничего в нём не меняет. Сессии,
+/// привычки и веса рекомендаций живут своей жизнью — выключенный игровой
+/// режим не должен отражаться на них ни одной строкой.
+abstract class GameRepository {
+  /// Включён ли игровой режим. Хранится в БД рядом с прогрессом: это часть
+  /// состояния игры, а не настройка оформления.
+  Stream<bool> watchEnabled();
+
+  Future<bool> isEnabled();
+
+  /// Переключение не трогает ни прогресс, ни карту: выключенный режим просто
+  /// перестаёт показываться. Вернувшись, пользователь окажется там же, где
+  /// остановился.
+  Future<void> setEnabled(bool value);
+
+  Stream<PlayerProgressEntity> watchProgress();
+
+  Future<PlayerProgressEntity> progress();
+
+  Stream<List<MapNodeEntity>> watchMap();
+
+  Future<List<MapNodeEntity>> mapNodes();
+
+  /// Узел, на котором пользователь сейчас стоит. null — карта пройдена
+  /// целиком или игровой режим ещё ни разу не включали.
+  Future<MapNodeEntity?> currentNode();
+
+  /// Заводит карту и строку прогресса, если их ещё нет. Идемпотентно:
+  /// повторный вызов ничего не портит.
+  Future<void> ensureInitialized();
+
+  /// Разносит итог завершённой (или оборванной) сессии по игровому слою:
+  /// опыт персонажу, урон противнику на текущем узле, ответный урон от
+  /// босса. Сама сессия к этому моменту уже сохранена — здесь только
+  /// надстройка.
+  Future<EncounterResult> applySession({
+    required int focusSeconds,
+    required TaskDifficulty difficulty,
+    required Mood mood,
+    required bool completedFully,
+  });
+
+  /// Опыт за закрытую привычку. Урона противнику не наносит: привычка — это
+  /// не заход на узел, а отдельный маленький вклад.
+  Future<EncounterResult> applyHabitCompletion();
+
+  /// Полный сброс игрового прогресса по явной просьбе пользователя.
+  Future<void> resetProgress();
+}

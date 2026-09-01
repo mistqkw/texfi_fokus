@@ -4519,6 +4519,1174 @@ class RecommendationWeightsCompanion
   }
 }
 
+class $PlayerProgressTable extends PlayerProgress
+    with TableInfo<$PlayerProgressTable, PlayerProgressData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlayerProgressTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(gameSingletonId),
+  );
+  static const VerificationMeta _totalXpMeta = const VerificationMeta(
+    'totalXp',
+  );
+  @override
+  late final GeneratedColumn<int> totalXp = GeneratedColumn<int>(
+    'total_xp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _drifterKillsMeta = const VerificationMeta(
+    'drifterKills',
+  );
+  @override
+  late final GeneratedColumn<int> drifterKills = GeneratedColumn<int>(
+    'drifter_kills',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _bossKillsMeta = const VerificationMeta(
+    'bossKills',
+  );
+  @override
+  late final GeneratedColumn<int> bossKills = GeneratedColumn<int>(
+    'boss_kills',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    totalXp,
+    drifterKills,
+    bossKills,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'player_progress';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlayerProgressData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('total_xp')) {
+      context.handle(
+        _totalXpMeta,
+        totalXp.isAcceptableOrUnknown(data['total_xp']!, _totalXpMeta),
+      );
+    }
+    if (data.containsKey('drifter_kills')) {
+      context.handle(
+        _drifterKillsMeta,
+        drifterKills.isAcceptableOrUnknown(
+          data['drifter_kills']!,
+          _drifterKillsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('boss_kills')) {
+      context.handle(
+        _bossKillsMeta,
+        bossKills.isAcceptableOrUnknown(data['boss_kills']!, _bossKillsMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlayerProgressData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlayerProgressData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      totalXp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_xp'],
+      )!,
+      drifterKills: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}drifter_kills'],
+      )!,
+      bossKills: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}boss_kills'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PlayerProgressTable createAlias(String alias) {
+    return $PlayerProgressTable(attachedDatabase, alias);
+  }
+}
+
+class PlayerProgressData extends DataClass
+    implements Insertable<PlayerProgressData> {
+  /// Singleton-строка: игрок в приложении один.
+  final int id;
+  final int totalXp;
+
+  /// Счётчики для экрана персонажа. Считать их каждый раз по карте нельзя:
+  /// побеждённые дриферы на пройденных узлах перезаписываются, а история
+  /// побед должна оставаться.
+  final int drifterKills;
+  final int bossKills;
+  final DateTime updatedAt;
+  const PlayerProgressData({
+    required this.id,
+    required this.totalXp,
+    required this.drifterKills,
+    required this.bossKills,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['total_xp'] = Variable<int>(totalXp);
+    map['drifter_kills'] = Variable<int>(drifterKills);
+    map['boss_kills'] = Variable<int>(bossKills);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PlayerProgressCompanion toCompanion(bool nullToAbsent) {
+    return PlayerProgressCompanion(
+      id: Value(id),
+      totalXp: Value(totalXp),
+      drifterKills: Value(drifterKills),
+      bossKills: Value(bossKills),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory PlayerProgressData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlayerProgressData(
+      id: serializer.fromJson<int>(json['id']),
+      totalXp: serializer.fromJson<int>(json['totalXp']),
+      drifterKills: serializer.fromJson<int>(json['drifterKills']),
+      bossKills: serializer.fromJson<int>(json['bossKills']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'totalXp': serializer.toJson<int>(totalXp),
+      'drifterKills': serializer.toJson<int>(drifterKills),
+      'bossKills': serializer.toJson<int>(bossKills),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  PlayerProgressData copyWith({
+    int? id,
+    int? totalXp,
+    int? drifterKills,
+    int? bossKills,
+    DateTime? updatedAt,
+  }) => PlayerProgressData(
+    id: id ?? this.id,
+    totalXp: totalXp ?? this.totalXp,
+    drifterKills: drifterKills ?? this.drifterKills,
+    bossKills: bossKills ?? this.bossKills,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  PlayerProgressData copyWithCompanion(PlayerProgressCompanion data) {
+    return PlayerProgressData(
+      id: data.id.present ? data.id.value : this.id,
+      totalXp: data.totalXp.present ? data.totalXp.value : this.totalXp,
+      drifterKills: data.drifterKills.present
+          ? data.drifterKills.value
+          : this.drifterKills,
+      bossKills: data.bossKills.present ? data.bossKills.value : this.bossKills,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlayerProgressData(')
+          ..write('id: $id, ')
+          ..write('totalXp: $totalXp, ')
+          ..write('drifterKills: $drifterKills, ')
+          ..write('bossKills: $bossKills, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, totalXp, drifterKills, bossKills, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlayerProgressData &&
+          other.id == this.id &&
+          other.totalXp == this.totalXp &&
+          other.drifterKills == this.drifterKills &&
+          other.bossKills == this.bossKills &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PlayerProgressCompanion extends UpdateCompanion<PlayerProgressData> {
+  final Value<int> id;
+  final Value<int> totalXp;
+  final Value<int> drifterKills;
+  final Value<int> bossKills;
+  final Value<DateTime> updatedAt;
+  const PlayerProgressCompanion({
+    this.id = const Value.absent(),
+    this.totalXp = const Value.absent(),
+    this.drifterKills = const Value.absent(),
+    this.bossKills = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  PlayerProgressCompanion.insert({
+    this.id = const Value.absent(),
+    this.totalXp = const Value.absent(),
+    this.drifterKills = const Value.absent(),
+    this.bossKills = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  static Insertable<PlayerProgressData> custom({
+    Expression<int>? id,
+    Expression<int>? totalXp,
+    Expression<int>? drifterKills,
+    Expression<int>? bossKills,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (totalXp != null) 'total_xp': totalXp,
+      if (drifterKills != null) 'drifter_kills': drifterKills,
+      if (bossKills != null) 'boss_kills': bossKills,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  PlayerProgressCompanion copyWith({
+    Value<int>? id,
+    Value<int>? totalXp,
+    Value<int>? drifterKills,
+    Value<int>? bossKills,
+    Value<DateTime>? updatedAt,
+  }) {
+    return PlayerProgressCompanion(
+      id: id ?? this.id,
+      totalXp: totalXp ?? this.totalXp,
+      drifterKills: drifterKills ?? this.drifterKills,
+      bossKills: bossKills ?? this.bossKills,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (totalXp.present) {
+      map['total_xp'] = Variable<int>(totalXp.value);
+    }
+    if (drifterKills.present) {
+      map['drifter_kills'] = Variable<int>(drifterKills.value);
+    }
+    if (bossKills.present) {
+      map['boss_kills'] = Variable<int>(bossKills.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlayerProgressCompanion(')
+          ..write('id: $id, ')
+          ..write('totalXp: $totalXp, ')
+          ..write('drifterKills: $drifterKills, ')
+          ..write('bossKills: $bossKills, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MapNodesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _worldMeta = const VerificationMeta('world');
+  @override
+  late final GeneratedColumn<int> world = GeneratedColumn<int>(
+    'world',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<int> kind = GeneratedColumn<int>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speciesMeta = const VerificationMeta(
+    'species',
+  );
+  @override
+  late final GeneratedColumn<int> species = GeneratedColumn<int>(
+    'species',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _maxHpMeta = const VerificationMeta('maxHp');
+  @override
+  late final GeneratedColumn<int> maxHp = GeneratedColumn<int>(
+    'max_hp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentHpMeta = const VerificationMeta(
+    'currentHp',
+  );
+  @override
+  late final GeneratedColumn<int> currentHp = GeneratedColumn<int>(
+    'current_hp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _playerHpMeta = const VerificationMeta(
+    'playerHp',
+  );
+  @override
+  late final GeneratedColumn<int> playerHp = GeneratedColumn<int>(
+    'player_hp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastFoughtAtMeta = const VerificationMeta(
+    'lastFoughtAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastFoughtAt = GeneratedColumn<DateTime>(
+    'last_fought_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    world,
+    position,
+    kind,
+    status,
+    species,
+    maxHp,
+    currentHp,
+    playerHp,
+    lastFoughtAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'map_nodes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MapNode> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('world')) {
+      context.handle(
+        _worldMeta,
+        world.isAcceptableOrUnknown(data['world']!, _worldMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_worldMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('species')) {
+      context.handle(
+        _speciesMeta,
+        species.isAcceptableOrUnknown(data['species']!, _speciesMeta),
+      );
+    }
+    if (data.containsKey('max_hp')) {
+      context.handle(
+        _maxHpMeta,
+        maxHp.isAcceptableOrUnknown(data['max_hp']!, _maxHpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_maxHpMeta);
+    }
+    if (data.containsKey('current_hp')) {
+      context.handle(
+        _currentHpMeta,
+        currentHp.isAcceptableOrUnknown(data['current_hp']!, _currentHpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_currentHpMeta);
+    }
+    if (data.containsKey('player_hp')) {
+      context.handle(
+        _playerHpMeta,
+        playerHp.isAcceptableOrUnknown(data['player_hp']!, _playerHpMeta),
+      );
+    }
+    if (data.containsKey('last_fought_at')) {
+      context.handle(
+        _lastFoughtAtMeta,
+        lastFoughtAt.isAcceptableOrUnknown(
+          data['last_fought_at']!,
+          _lastFoughtAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MapNode map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MapNode(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      world: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}world'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}kind'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      species: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}species'],
+      )!,
+      maxHp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}max_hp'],
+      )!,
+      currentHp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_hp'],
+      )!,
+      playerHp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}player_hp'],
+      )!,
+      lastFoughtAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_fought_at'],
+      ),
+    );
+  }
+
+  @override
+  $MapNodesTable createAlias(String alias) {
+    return $MapNodesTable(attachedDatabase, alias);
+  }
+}
+
+class MapNode extends DataClass implements Insertable<MapNode> {
+  /// `w1n2` — мир и позиция. Строкой: так id читаем в логах и не разъедется
+  /// при смене нумерации.
+  final String id;
+
+  /// 1-based номер мира.
+  final int world;
+
+  /// 1-based позиция внутри мира.
+  final int position;
+
+  /// `MapNodeKind`: обычный дрифер или босс.
+  final int kind;
+
+  /// `MapNodeStatus`: locked / current / completed.
+  final int status;
+
+  /// `DrifterSpecies` — какой именно силуэт здесь стоит.
+  final int species;
+  final int maxHp;
+  final int currentHp;
+
+  /// Запас персонажа на текущем заходе к боссу.
+  final int playerHp;
+
+  /// Когда по узлу били в последний раз — от этого зависит, успел ли
+  /// недобитый дрифер восстановиться.
+  final DateTime? lastFoughtAt;
+  const MapNode({
+    required this.id,
+    required this.world,
+    required this.position,
+    required this.kind,
+    required this.status,
+    required this.species,
+    required this.maxHp,
+    required this.currentHp,
+    required this.playerHp,
+    this.lastFoughtAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['world'] = Variable<int>(world);
+    map['position'] = Variable<int>(position);
+    map['kind'] = Variable<int>(kind);
+    map['status'] = Variable<int>(status);
+    map['species'] = Variable<int>(species);
+    map['max_hp'] = Variable<int>(maxHp);
+    map['current_hp'] = Variable<int>(currentHp);
+    map['player_hp'] = Variable<int>(playerHp);
+    if (!nullToAbsent || lastFoughtAt != null) {
+      map['last_fought_at'] = Variable<DateTime>(lastFoughtAt);
+    }
+    return map;
+  }
+
+  MapNodesCompanion toCompanion(bool nullToAbsent) {
+    return MapNodesCompanion(
+      id: Value(id),
+      world: Value(world),
+      position: Value(position),
+      kind: Value(kind),
+      status: Value(status),
+      species: Value(species),
+      maxHp: Value(maxHp),
+      currentHp: Value(currentHp),
+      playerHp: Value(playerHp),
+      lastFoughtAt: lastFoughtAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastFoughtAt),
+    );
+  }
+
+  factory MapNode.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MapNode(
+      id: serializer.fromJson<String>(json['id']),
+      world: serializer.fromJson<int>(json['world']),
+      position: serializer.fromJson<int>(json['position']),
+      kind: serializer.fromJson<int>(json['kind']),
+      status: serializer.fromJson<int>(json['status']),
+      species: serializer.fromJson<int>(json['species']),
+      maxHp: serializer.fromJson<int>(json['maxHp']),
+      currentHp: serializer.fromJson<int>(json['currentHp']),
+      playerHp: serializer.fromJson<int>(json['playerHp']),
+      lastFoughtAt: serializer.fromJson<DateTime?>(json['lastFoughtAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'world': serializer.toJson<int>(world),
+      'position': serializer.toJson<int>(position),
+      'kind': serializer.toJson<int>(kind),
+      'status': serializer.toJson<int>(status),
+      'species': serializer.toJson<int>(species),
+      'maxHp': serializer.toJson<int>(maxHp),
+      'currentHp': serializer.toJson<int>(currentHp),
+      'playerHp': serializer.toJson<int>(playerHp),
+      'lastFoughtAt': serializer.toJson<DateTime?>(lastFoughtAt),
+    };
+  }
+
+  MapNode copyWith({
+    String? id,
+    int? world,
+    int? position,
+    int? kind,
+    int? status,
+    int? species,
+    int? maxHp,
+    int? currentHp,
+    int? playerHp,
+    Value<DateTime?> lastFoughtAt = const Value.absent(),
+  }) => MapNode(
+    id: id ?? this.id,
+    world: world ?? this.world,
+    position: position ?? this.position,
+    kind: kind ?? this.kind,
+    status: status ?? this.status,
+    species: species ?? this.species,
+    maxHp: maxHp ?? this.maxHp,
+    currentHp: currentHp ?? this.currentHp,
+    playerHp: playerHp ?? this.playerHp,
+    lastFoughtAt: lastFoughtAt.present ? lastFoughtAt.value : this.lastFoughtAt,
+  );
+  MapNode copyWithCompanion(MapNodesCompanion data) {
+    return MapNode(
+      id: data.id.present ? data.id.value : this.id,
+      world: data.world.present ? data.world.value : this.world,
+      position: data.position.present ? data.position.value : this.position,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      status: data.status.present ? data.status.value : this.status,
+      species: data.species.present ? data.species.value : this.species,
+      maxHp: data.maxHp.present ? data.maxHp.value : this.maxHp,
+      currentHp: data.currentHp.present ? data.currentHp.value : this.currentHp,
+      playerHp: data.playerHp.present ? data.playerHp.value : this.playerHp,
+      lastFoughtAt: data.lastFoughtAt.present
+          ? data.lastFoughtAt.value
+          : this.lastFoughtAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MapNode(')
+          ..write('id: $id, ')
+          ..write('world: $world, ')
+          ..write('position: $position, ')
+          ..write('kind: $kind, ')
+          ..write('status: $status, ')
+          ..write('species: $species, ')
+          ..write('maxHp: $maxHp, ')
+          ..write('currentHp: $currentHp, ')
+          ..write('playerHp: $playerHp, ')
+          ..write('lastFoughtAt: $lastFoughtAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    world,
+    position,
+    kind,
+    status,
+    species,
+    maxHp,
+    currentHp,
+    playerHp,
+    lastFoughtAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MapNode &&
+          other.id == this.id &&
+          other.world == this.world &&
+          other.position == this.position &&
+          other.kind == this.kind &&
+          other.status == this.status &&
+          other.species == this.species &&
+          other.maxHp == this.maxHp &&
+          other.currentHp == this.currentHp &&
+          other.playerHp == this.playerHp &&
+          other.lastFoughtAt == this.lastFoughtAt);
+}
+
+class MapNodesCompanion extends UpdateCompanion<MapNode> {
+  final Value<String> id;
+  final Value<int> world;
+  final Value<int> position;
+  final Value<int> kind;
+  final Value<int> status;
+  final Value<int> species;
+  final Value<int> maxHp;
+  final Value<int> currentHp;
+  final Value<int> playerHp;
+  final Value<DateTime?> lastFoughtAt;
+  final Value<int> rowid;
+  const MapNodesCompanion({
+    this.id = const Value.absent(),
+    this.world = const Value.absent(),
+    this.position = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.status = const Value.absent(),
+    this.species = const Value.absent(),
+    this.maxHp = const Value.absent(),
+    this.currentHp = const Value.absent(),
+    this.playerHp = const Value.absent(),
+    this.lastFoughtAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MapNodesCompanion.insert({
+    required String id,
+    required int world,
+    required int position,
+    required int kind,
+    required int status,
+    this.species = const Value.absent(),
+    required int maxHp,
+    required int currentHp,
+    this.playerHp = const Value.absent(),
+    this.lastFoughtAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       world = Value(world),
+       position = Value(position),
+       kind = Value(kind),
+       status = Value(status),
+       maxHp = Value(maxHp),
+       currentHp = Value(currentHp);
+  static Insertable<MapNode> custom({
+    Expression<String>? id,
+    Expression<int>? world,
+    Expression<int>? position,
+    Expression<int>? kind,
+    Expression<int>? status,
+    Expression<int>? species,
+    Expression<int>? maxHp,
+    Expression<int>? currentHp,
+    Expression<int>? playerHp,
+    Expression<DateTime>? lastFoughtAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (world != null) 'world': world,
+      if (position != null) 'position': position,
+      if (kind != null) 'kind': kind,
+      if (status != null) 'status': status,
+      if (species != null) 'species': species,
+      if (maxHp != null) 'max_hp': maxHp,
+      if (currentHp != null) 'current_hp': currentHp,
+      if (playerHp != null) 'player_hp': playerHp,
+      if (lastFoughtAt != null) 'last_fought_at': lastFoughtAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MapNodesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? world,
+    Value<int>? position,
+    Value<int>? kind,
+    Value<int>? status,
+    Value<int>? species,
+    Value<int>? maxHp,
+    Value<int>? currentHp,
+    Value<int>? playerHp,
+    Value<DateTime?>? lastFoughtAt,
+    Value<int>? rowid,
+  }) {
+    return MapNodesCompanion(
+      id: id ?? this.id,
+      world: world ?? this.world,
+      position: position ?? this.position,
+      kind: kind ?? this.kind,
+      status: status ?? this.status,
+      species: species ?? this.species,
+      maxHp: maxHp ?? this.maxHp,
+      currentHp: currentHp ?? this.currentHp,
+      playerHp: playerHp ?? this.playerHp,
+      lastFoughtAt: lastFoughtAt ?? this.lastFoughtAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (world.present) {
+      map['world'] = Variable<int>(world.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<int>(kind.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (species.present) {
+      map['species'] = Variable<int>(species.value);
+    }
+    if (maxHp.present) {
+      map['max_hp'] = Variable<int>(maxHp.value);
+    }
+    if (currentHp.present) {
+      map['current_hp'] = Variable<int>(currentHp.value);
+    }
+    if (playerHp.present) {
+      map['player_hp'] = Variable<int>(playerHp.value);
+    }
+    if (lastFoughtAt.present) {
+      map['last_fought_at'] = Variable<DateTime>(lastFoughtAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MapNodesCompanion(')
+          ..write('id: $id, ')
+          ..write('world: $world, ')
+          ..write('position: $position, ')
+          ..write('kind: $kind, ')
+          ..write('status: $status, ')
+          ..write('species: $species, ')
+          ..write('maxHp: $maxHp, ')
+          ..write('currentHp: $currentHp, ')
+          ..write('playerHp: $playerHp, ')
+          ..write('lastFoughtAt: $lastFoughtAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GameSettingsTable extends GameSettings
+    with TableInfo<$GameSettingsTable, GameSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GameSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(gameSingletonId),
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, enabled];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GameSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GameSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GameSetting(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+    );
+  }
+
+  @override
+  $GameSettingsTable createAlias(String alias) {
+    return $GameSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class GameSetting extends DataClass implements Insertable<GameSetting> {
+  final int id;
+
+  /// Игровой режим включён. По умолчанию выключен: обычный трекер остаётся
+  /// поведением по умолчанию, игра — осознанный выбор.
+  final bool enabled;
+  const GameSetting({required this.id, required this.enabled});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['enabled'] = Variable<bool>(enabled);
+    return map;
+  }
+
+  GameSettingsCompanion toCompanion(bool nullToAbsent) {
+    return GameSettingsCompanion(id: Value(id), enabled: Value(enabled));
+  }
+
+  factory GameSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GameSetting(
+      id: serializer.fromJson<int>(json['id']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'enabled': serializer.toJson<bool>(enabled),
+    };
+  }
+
+  GameSetting copyWith({int? id, bool? enabled}) =>
+      GameSetting(id: id ?? this.id, enabled: enabled ?? this.enabled);
+  GameSetting copyWithCompanion(GameSettingsCompanion data) {
+    return GameSetting(
+      id: data.id.present ? data.id.value : this.id,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameSetting(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, enabled);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GameSetting &&
+          other.id == this.id &&
+          other.enabled == this.enabled);
+}
+
+class GameSettingsCompanion extends UpdateCompanion<GameSetting> {
+  final Value<int> id;
+  final Value<bool> enabled;
+  const GameSettingsCompanion({
+    this.id = const Value.absent(),
+    this.enabled = const Value.absent(),
+  });
+  GameSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.enabled = const Value.absent(),
+  });
+  static Insertable<GameSetting> custom({
+    Expression<int>? id,
+    Expression<bool>? enabled,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (enabled != null) 'enabled': enabled,
+    });
+  }
+
+  GameSettingsCompanion copyWith({Value<int>? id, Value<bool>? enabled}) {
+    return GameSettingsCompanion(
+      id: id ?? this.id,
+      enabled: enabled ?? this.enabled,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4534,6 +5702,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MoodEntriesTable moodEntries = $MoodEntriesTable(this);
   late final $RecommendationWeightsTable recommendationWeights =
       $RecommendationWeightsTable(this);
+  late final $PlayerProgressTable playerProgress = $PlayerProgressTable(this);
+  late final $MapNodesTable mapNodes = $MapNodesTable(this);
+  late final $GameSettingsTable gameSettings = $GameSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4548,6 +5719,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sessions,
     moodEntries,
     recommendationWeights,
+    playerProgress,
+    mapNodes,
+    gameSettings,
   ];
 }
 
@@ -6833,6 +8007,624 @@ typedef $$RecommendationWeightsTableProcessedTableManager =
       RecommendationWeight,
       PrefetchHooks Function()
     >;
+typedef $$PlayerProgressTableCreateCompanionBuilder =
+    PlayerProgressCompanion Function({
+      Value<int> id,
+      Value<int> totalXp,
+      Value<int> drifterKills,
+      Value<int> bossKills,
+      Value<DateTime> updatedAt,
+    });
+typedef $$PlayerProgressTableUpdateCompanionBuilder =
+    PlayerProgressCompanion Function({
+      Value<int> id,
+      Value<int> totalXp,
+      Value<int> drifterKills,
+      Value<int> bossKills,
+      Value<DateTime> updatedAt,
+    });
+
+class $$PlayerProgressTableFilterComposer
+    extends Composer<_$AppDatabase, $PlayerProgressTable> {
+  $$PlayerProgressTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalXp => $composableBuilder(
+    column: $table.totalXp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get drifterKills => $composableBuilder(
+    column: $table.drifterKills,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bossKills => $composableBuilder(
+    column: $table.bossKills,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlayerProgressTableOrderingComposer
+    extends Composer<_$AppDatabase, $PlayerProgressTable> {
+  $$PlayerProgressTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalXp => $composableBuilder(
+    column: $table.totalXp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get drifterKills => $composableBuilder(
+    column: $table.drifterKills,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bossKills => $composableBuilder(
+    column: $table.bossKills,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlayerProgressTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PlayerProgressTable> {
+  $$PlayerProgressTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get totalXp =>
+      $composableBuilder(column: $table.totalXp, builder: (column) => column);
+
+  GeneratedColumn<int> get drifterKills => $composableBuilder(
+    column: $table.drifterKills,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get bossKills =>
+      $composableBuilder(column: $table.bossKills, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$PlayerProgressTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PlayerProgressTable,
+          PlayerProgressData,
+          $$PlayerProgressTableFilterComposer,
+          $$PlayerProgressTableOrderingComposer,
+          $$PlayerProgressTableAnnotationComposer,
+          $$PlayerProgressTableCreateCompanionBuilder,
+          $$PlayerProgressTableUpdateCompanionBuilder,
+          (
+            PlayerProgressData,
+            BaseReferences<
+              _$AppDatabase,
+              $PlayerProgressTable,
+              PlayerProgressData
+            >,
+          ),
+          PlayerProgressData,
+          PrefetchHooks Function()
+        > {
+  $$PlayerProgressTableTableManager(
+    _$AppDatabase db,
+    $PlayerProgressTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlayerProgressTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlayerProgressTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlayerProgressTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> totalXp = const Value.absent(),
+                Value<int> drifterKills = const Value.absent(),
+                Value<int> bossKills = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => PlayerProgressCompanion(
+                id: id,
+                totalXp: totalXp,
+                drifterKills: drifterKills,
+                bossKills: bossKills,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> totalXp = const Value.absent(),
+                Value<int> drifterKills = const Value.absent(),
+                Value<int> bossKills = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => PlayerProgressCompanion.insert(
+                id: id,
+                totalXp: totalXp,
+                drifterKills: drifterKills,
+                bossKills: bossKills,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlayerProgressTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PlayerProgressTable,
+      PlayerProgressData,
+      $$PlayerProgressTableFilterComposer,
+      $$PlayerProgressTableOrderingComposer,
+      $$PlayerProgressTableAnnotationComposer,
+      $$PlayerProgressTableCreateCompanionBuilder,
+      $$PlayerProgressTableUpdateCompanionBuilder,
+      (
+        PlayerProgressData,
+        BaseReferences<_$AppDatabase, $PlayerProgressTable, PlayerProgressData>,
+      ),
+      PlayerProgressData,
+      PrefetchHooks Function()
+    >;
+typedef $$MapNodesTableCreateCompanionBuilder =
+    MapNodesCompanion Function({
+      required String id,
+      required int world,
+      required int position,
+      required int kind,
+      required int status,
+      Value<int> species,
+      required int maxHp,
+      required int currentHp,
+      Value<int> playerHp,
+      Value<DateTime?> lastFoughtAt,
+      Value<int> rowid,
+    });
+typedef $$MapNodesTableUpdateCompanionBuilder =
+    MapNodesCompanion Function({
+      Value<String> id,
+      Value<int> world,
+      Value<int> position,
+      Value<int> kind,
+      Value<int> status,
+      Value<int> species,
+      Value<int> maxHp,
+      Value<int> currentHp,
+      Value<int> playerHp,
+      Value<DateTime?> lastFoughtAt,
+      Value<int> rowid,
+    });
+
+class $$MapNodesTableFilterComposer
+    extends Composer<_$AppDatabase, $MapNodesTable> {
+  $$MapNodesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get world => $composableBuilder(
+    column: $table.world,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get species => $composableBuilder(
+    column: $table.species,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maxHp => $composableBuilder(
+    column: $table.maxHp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentHp => $composableBuilder(
+    column: $table.currentHp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get playerHp => $composableBuilder(
+    column: $table.playerHp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastFoughtAt => $composableBuilder(
+    column: $table.lastFoughtAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MapNodesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MapNodesTable> {
+  $$MapNodesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get world => $composableBuilder(
+    column: $table.world,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get species => $composableBuilder(
+    column: $table.species,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maxHp => $composableBuilder(
+    column: $table.maxHp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentHp => $composableBuilder(
+    column: $table.currentHp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get playerHp => $composableBuilder(
+    column: $table.playerHp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastFoughtAt => $composableBuilder(
+    column: $table.lastFoughtAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MapNodesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MapNodesTable> {
+  $$MapNodesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get world =>
+      $composableBuilder(column: $table.world, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get species =>
+      $composableBuilder(column: $table.species, builder: (column) => column);
+
+  GeneratedColumn<int> get maxHp =>
+      $composableBuilder(column: $table.maxHp, builder: (column) => column);
+
+  GeneratedColumn<int> get currentHp =>
+      $composableBuilder(column: $table.currentHp, builder: (column) => column);
+
+  GeneratedColumn<int> get playerHp =>
+      $composableBuilder(column: $table.playerHp, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastFoughtAt => $composableBuilder(
+    column: $table.lastFoughtAt,
+    builder: (column) => column,
+  );
+}
+
+class $$MapNodesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MapNodesTable,
+          MapNode,
+          $$MapNodesTableFilterComposer,
+          $$MapNodesTableOrderingComposer,
+          $$MapNodesTableAnnotationComposer,
+          $$MapNodesTableCreateCompanionBuilder,
+          $$MapNodesTableUpdateCompanionBuilder,
+          (MapNode, BaseReferences<_$AppDatabase, $MapNodesTable, MapNode>),
+          MapNode,
+          PrefetchHooks Function()
+        > {
+  $$MapNodesTableTableManager(_$AppDatabase db, $MapNodesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MapNodesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MapNodesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MapNodesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> world = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> kind = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<int> species = const Value.absent(),
+                Value<int> maxHp = const Value.absent(),
+                Value<int> currentHp = const Value.absent(),
+                Value<int> playerHp = const Value.absent(),
+                Value<DateTime?> lastFoughtAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MapNodesCompanion(
+                id: id,
+                world: world,
+                position: position,
+                kind: kind,
+                status: status,
+                species: species,
+                maxHp: maxHp,
+                currentHp: currentHp,
+                playerHp: playerHp,
+                lastFoughtAt: lastFoughtAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int world,
+                required int position,
+                required int kind,
+                required int status,
+                Value<int> species = const Value.absent(),
+                required int maxHp,
+                required int currentHp,
+                Value<int> playerHp = const Value.absent(),
+                Value<DateTime?> lastFoughtAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MapNodesCompanion.insert(
+                id: id,
+                world: world,
+                position: position,
+                kind: kind,
+                status: status,
+                species: species,
+                maxHp: maxHp,
+                currentHp: currentHp,
+                playerHp: playerHp,
+                lastFoughtAt: lastFoughtAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MapNodesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MapNodesTable,
+      MapNode,
+      $$MapNodesTableFilterComposer,
+      $$MapNodesTableOrderingComposer,
+      $$MapNodesTableAnnotationComposer,
+      $$MapNodesTableCreateCompanionBuilder,
+      $$MapNodesTableUpdateCompanionBuilder,
+      (MapNode, BaseReferences<_$AppDatabase, $MapNodesTable, MapNode>),
+      MapNode,
+      PrefetchHooks Function()
+    >;
+typedef $$GameSettingsTableCreateCompanionBuilder =
+    GameSettingsCompanion Function({Value<int> id, Value<bool> enabled});
+typedef $$GameSettingsTableUpdateCompanionBuilder =
+    GameSettingsCompanion Function({Value<int> id, Value<bool> enabled});
+
+class $$GameSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $GameSettingsTable> {
+  $$GameSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GameSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GameSettingsTable> {
+  $$GameSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GameSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GameSettingsTable> {
+  $$GameSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+}
+
+class $$GameSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GameSettingsTable,
+          GameSetting,
+          $$GameSettingsTableFilterComposer,
+          $$GameSettingsTableOrderingComposer,
+          $$GameSettingsTableAnnotationComposer,
+          $$GameSettingsTableCreateCompanionBuilder,
+          $$GameSettingsTableUpdateCompanionBuilder,
+          (
+            GameSetting,
+            BaseReferences<_$AppDatabase, $GameSettingsTable, GameSetting>,
+          ),
+          GameSetting,
+          PrefetchHooks Function()
+        > {
+  $$GameSettingsTableTableManager(_$AppDatabase db, $GameSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GameSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GameSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GameSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+              }) => GameSettingsCompanion(id: id, enabled: enabled),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+              }) => GameSettingsCompanion.insert(id: id, enabled: enabled),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GameSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GameSettingsTable,
+      GameSetting,
+      $$GameSettingsTableFilterComposer,
+      $$GameSettingsTableOrderingComposer,
+      $$GameSettingsTableAnnotationComposer,
+      $$GameSettingsTableCreateCompanionBuilder,
+      $$GameSettingsTableUpdateCompanionBuilder,
+      (
+        GameSetting,
+        BaseReferences<_$AppDatabase, $GameSettingsTable, GameSetting>,
+      ),
+      GameSetting,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6855,4 +8647,10 @@ class $AppDatabaseManager {
       $$MoodEntriesTableTableManager(_db, _db.moodEntries);
   $$RecommendationWeightsTableTableManager get recommendationWeights =>
       $$RecommendationWeightsTableTableManager(_db, _db.recommendationWeights);
+  $$PlayerProgressTableTableManager get playerProgress =>
+      $$PlayerProgressTableTableManager(_db, _db.playerProgress);
+  $$MapNodesTableTableManager get mapNodes =>
+      $$MapNodesTableTableManager(_db, _db.mapNodes);
+  $$GameSettingsTableTableManager get gameSettings =>
+      $$GameSettingsTableTableManager(_db, _db.gameSettings);
 }

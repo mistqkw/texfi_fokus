@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'tables/game_tables.dart';
 import 'tables/habits_table.dart';
 import 'tables/mood_entries_table.dart';
 import 'tables/planner_tables.dart';
@@ -21,6 +22,9 @@ part 'database.g.dart';
     Sessions,
     MoodEntries,
     RecommendationWeights,
+    PlayerProgress,
+    MapNodes,
+    GameSettings,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -29,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -62,6 +66,15 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.createTable(dayPlanEntries);
             await m.createTable(subtasks);
+          }
+
+          // v5: игровой слой. Только новые таблицы — сессии, привычки и веса
+          // рекомендаций игра читает, но не переписывает, поэтому их схема
+          // здесь не трогается вовсе.
+          if (from < 5) {
+            await m.createTable(playerProgress);
+            await m.createTable(mapNodes);
+            await m.createTable(gameSettings);
           }
         },
       );

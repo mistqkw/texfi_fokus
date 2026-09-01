@@ -183,6 +183,13 @@ void main() {
     expect(await db.select(db.dayPlanEntries).get(), isEmpty);
     expect(await db.select(db.subtasks).get(), isEmpty);
 
+    // v5: игровой слой приезжает тремя новыми таблицами и ничем больше.
+    // Пустые — игра по умолчанию выключена, и человек, обновившийся с v1,
+    // не должен обнаружить у себя вдруг начатую партию.
+    expect(await db.select(db.playerProgress).get(), isEmpty);
+    expect(await db.select(db.mapNodes).get(), isEmpty);
+    expect(await db.select(db.gameSettings).get(), isEmpty);
+
     final version = await db
         .customSelect('PRAGMA user_version')
         .getSingle();
@@ -224,5 +231,43 @@ void main() {
           ),
         );
     expect(await db.select(db.habitFreezes).get(), hasLength(1));
+  });
+
+  test('the game layer is additive: old tables keep their shape', () async {
+    final file = _seedV1(dir);
+    final db = AppDatabase.forTesting(NativeDatabase(file));
+    addTearDown(db.close);
+
+    // Колонки существующих таблиц не должны ни исчезнуть, ни поменять тип:
+    // игровой слой читает сессии и привычки, но не переписывает их схему.
+    Future<List<String>> columnsOf(String table) async {
+      final rows =
+          await db.customSelect('PRAGMA table_info($table)').get();
+      return rows.map((r) => r.data['name'] as String).toList();
+    }
+
+    final sessionColumns = await columnsOf('sessions');
+    expect(sessionColumns, contains('actual_focus_seconds'));
+    expect(sessionColumns, contains('context_key'));
+    expect(sessionColumns, isNot(contains('xp')));
+
+    final weightColumns = await columnsOf('recommendation_weights');
+    expect(weightColumns, isNot(contains('xp')));
+    expect(weightColumns, isNot(contains('world')));
+
+    // А новые таблицы — на месте и с нужными колонками.
+    expect(await columnsOf('map_nodes'), containsAll(<String>[
+      'world',
+      'position',
+      'kind',
+      'status',
+      'current_hp',
+      'player_hp',
+    ]));
+    expect(await columnsOf('player_progress'), containsAll(<String>[
+      'total_xp',
+      'drifter_kills',
+      'boss_kills',
+    ]));
   });
 }
