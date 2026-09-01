@@ -62,6 +62,46 @@
     }
   },
 
+  "insightTitle": "Pattern spotted",
+  "insightBestMood": "Sessions you start in “{mood}” finish {percent}% of the time — your strongest state.",
+  "@insightBestMood": {
+    "placeholders": {
+      "mood": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+  "insightBestWeekday": "{day} is your deepest focus day — {minutes} min on average.",
+  "@insightBestWeekday": {
+    "placeholders": {
+      "day": { "type": "String" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "insightBestTime": "{time} is when you follow through: {percent}% of those sessions land.",
+  "@insightBestTime": {
+    "placeholders": {
+      "time": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+  "insightBestTechnique": "{technique} works for you more than anything else — {percent}% of those sessions land.",
+  "@insightBestTechnique": {
+    "placeholders": {
+      "technique": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+  "insightBasis": "From {count} sessions over the last 30 days.",
+  "@insightBasis": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeOfDayMorning": "Morning",
+  "timeOfDayAfternoon": "Afternoon",
+  "timeOfDayEvening": "Evening",
+  "timeOfDayNight": "Night",
+
   "navHome": "Home",
   "navHabits": "Habits",
   "navStats": "Stats",
@@ -93,11 +133,42 @@
 
   "recommendationTitle": "Recommended for you",
   "recommendationColdStart": "A safe default for this mood — the app has not seen enough of your sessions yet.",
-  "recommendationLearned": "Based on your past sessions with a similar mood and task.",
-  "recommendationConfidence": "Confidence: {percent}%",
-  "@recommendationConfidence": {
+  "recommendationColdStartProgress": "{count} more sessions and the picks become yours.",
+  "@recommendationColdStartProgress": {
     "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recommendationWhyTitle": "Why this",
+  "recommendationBadgePersonal": "PERSONAL",
+  "recommendationBadgeDefault": "DEFAULT",
+  "recommendationEvidenceExact": "In this exact setup you ran {count} sessions with it — {percent}% of them worked out.",
+  "@recommendationEvidenceExact": {
+    "placeholders": {
+      "count": { "type": "int" },
       "percent": { "type": "int" }
+    }
+  },
+  "recommendationEvidenceSimilar": "With a similar mood and task you ran {count} sessions with it — {percent}% of them worked out.",
+  "@recommendationEvidenceSimilar": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "percent": { "type": "int" }
+    }
+  },
+  "recommendationEvidenceBroad": "In this mood you ran {count} sessions with it — {percent}% of them worked out.",
+  "@recommendationEvidenceBroad": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "percent": { "type": "int" }
+    }
+  },
+  "recommendationEvidenceNone": "No history for this one yet — the app is checking whether it fits you.",
+  "recommendationExploring": "A deliberate try-out, not your best known option. However it goes, it sharpens the next pick.",
+  "recommendationHistorySize": "Learned from {count} sessions in total.",
+  "@recommendationHistorySize": {
+    "placeholders": {
+      "count": { "type": "int" }
     }
   },
   "recommendationStart": "Start",

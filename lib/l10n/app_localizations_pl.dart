@@ -146,6 +146,46 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get insightTitle => 'Zauważone';
+
+  @override
+  String insightBestMood(String mood, int percent) {
+    return 'Sesje zaczęte w nastroju „$mood” kończysz w $percent% przypadków — to twój najmocniejszy stan.';
+  }
+
+  @override
+  String insightBestWeekday(String day, int minutes) {
+    return '$day to twój najgłębszy dzień — średnio $minutes min w skupieniu.';
+  }
+
+  @override
+  String insightBestTime(String time, int percent) {
+    return '$time to pora, w której dowozisz: $percent% takich sesji domykasz.';
+  }
+
+  @override
+  String insightBestTechnique(String technique, int percent) {
+    return '„$technique” działa u ciebie najlepiej — $percent% takich sesji domykasz.';
+  }
+
+  @override
+  String insightBasis(int count) {
+    return 'Na podstawie $count sesji z ostatnich 30 dni.';
+  }
+
+  @override
+  String get timeOfDayMorning => 'Rano';
+
+  @override
+  String get timeOfDayAfternoon => 'Popołudnie';
+
+  @override
+  String get timeOfDayEvening => 'Wieczór';
+
+  @override
+  String get timeOfDayNight => 'Noc';
+
+  @override
   String get navHome => 'Główna';
 
   @override
@@ -231,12 +271,45 @@ class AppLocalizationsPl extends AppLocalizations {
       'Bezpieczny wybór na ten nastrój — aplikacja zna jeszcze za mało twoich sesji.';
 
   @override
-  String get recommendationLearned =>
-      'Na podstawie twoich wcześniejszych sesji przy podobnym nastroju i zadaniu.';
+  String recommendationColdStartProgress(int count) {
+    return 'Jeszcze $count sesji i podpowiedzi staną się twoje.';
+  }
 
   @override
-  String recommendationConfidence(int percent) {
-    return 'Pewność: $percent%';
+  String get recommendationWhyTitle => 'Dlaczego to';
+
+  @override
+  String get recommendationBadgePersonal => 'OSOBISTE';
+
+  @override
+  String get recommendationBadgeDefault => 'DOMYŚLNE';
+
+  @override
+  String recommendationEvidenceExact(int count, int percent) {
+    return 'Dokładnie w takim układzie zrobiłeś z nią $count sesji — $percent% się udało.';
+  }
+
+  @override
+  String recommendationEvidenceSimilar(int count, int percent) {
+    return 'Przy podobnym nastroju i zadaniu zrobiłeś z nią $count sesji — $percent% się udało.';
+  }
+
+  @override
+  String recommendationEvidenceBroad(int count, int percent) {
+    return 'Przy tym nastroju zrobiłeś z nią $count sesji — $percent% się udało.';
+  }
+
+  @override
+  String get recommendationEvidenceNone =>
+      'Nie ma jeszcze historii tej techniki — aplikacja sprawdza, czy do ciebie pasuje.';
+
+  @override
+  String get recommendationExploring =>
+      'To świadomy test, a nie najlepsza znana opcja. Jakkolwiek pójdzie, kolejny wybór będzie trafniejszy.';
+
+  @override
+  String recommendationHistorySize(int count) {
+    return 'Łącznie w nauce $count sesji.';
   }
 
   @override

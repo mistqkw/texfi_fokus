@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:texfi_fokus/data/local/database.dart';
 import 'package:texfi_fokus/data/providers/data_providers.dart';
 import 'package:texfi_fokus/main.dart';
+import 'package:texfi_fokus/presentation/boot/boot_gate.dart';
 import 'package:texfi_fokus/presentation/settings/settings_providers.dart';
+import 'package:texfi_fokus/presentation/shared/app_entry.dart';
 
 /// Поднимает приложение на базе в памяти и на пустых настройках.
 ///
@@ -39,6 +41,13 @@ Future<void> _pumpApp(
   await tester.pump(const Duration(milliseconds: 300));
 }
 
+/// Доигрывает загрузочную заставку до конца. С запасом: анимация снимается
+/// по позднейшему из «кадры доиграли» и «инициализация закончилась».
+Future<void> _finishBoot(WidgetTester tester) async {
+  await tester.pump(BootGate.duration);
+  await tester.pump(const Duration(milliseconds: 50));
+}
+
 /// Снимает дерево и даёт отработать таймерам, которые drift ставит при
 /// отмене подписки на запрос (`StreamQueryStore.markAsClosed` — Timer нулевой
 /// длительности). Вызывается в конце каждого теста, а не в teardown: биндинг
@@ -65,6 +74,7 @@ void main() {
 
   testWidgets('Home renders with an empty database', (tester) async {
     await _pumpApp(tester);
+    await _finishBoot(tester);
 
     // Каркас с нижней навигацией — минимальный признак того, что тема,
     // локализация и слой данных поднялись вместе.
@@ -77,9 +87,41 @@ void main() {
   testWidgets('First run shows onboarding instead of the shell',
       (tester) async {
     await _pumpApp(tester, onboardingDone: false);
+    await _finishBoot(tester);
 
     expect(find.byType(PageView), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
+
+    await _drain(tester);
+  });
+
+  testWidgets('The boot sequence plays, then hands off to the app',
+      (tester) async {
+    await _pumpApp(tester);
+
+    // Заставка держится на экране, но приложение под ней уже построено —
+    // именно поэтому она ничего не задерживает.
+    expect(find.byKey(BootGate.overlayKey), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+
+    await _finishBoot(tester);
+
+    expect(find.byKey(BootGate.overlayKey), findsNothing);
+
+    await _drain(tester);
+  });
+
+  testWidgets('The boot sequence is a cold start, not a route transition',
+      (tester) async {
+    await _pumpApp(tester);
+    await _finishBoot(tester);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(AppEntry)),
+    );
+    // Флаг взведён — на любом следующем построении дерева заставки уже не
+    // будет, сколько бы раз ни менялись тема или язык.
+    expect(container.read(bootPlayedProvider), isTrue);
 
     await _drain(tester);
   });

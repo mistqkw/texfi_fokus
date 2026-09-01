@@ -1,5 +1,6 @@
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/mood.dart';
+import '../../domain/entities/recommendation.dart';
 import '../../domain/entities/task_category.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -47,6 +48,26 @@ extension FocusTechniqueLabel on FocusTechnique {
         FocusTechnique.pomodoro5010 => l10n.techniquePomodoro5010Desc,
         FocusTechnique.deepWork90 => l10n.techniqueDeepWork90Desc,
       };
+}
+
+extension TimeOfDayBucketLabel on TimeOfDayBucket {
+  String label(AppLocalizations l10n) => switch (this) {
+        TimeOfDayBucket.morning => l10n.timeOfDayMorning,
+        TimeOfDayBucket.afternoon => l10n.timeOfDayAfternoon,
+        TimeOfDayBucket.evening => l10n.timeOfDayEvening,
+        TimeOfDayBucket.night => l10n.timeOfDayNight,
+      };
+}
+
+/// Короткое имя дня недели, 1 — понедельник … 7 — воскресенье.
+///
+/// Берём из уже переведённой строки редактора привычек, а не заводим семь
+/// новых ключей на четыре языка: список там ровно тот же и в том же порядке.
+String weekdayShortLabel(AppLocalizations l10n, int weekday) {
+  final names = l10n.habitDaysShort.split(' ');
+  final index = weekday - 1;
+  if (index < 0 || index >= names.length) return '';
+  return names[index];
 }
 
 /// Список подписей настроений в порядке [Mood.values] — для переключателя.

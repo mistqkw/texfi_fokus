@@ -348,6 +348,66 @@ abstract class AppLocalizations {
   /// **'{count} of {total} goals left'**
   String homePending(int count, int total);
 
+  /// No description provided for @insightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern spotted'**
+  String get insightTitle;
+
+  /// No description provided for @insightBestMood.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions you start in “{mood}” finish {percent}% of the time — your strongest state.'**
+  String insightBestMood(String mood, int percent);
+
+  /// No description provided for @insightBestWeekday.
+  ///
+  /// In en, this message translates to:
+  /// **'{day} is your deepest focus day — {minutes} min on average.'**
+  String insightBestWeekday(String day, int minutes);
+
+  /// No description provided for @insightBestTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} is when you follow through: {percent}% of those sessions land.'**
+  String insightBestTime(String time, int percent);
+
+  /// No description provided for @insightBestTechnique.
+  ///
+  /// In en, this message translates to:
+  /// **'{technique} works for you more than anything else — {percent}% of those sessions land.'**
+  String insightBestTechnique(String technique, int percent);
+
+  /// No description provided for @insightBasis.
+  ///
+  /// In en, this message translates to:
+  /// **'From {count} sessions over the last 30 days.'**
+  String insightBasis(int count);
+
+  /// No description provided for @timeOfDayMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get timeOfDayMorning;
+
+  /// No description provided for @timeOfDayAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get timeOfDayAfternoon;
+
+  /// No description provided for @timeOfDayEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get timeOfDayEvening;
+
+  /// No description provided for @timeOfDayNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get timeOfDayNight;
+
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:
@@ -516,17 +576,65 @@ abstract class AppLocalizations {
   /// **'A safe default for this mood — the app has not seen enough of your sessions yet.'**
   String get recommendationColdStart;
 
-  /// No description provided for @recommendationLearned.
+  /// No description provided for @recommendationColdStartProgress.
   ///
   /// In en, this message translates to:
-  /// **'Based on your past sessions with a similar mood and task.'**
-  String get recommendationLearned;
+  /// **'{count} more sessions and the picks become yours.'**
+  String recommendationColdStartProgress(int count);
 
-  /// No description provided for @recommendationConfidence.
+  /// No description provided for @recommendationWhyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Confidence: {percent}%'**
-  String recommendationConfidence(int percent);
+  /// **'Why this'**
+  String get recommendationWhyTitle;
+
+  /// No description provided for @recommendationBadgePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'PERSONAL'**
+  String get recommendationBadgePersonal;
+
+  /// No description provided for @recommendationBadgeDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'DEFAULT'**
+  String get recommendationBadgeDefault;
+
+  /// No description provided for @recommendationEvidenceExact.
+  ///
+  /// In en, this message translates to:
+  /// **'In this exact setup you ran {count} sessions with it — {percent}% of them worked out.'**
+  String recommendationEvidenceExact(int count, int percent);
+
+  /// No description provided for @recommendationEvidenceSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'With a similar mood and task you ran {count} sessions with it — {percent}% of them worked out.'**
+  String recommendationEvidenceSimilar(int count, int percent);
+
+  /// No description provided for @recommendationEvidenceBroad.
+  ///
+  /// In en, this message translates to:
+  /// **'In this mood you ran {count} sessions with it — {percent}% of them worked out.'**
+  String recommendationEvidenceBroad(int count, int percent);
+
+  /// No description provided for @recommendationEvidenceNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No history for this one yet — the app is checking whether it fits you.'**
+  String get recommendationEvidenceNone;
+
+  /// No description provided for @recommendationExploring.
+  ///
+  /// In en, this message translates to:
+  /// **'A deliberate try-out, not your best known option. However it goes, it sharpens the next pick.'**
+  String get recommendationExploring;
+
+  /// No description provided for @recommendationHistorySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Learned from {count} sessions in total.'**
+  String recommendationHistorySize(int count);
 
   /// No description provided for @recommendationStart.
   ///
