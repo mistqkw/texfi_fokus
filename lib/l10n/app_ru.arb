@@ -516,5 +516,19 @@
   "historyDeleteTitle": "Удалить эту сессию?",
   "historyDeleteBody": "Она уйдёт из истории и перестанет учитываться в статистике. Прикреплённое фото тоже будет удалено с устройства. Отменить нельзя.",
   "historyDeleted": "Сессия удалена.",
-  "historyMinutes": "{minutes} мин"
+  "historyMinutes": "{minutes} мин",
+  "updateSectionTitle": "Обновления",
+  "updateCheckButton": "Проверить обновления",
+  "updateChecking": "Проверяем…",
+  "updateUpToDate": "Установлена последняя версия.",
+  "updateAvailable": "Доступно обновление v{version}",
+  "updateDownloadButton": "Скачать и установить",
+  "updateDownloading": "Скачиваем… {percent}%",
+  "updateInstallExplainerTitle": "Сейчас начнётся установка",
+  "updateInstallExplainerBody": "Android спросит разрешение на установку из этого источника — это нормально для приложений не из Google Play: f0kus раздаётся как .apk через GitHub.",
+  "updateInstallExplainerOk": "Понятно",
+  "updateFailed": "Не удалось скачать обновление. Попробуйте позже.",
+  "updateNoApk": "У этого релиза пока нет пакета для установки.",
+  "timerQuietMode": "Тихий режим",
+  "timerQuietModeHint": "Коснитесь экрана, чтобы вернуться"
 }

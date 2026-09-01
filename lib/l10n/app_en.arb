@@ -814,5 +814,33 @@
         "type": "int"
       }
     }
-  }
+  },
+  "updateSectionTitle": "Updates",
+  "updateCheckButton": "Check for updates",
+  "updateChecking": "Checking…",
+  "updateUpToDate": "You have the latest version.",
+  "updateAvailable": "Update available v{version}",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateDownloadButton": "Download and install",
+  "updateDownloading": "Downloading… {percent}%",
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "updateInstallExplainerTitle": "About to install",
+  "updateInstallExplainerBody": "Android will ask for permission to install from this source. That is normal for apps that do not come from Google Play — f0kus is distributed as an .apk from GitHub.",
+  "updateInstallExplainerOk": "Got it",
+  "updateFailed": "Could not download the update. Try again later.",
+  "updateNoApk": "This release has no package to install yet.",
+  "timerQuietMode": "Quiet mode",
+  "timerQuietModeHint": "Tap anywhere to return"
 }

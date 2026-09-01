@@ -516,5 +516,19 @@
   "historyDeleteTitle": "Видалити цю сесію?",
   "historyDeleteBody": "Вона зникне з історії й перестане враховуватись у статистиці. Прикріплене фото теж буде видалено з пристрою. Скасувати не можна.",
   "historyDeleted": "Сесію видалено.",
-  "historyMinutes": "{minutes} хв"
+  "historyMinutes": "{minutes} хв",
+  "updateSectionTitle": "Оновлення",
+  "updateCheckButton": "Перевірити оновлення",
+  "updateChecking": "Перевіряємо…",
+  "updateUpToDate": "Встановлено найновішу версію.",
+  "updateAvailable": "Доступне оновлення v{version}",
+  "updateDownloadButton": "Завантажити та встановити",
+  "updateDownloading": "Завантажуємо… {percent}%",
+  "updateInstallExplainerTitle": "Зараз почнеться встановлення",
+  "updateInstallExplainerBody": "Android запитає дозвіл на встановлення з цього джерела — це нормально для застосунків не з Google Play: f0kus поширюється як .apk через GitHub.",
+  "updateInstallExplainerOk": "Зрозуміло",
+  "updateFailed": "Не вдалося завантажити оновлення. Спробуйте пізніше.",
+  "updateNoApk": "У цього релізу поки немає пакета для встановлення.",
+  "timerQuietMode": "Тихий режим",
+  "timerQuietModeHint": "Торкніться екрана, щоб повернутися"
 }

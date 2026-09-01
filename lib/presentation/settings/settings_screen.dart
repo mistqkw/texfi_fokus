@@ -13,6 +13,7 @@ import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
+import '../../core/update/update_service.dart';
 import '../../core/utils/duration_format.dart';
 import '../../data/providers/data_providers.dart';
 import '../game/character_screen.dart';
@@ -26,6 +27,7 @@ import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
 import 'alarm_sound_labels.dart';
 import 'settings_providers.dart';
+import 'update_card.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -443,6 +445,14 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            // Блок обновлений сам исчезает там, где обновиться нельзя:
+            // заголовок секции поэтому тоже под тем же условием, иначе на
+            // десктопе остался бы висеть заголовок без содержимого.
+            if (updatesSupported) ...[
+              AppSpacing.gapXl,
+              PixelSectionHeader(title: l10n.updateSectionTitle),
+              const UpdateCard(),
+            ],
             AppSpacing.gapXl,
             PixelSectionHeader(title: l10n.settingsAbout),
             PixelCard(

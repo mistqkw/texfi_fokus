@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -11,6 +13,7 @@ import 'data/providers/data_providers.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/boot/boot_gate.dart';
 import 'presentation/settings/settings_providers.dart';
+import 'presentation/settings/update_providers.dart';
 import 'presentation/shared/app_entry.dart';
 
 Future<void> main() async {
@@ -44,8 +47,13 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
   /// платформенные каналы и раньше просто откладывалась на первый кадр.
   /// Теперь заставка её прикрывает — и ждёт, если та окажется дольше
   /// анимации.
-  Future<void> _initServices() =>
-      ref.read(notificationServiceProvider).init();
+  Future<void> _initServices() {
+    // Проверка обновлений запускается, но не ожидается: заставка не должна
+    // ждать сеть. Если GitHub недоступен или лимит исчерпан — проверка молча
+    // ничего не найдёт, и запуск от этого не изменится ни на кадр.
+    unawaited(ref.read(updateControllerProvider.notifier).checkOnLaunch());
+    return ref.read(notificationServiceProvider).init();
+  }
 
   @override
   Widget build(BuildContext context) {

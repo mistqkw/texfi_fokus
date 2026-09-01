@@ -1406,4 +1406,52 @@ class AppLocalizationsPl extends AppLocalizations {
   String historyMinutes(int minutes) {
     return '$minutes min';
   }
+
+  @override
+  String get updateSectionTitle => 'Aktualizacje';
+
+  @override
+  String get updateCheckButton => 'Sprawdź aktualizacje';
+
+  @override
+  String get updateChecking => 'Sprawdzanie…';
+
+  @override
+  String get updateUpToDate => 'Masz najnowszą wersję.';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Dostępna aktualizacja v$version';
+  }
+
+  @override
+  String get updateDownloadButton => 'Pobierz i zainstaluj';
+
+  @override
+  String updateDownloading(int percent) {
+    return 'Pobieranie… $percent%';
+  }
+
+  @override
+  String get updateInstallExplainerTitle => 'Zaraz rozpocznie się instalacja';
+
+  @override
+  String get updateInstallExplainerBody =>
+      'Android poprosi o zgodę na instalację z tego źródła. To normalne dla aplikacji spoza Google Play — f0kus jest rozpowszechniany jako plik .apk przez GitHub.';
+
+  @override
+  String get updateInstallExplainerOk => 'Rozumiem';
+
+  @override
+  String get updateFailed =>
+      'Nie udało się pobrać aktualizacji. Spróbuj później.';
+
+  @override
+  String get updateNoApk => 'To wydanie nie ma jeszcze pakietu do instalacji.';
+
+  @override
+  String get timerQuietMode => 'Tryb cichy';
+
+  @override
+  String get timerQuietModeHint => 'Dotknij ekranu, aby wrócić';
 }

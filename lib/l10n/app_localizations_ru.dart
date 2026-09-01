@@ -1405,4 +1405,51 @@ class AppLocalizationsRu extends AppLocalizations {
   String historyMinutes(int minutes) {
     return '$minutes мин';
   }
+
+  @override
+  String get updateSectionTitle => 'Обновления';
+
+  @override
+  String get updateCheckButton => 'Проверить обновления';
+
+  @override
+  String get updateChecking => 'Проверяем…';
+
+  @override
+  String get updateUpToDate => 'Установлена последняя версия.';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Доступно обновление v$version';
+  }
+
+  @override
+  String get updateDownloadButton => 'Скачать и установить';
+
+  @override
+  String updateDownloading(int percent) {
+    return 'Скачиваем… $percent%';
+  }
+
+  @override
+  String get updateInstallExplainerTitle => 'Сейчас начнётся установка';
+
+  @override
+  String get updateInstallExplainerBody =>
+      'Android спросит разрешение на установку из этого источника — это нормально для приложений не из Google Play: f0kus раздаётся как .apk через GitHub.';
+
+  @override
+  String get updateInstallExplainerOk => 'Понятно';
+
+  @override
+  String get updateFailed => 'Не удалось скачать обновление. Попробуйте позже.';
+
+  @override
+  String get updateNoApk => 'У этого релиза пока нет пакета для установки.';
+
+  @override
+  String get timerQuietMode => 'Тихий режим';
+
+  @override
+  String get timerQuietModeHint => 'Коснитесь экрана, чтобы вернуться';
 }
