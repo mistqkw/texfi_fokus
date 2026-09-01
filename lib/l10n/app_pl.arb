@@ -200,5 +200,14 @@
   "notificationDailyTitle": "Koniec dnia",
   "notificationDailyBody": "Niezamkniętych celów: {count}. Jeszcze jest czas.",
   "notificationChannelHabits": "Przypomnienia o nawykach",
-  "notificationChannelHabitsDesc": "Przypomnienia o niezrobionych dziennych celach"
+  "notificationChannelHabitsDesc": "Przypomnienia o niezrobionych dziennych celach",
+
+  "interruptionQuestion": "Co cię wybiło?",
+  "interruptionOptional": "Opcjonalne — pomaga aplikacji poznać twoje wzorce.",
+  "interruptionDistracted": "Rozproszenie",
+  "interruptionWrongTask": "Nie to zadanie",
+  "interruptionTired": "Zmęczenie",
+  "interruptionNoComment": "Wolę nie mówić",
+  "sessionNoteQuestion": "Jak poszło?",
+  "sessionNoteHint": "Kilka słów albo naklejka"
 }

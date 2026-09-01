@@ -1,6 +1,7 @@
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/recommendation.dart';
+import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/task_category.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -73,3 +74,12 @@ String weekdayShortLabel(AppLocalizations l10n, int weekday) {
 /// Список подписей настроений в порядке [Mood.values] — для переключателя.
 List<String> moodLabels(AppLocalizations l10n) =>
     Mood.values.map((m) => m.label(l10n)).toList();
+
+extension InterruptionReasonLabel on InterruptionReason {
+  String label(AppLocalizations l10n) => switch (this) {
+        InterruptionReason.distracted => l10n.interruptionDistracted,
+        InterruptionReason.wrongTask => l10n.interruptionWrongTask,
+        InterruptionReason.tired => l10n.interruptionTired,
+        InterruptionReason.noComment => l10n.interruptionNoComment,
+      };
+}

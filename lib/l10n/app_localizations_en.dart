@@ -628,4 +628,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationChannelHabitsDesc =>
       'Reminders about unfinished daily goals';
+
+  @override
+  String get interruptionQuestion => 'What pulled you out?';
+
+  @override
+  String get interruptionOptional =>
+      'Optional — it helps the app read your patterns.';
+
+  @override
+  String get interruptionDistracted => 'Got distracted';
+
+  @override
+  String get interruptionWrongTask => 'Wrong task';
+
+  @override
+  String get interruptionTired => 'Too tired';
+
+  @override
+  String get interruptionNoComment => 'Rather not say';
+
+  @override
+  String get sessionNoteQuestion => 'How did it go?';
+
+  @override
+  String get sessionNoteHint => 'A few words or a sticker';
 }

@@ -72,6 +72,7 @@ SessionEntity _session({
   required FocusTechnique technique,
   required bool success,
   DateTime? at,
+  bool manualOverride = false,
 }) {
   final moment = at ?? DateTime(2026, 1, 10, 9);
   return SessionEntity(
@@ -89,6 +90,8 @@ SessionEntity _session({
     startedAt: moment,
     endedAt: moment.add(const Duration(minutes: 30)),
     contextKey: _context.key,
+    wasRecommended: !manualOverride,
+    wasManualOverride: manualOverride,
   );
 }
 
@@ -229,6 +232,76 @@ void main() {
       final exact = all.firstWhere((w) => w.contextKey == _context.key);
       final broad = all.firstWhere((w) => w.contextKey == _context.moodKey);
       expect(exact.alpha, greaterThan(broad.alpha));
+    });
+
+    test('a manual override teaches the engine less than a taken advice',
+        () async {
+      // Сессия, запущенная вопреки совету, говорит о недоверии к совету, а
+      // не о качестве техники: вес такого наблюдения должен быть заметно
+      // меньше, но не нулевым.
+      final byAdvice = _FakeWeights();
+      final override = _FakeWeights();
+      final now = DateTime(2026, 1, 1);
+
+      for (final entry in {byAdvice: false, override: true}.entries) {
+        final engine = BanditRecommendationEngine(
+          weights: entry.key,
+          sessions: _FakeSessions(20),
+          random: Random(1),
+          clock: () => now,
+        );
+        await engine.recordOutcome(
+          _session(
+            technique: FocusTechnique.sprint15,
+            success: true,
+            at: now,
+            manualOverride: entry.value,
+          ),
+        );
+      }
+
+      final taken = (await byAdvice.allWeights())
+          .firstWhere((w) => w.contextKey == _context.key);
+      final rejected = (await override.allWeights())
+          .firstWhere((w) => w.contextKey == _context.key);
+
+      expect(rejected.observations, greaterThan(0));
+      expect(rejected.observations, lessThan(taken.observations));
+      expect(
+        rejected.observations,
+        closeTo(
+          taken.observations * BanditRecommendationEngine.manualOverrideWeight,
+          0.0001,
+        ),
+      );
+    });
+
+    test('a manual override moves the loss side just as weakly', () async {
+      final weights = _FakeWeights();
+      final now = DateTime(2026, 1, 1);
+      final engine = BanditRecommendationEngine(
+        weights: weights,
+        sessions: _FakeSessions(20),
+        random: Random(1),
+        clock: () => now,
+      );
+
+      await engine.recordOutcome(
+        _session(
+          technique: FocusTechnique.deepWork90,
+          success: false,
+          at: now,
+          manualOverride: true,
+        ),
+      );
+
+      final exact = (await weights.allWeights())
+          .firstWhere((w) => w.contextKey == _context.key);
+      expect(
+        exact.beta - 1,
+        closeTo(BanditRecommendationEngine.manualOverrideWeight, 0.0001),
+      );
+      expect(exact.alpha, closeTo(1, 0.0001));
     });
 
     test('a session recorded with a broken context key is not lost', () async {

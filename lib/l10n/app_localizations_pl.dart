@@ -627,4 +627,29 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get notificationChannelHabitsDesc =>
       'Przypomnienia o niezrobionych dziennych celach';
+
+  @override
+  String get interruptionQuestion => 'Co cię wybiło?';
+
+  @override
+  String get interruptionOptional =>
+      'Opcjonalne — pomaga aplikacji poznać twoje wzorce.';
+
+  @override
+  String get interruptionDistracted => 'Rozproszenie';
+
+  @override
+  String get interruptionWrongTask => 'Nie to zadanie';
+
+  @override
+  String get interruptionTired => 'Zmęczenie';
+
+  @override
+  String get interruptionNoComment => 'Wolę nie mówić';
+
+  @override
+  String get sessionNoteQuestion => 'Jak poszło?';
+
+  @override
+  String get sessionNoteHint => 'Kilka słów albo naklejka';
 }

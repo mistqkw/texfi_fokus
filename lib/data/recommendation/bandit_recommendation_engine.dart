@@ -71,6 +71,17 @@ class BanditRecommendationEngine implements RecommendationEngine {
   /// сохранилась сама работа (категория и/или сложность).
   static const int _similarScopeLastLevel = 3;
 
+  /// Во сколько раз слабее обновляются веса, если пользователь отверг
+  /// рекомендацию и выбрал технику сам.
+  ///
+  /// Такая сессия — плохой эксперимент: техника выбиралась не движком, и её
+  /// исход смешан с тем, почему человек вообще полез в ручную настройку
+  /// (не согласился, захотел конкретную длину, привычка). Выкидывать её
+  /// целиком тоже неправильно — она всё-таки состоялась и что-то говорит о
+  /// технике. Треть веса: сигнал слышен, но не перекрикивает сессии,
+  /// честно запущенные по совету.
+  static const double manualOverrideWeight = 1 / 3;
+
   @override
   Future<Recommendation> recommend(RecommendationContext context) async {
     final total = await sessions.totalSessionCount();
@@ -132,6 +143,7 @@ class BanditRecommendationEngine implements RecommendationEngine {
     final success = session.isSuccess;
     final now = _clock();
     final keys = _hierarchyOf(session.contextKey);
+    final signal = session.wasManualOverride ? manualOverrideWeight : 1.0;
 
     for (var level = 0; level < keys.length; level++) {
       final key = keys[level];
@@ -151,7 +163,7 @@ class BanditRecommendationEngine implements RecommendationEngine {
         base.updated(
           success: success,
           at: now,
-          weight: _levelWeights[level],
+          weight: _levelWeights[level] * signal,
         ),
       );
     }

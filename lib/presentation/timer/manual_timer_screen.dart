@@ -49,6 +49,10 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
       // Помечаем как «не по рекомендации»: статистика должна отличать
       // принятый совет от самостоятельной настройки.
       wasRecommended: false,
+      // Смена самой техники — это несогласие с советом, и движок учтёт
+      // такой исход слабее. Поправленная длина той же техники — нет:
+      // с выбором руки бандита пользователь при этом согласился.
+      wasManualOverride: _technique != widget.initial.technique,
     );
     Navigator.of(context).pushReplacement(
       pixelDissolveRoute<void>(const TimerScreen()),

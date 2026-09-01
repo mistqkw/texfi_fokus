@@ -309,5 +309,14 @@
     }
   },
   "notificationChannelHabits": "Habit reminders",
-  "notificationChannelHabitsDesc": "Reminders about unfinished daily goals"
+  "notificationChannelHabitsDesc": "Reminders about unfinished daily goals",
+
+  "interruptionQuestion": "What pulled you out?",
+  "interruptionOptional": "Optional — it helps the app read your patterns.",
+  "interruptionDistracted": "Got distracted",
+  "interruptionWrongTask": "Wrong task",
+  "interruptionTired": "Too tired",
+  "interruptionNoComment": "Rather not say",
+  "sessionNoteQuestion": "How did it go?",
+  "sessionNoteHint": "A few words or a sticker"
 }

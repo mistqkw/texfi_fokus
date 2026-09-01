@@ -46,6 +46,19 @@ class Sessions extends Table {
   BoolColumn get wasRecommended =>
       boolean().withDefault(const Constant(true))();
 
+  /// Пользователь открыл «настроить вручную» и выбрал технику, отличную от
+  /// предложенной. Это не то же самое, что [wasRecommended]: там про «сессия
+  /// шла не по совету», здесь — про явное несогласие с советом.
+  BoolColumn get wasManualOverride =>
+      boolean().withDefault(const Constant(false))();
+
+  /// Ключ `InterruptionReason`; null — сессия не прервана либо причину
+  /// не назвали.
+  TextColumn get interruptionReason => text().nullable()();
+
+  /// Короткая заметка «как прошло». null — пропустили.
+  TextColumn get sessionNote => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

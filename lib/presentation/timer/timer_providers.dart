@@ -26,6 +26,7 @@ class TimerPlan {
     this.soundOnEnd = true,
     this.autoStartNext = true,
     this.wasRecommended = true,
+    this.wasManualOverride = false,
   });
 
   factory TimerPlan.fromRecommendation(Recommendation recommendation) {
@@ -45,6 +46,10 @@ class TimerPlan {
   final bool autoStartNext;
   final bool wasRecommended;
 
+  /// Пользователь выбрал технику, отличную от рекомендованной. Долетает до
+  /// [SessionEntity] и делает сигнал для движка слабее.
+  final bool wasManualOverride;
+
   TimerPlan copyWith({
     FocusTechnique? technique,
     int? focusMinutes,
@@ -53,6 +58,7 @@ class TimerPlan {
     bool? soundOnEnd,
     bool? autoStartNext,
     bool? wasRecommended,
+    bool? wasManualOverride,
   }) {
     return TimerPlan(
       technique: technique ?? this.technique,
@@ -62,6 +68,7 @@ class TimerPlan {
       soundOnEnd: soundOnEnd ?? this.soundOnEnd,
       autoStartNext: autoStartNext ?? this.autoStartNext,
       wasRecommended: wasRecommended ?? this.wasRecommended,
+      wasManualOverride: wasManualOverride ?? this.wasManualOverride,
     );
   }
 }
@@ -290,8 +297,15 @@ final saveSessionProvider = Provider<
     Future<void> Function({
   required TimerState state,
   required int? rating,
+  InterruptionReason? interruptionReason,
+  String? note,
 })>((ref) {
-  return ({required TimerState state, required int? rating}) async {
+  return ({
+    required TimerState state,
+    required int? rating,
+    InterruptionReason? interruptionReason,
+    String? note,
+  }) async {
     final draft = ref.read(sessionDraftProvider);
     final session = SessionEntity(
       id: _uuid.v4(),
@@ -315,6 +329,12 @@ final saveSessionProvider = Provider<
       endedAt: DateTime.now(),
       contextKey: draft.context.key,
       wasRecommended: state.plan.wasRecommended,
+      wasManualOverride: state.plan.wasManualOverride,
+      // Причина прерывания осмысленна только для оборванной сессии:
+      // на завершённой она означала бы «прервал доведённое до конца».
+      interruptionReason:
+          state.completedFully ? null : interruptionReason,
+      sessionNote: (note ?? '').trim().isEmpty ? null : note!.trim(),
     );
 
     await ref.read(sessionRepositoryProvider).addSession(session);

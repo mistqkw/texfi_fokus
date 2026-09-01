@@ -200,5 +200,14 @@
   "notificationDailyTitle": "Кінець дня",
   "notificationDailyBody": "Незакритих цілей: {count}. Ще є час.",
   "notificationChannelHabits": "Нагадування про звички",
-  "notificationChannelHabitsDesc": "Нагадування про невиконані денні цілі"
+  "notificationChannelHabitsDesc": "Нагадування про невиконані денні цілі",
+
+  "interruptionQuestion": "Що збило?",
+  "interruptionOptional": "Необов'язково — допомагає застосунку зрозуміти твої закономірності.",
+  "interruptionDistracted": "Відволікся",
+  "interruptionWrongTask": "Завдання виявилось не те",
+  "interruptionTired": "Втомився",
+  "interruptionNoComment": "Не хочу казати",
+  "sessionNoteQuestion": "Як пройшло?",
+  "sessionNoteHint": "Кілька слів або стікер"
 }
