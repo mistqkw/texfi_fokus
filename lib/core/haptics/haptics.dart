@@ -60,7 +60,7 @@ abstract final class Haptics {
   ) async {
     if (!enabled) return;
     if (!_canPattern) {
-      await fallback();
+      await _plainVibrate(pattern, fallback);
       return;
     }
     try {
@@ -72,6 +72,38 @@ abstract final class Haptics {
       );
     } catch (error) {
       debugPrint('Haptics pattern failed: $error');
+      await _plainVibrate(pattern, fallback);
+    }
+  }
+
+  /// Промежуточная ступень между паттерном и [HapticFeedback].
+  ///
+  /// Мотор есть, но произвольные паттерны недоступны — тогда лучше отдать
+  /// системе одну вибрацию нужной длительности, чем сразу падать на
+  /// `HapticFeedback`: тот на части устройств привязан к системному профилю
+  /// звука и в беззвучном режиме не делает ничего. `Vibration.vibrate` идёт
+  /// прямо в вибромотор и от профиля не зависит.
+  static Future<void> _plainVibrate(
+    List<int> pattern,
+    Future<void> Function() fallback,
+  ) async {
+    if (!(_hasVibrator ?? false)) {
+      await fallback();
+      return;
+    }
+    // Нечётные позиции паттерна — сами импульсы, чётные — паузы между ними.
+    var total = 0;
+    for (var i = 1; i < pattern.length; i += 2) {
+      total += pattern[i];
+    }
+    if (total <= 0) {
+      await fallback();
+      return;
+    }
+    try {
+      await Vibration.vibrate(duration: total.clamp(10, 2000));
+    } catch (error) {
+      debugPrint('Haptics plain vibrate failed: $error');
       await fallback();
     }
   }
@@ -177,6 +209,19 @@ abstract final class Haptics {
   static Future<void> sessionComplete() => _pattern(
         const [0, 80, 60, 80, 60, 160],
         const [0, 200, 0, 220, 0, 255],
+        HapticFeedback.heavyImpact,
+      );
+
+  /// Сигнал «время вышло» — самостоятельный, а не украшение к звуку.
+  ///
+  /// Отличается от [sessionComplete] намеренно: тот аккорд играет, когда
+  /// пользователь смотрит на экран и всё и так очевидно. Этот — единственное,
+  /// что человек получит, если телефон лежит экраном вниз в беззвучном
+  /// режиме, поэтому он длинный, с двумя одинаковыми группами и заметной
+  /// паузой между ними: такой ритм не спутать с приходом сообщения.
+  static Future<void> timerAlarm() => _pattern(
+        const [0, 220, 140, 220, 140, 420],
+        const [0, 255, 0, 255, 0, 255],
         HapticFeedback.heavyImpact,
       );
 

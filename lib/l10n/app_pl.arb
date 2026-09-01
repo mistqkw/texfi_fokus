@@ -364,6 +364,14 @@
     }
   },
   "notificationDailyAllDone": "Dziś wszystko zamknięte. Dobra robota.",
+  "notificationChannelTimer": "Minutnik",
+  "notificationChannelTimerDesc": "Koniec bloku skupienia, przerwy albo całej sesji",
+  "notificationTimerFocusDoneTitle": "Blok skupienia skończony",
+  "notificationTimerFocusDoneBody": "Cykl {cycle} z {total} za tobą. Czas na przerwę.",
+  "notificationTimerBreakDoneTitle": "Przerwa się skończyła",
+  "notificationTimerBreakDoneBody": "Wróć do skupienia, gdy będziesz gotów.",
+  "notificationTimerSessionDoneTitle": "Sesja zakończona",
+  "notificationTimerSessionDoneBody": "{minutes} min skupienia w planie. Dobra robota.",
 
   "settingsAccent": "Kolor akcentu",
   "settingsAccentSubtitle": "Zmienia się tylko ton akcentu — reszta palety zostaje bez zmian.",

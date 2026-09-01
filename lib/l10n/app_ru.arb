@@ -364,6 +364,14 @@
     }
   },
   "notificationDailyAllDone": "Сегодня всё закрыто. Хорошо.",
+  "notificationChannelTimer": "Таймер",
+  "notificationChannelTimerDesc": "Конец отрезка фокуса, перерыва или всей сессии",
+  "notificationTimerFocusDoneTitle": "Отрезок фокуса закончен",
+  "notificationTimerFocusDoneBody": "Цикл {cycle} из {total} позади. Пора на перерыв.",
+  "notificationTimerBreakDoneTitle": "Перерыв закончился",
+  "notificationTimerBreakDoneBody": "Возвращайся в фокус, когда будешь готов.",
+  "notificationTimerSessionDoneTitle": "Сессия завершена",
+  "notificationTimerSessionDoneBody": "{minutes} мин фокуса по плану. Хорошо продержался.",
 
   "settingsAccent": "Акцентный цвет",
   "settingsAccentSubtitle": "Меняется только акцентный тон — остальная палитра остаётся прежней.",

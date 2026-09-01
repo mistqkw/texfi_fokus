@@ -863,6 +863,36 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everything is closed today. Well done.';
 
   @override
+  String get notificationChannelTimer => 'Timer';
+
+  @override
+  String get notificationChannelTimerDesc =>
+      'End of a focus block, a break or a whole session';
+
+  @override
+  String get notificationTimerFocusDoneTitle => 'Focus block done';
+
+  @override
+  String notificationTimerFocusDoneBody(int cycle, int total) {
+    return 'Cycle $cycle of $total is over. Break time.';
+  }
+
+  @override
+  String get notificationTimerBreakDoneTitle => 'Break is over';
+
+  @override
+  String get notificationTimerBreakDoneBody =>
+      'Back to focus when you are ready.';
+
+  @override
+  String get notificationTimerSessionDoneTitle => 'Session complete';
+
+  @override
+  String notificationTimerSessionDoneBody(int minutes) {
+    return '$minutes min planned in focus. Well held.';
+  }
+
+  @override
   String get settingsAccent => 'Accent colour';
 
   @override

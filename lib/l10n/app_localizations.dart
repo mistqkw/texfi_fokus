@@ -1620,6 +1620,54 @@ abstract class AppLocalizations {
   /// **'Everything is closed today. Well done.'**
   String get notificationDailyAllDone;
 
+  /// No description provided for @notificationChannelTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer'**
+  String get notificationChannelTimer;
+
+  /// No description provided for @notificationChannelTimerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'End of a focus block, a break or a whole session'**
+  String get notificationChannelTimerDesc;
+
+  /// No description provided for @notificationTimerFocusDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus block done'**
+  String get notificationTimerFocusDoneTitle;
+
+  /// No description provided for @notificationTimerFocusDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle {cycle} of {total} is over. Break time.'**
+  String notificationTimerFocusDoneBody(int cycle, int total);
+
+  /// No description provided for @notificationTimerBreakDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Break is over'**
+  String get notificationTimerBreakDoneTitle;
+
+  /// No description provided for @notificationTimerBreakDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to focus when you are ready.'**
+  String get notificationTimerBreakDoneBody;
+
+  /// No description provided for @notificationTimerSessionDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session complete'**
+  String get notificationTimerSessionDoneTitle;
+
+  /// No description provided for @notificationTimerSessionDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min planned in focus. Well held.'**
+  String notificationTimerSessionDoneBody(int minutes);
+
   /// No description provided for @settingsAccent.
   ///
   /// In en, this message translates to:

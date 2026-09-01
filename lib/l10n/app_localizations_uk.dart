@@ -860,6 +860,36 @@ class AppLocalizationsUk extends AppLocalizations {
   String get notificationDailyAllDone => 'Сьогодні все закрито. Добре.';
 
   @override
+  String get notificationChannelTimer => 'Таймер';
+
+  @override
+  String get notificationChannelTimerDesc =>
+      'Кінець відрізка фокуса, перерви або всієї сесії';
+
+  @override
+  String get notificationTimerFocusDoneTitle => 'Відрізок фокуса завершено';
+
+  @override
+  String notificationTimerFocusDoneBody(int cycle, int total) {
+    return 'Цикл $cycle з $total позаду. Час на перерву.';
+  }
+
+  @override
+  String get notificationTimerBreakDoneTitle => 'Перерва скінчилася';
+
+  @override
+  String get notificationTimerBreakDoneBody =>
+      'Повертайся у фокус, коли будеш готовий.';
+
+  @override
+  String get notificationTimerSessionDoneTitle => 'Сесію завершено';
+
+  @override
+  String notificationTimerSessionDoneBody(int minutes) {
+    return '$minutes хв фокуса за планом. Добре тримався.';
+  }
+
+  @override
   String get settingsAccent => 'Акцентний колір';
 
   @override
