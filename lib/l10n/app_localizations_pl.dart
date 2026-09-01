@@ -702,4 +702,98 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsNightCapHour => 'Noc zaczyna się o';
+
+  @override
+  String get habitByWeekdays => 'W wybrane dni';
+
+  @override
+  String get habitTimesPerWeek => 'N razy w tygodniu';
+
+  @override
+  String get habitTimesPerWeekLabel => 'Razy w tygodniu';
+
+  @override
+  String habitTimesPerWeekValue(int count) {
+    return '$count× w tygodniu';
+  }
+
+  @override
+  String get habitRewardLabel => 'Jeśli wytrwasz';
+
+  @override
+  String get habitRewardHint => 'Długa kąpiel, ta gra, wolny dzień';
+
+  @override
+  String get habitRewardExplainer =>
+      'Opcjonalne i dokładnie tak samo twoja umowa z sobą jak kara — aplikacja tylko zapamięta i pokaże, gdy dojdziesz.';
+
+  @override
+  String get habitRewardStreakDays => 'Potrzebna seria';
+
+  @override
+  String habitRewardAfter(int count) {
+    return 'Nagroda po $count dniach';
+  }
+
+  @override
+  String habitRewardEarned(int count) {
+    return 'Zasłużone — $count dni z rzędu';
+  }
+
+  @override
+  String habitStreakWeeks(int count) {
+    return '$count tygodni z rzędu';
+  }
+
+  @override
+  String habitWeekProgress(int done, int target) {
+    return '$done z $target w tym tygodniu';
+  }
+
+  @override
+  String get habitFreezeAllow => 'Pozwól zamrozić serię';
+
+  @override
+  String habitFreezeAllowSubtitle(int days) {
+    return 'Jeden pominięty dzień co $days dni nie psuje serii';
+  }
+
+  @override
+  String get habitFreezeToday => 'Zamroź';
+
+  @override
+  String get habitFreezeUndo => 'Odmroź';
+
+  @override
+  String get habitFreezeHint => 'Pomiń dziś bez utraty serii';
+
+  @override
+  String get habitFreezeUndoHint => 'Dziś zamrożone — seria trwa';
+
+  @override
+  String get habitFreezeUnavailable => 'Zamrożenie jeszcze niedostępne';
+
+  @override
+  String get habitFrozenToday => 'Zamrożone';
+
+  @override
+  String get statsPunishment => 'Kiedy kara zadziałała';
+
+  @override
+  String statsPunishmentCount(int missed, int scheduled) {
+    return '$missed z $scheduled dni pominięto';
+  }
+
+  @override
+  String get statsPunishmentEmpty => 'W tym okresie nic nie pominięto.';
+
+  @override
+  String get statsInterruptions => 'Dlaczego sesje się urywały';
+
+  @override
+  String get statsInterruptionsEmpty =>
+      'W tym okresie nie było przerwanych sesji.';
+
+  @override
+  String get statsInterruptionUnnamed => 'Bez podanego powodu';
 }

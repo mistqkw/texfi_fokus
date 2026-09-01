@@ -38,4 +38,18 @@ abstract class HabitRepository {
   Future<int> overallStreak({DateTime? until});
 
   Future<List<HabitSuccessStat>> successStats(DateTime from, DateTime to);
+
+  /// Сколько раз за период сработало «наказание» — по привычкам.
+  Future<List<HabitPunishmentStat>> punishmentStats(DateTime from, DateTime to);
+
+  /// Замораживает или размораживает день. Возвращает `true`, если состояние
+  /// изменилось: заморозка лимитирована по частоте, и попытка потратить её
+  /// раньше срока должна отличаться от успешной.
+  Future<bool> setFreeze({
+    required String habitId,
+    required DateTime day,
+    required bool frozen,
+  });
+
+  Future<List<HabitFreezeEntity>> freezesInRange(DateTime from, DateTime to);
 }

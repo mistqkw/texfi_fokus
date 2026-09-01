@@ -20,6 +20,7 @@ class PixelCard extends StatelessWidget {
     required this.child,
     this.padding = AppSpacing.card,
     this.onTap,
+    this.onLongPress,
     this.accent = false,
     this.borderColor,
     this.raised = true,
@@ -29,6 +30,10 @@ class PixelCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
   final VoidCallback? onTap;
+
+  /// Долгое нажатие — для второстепенного действия, которому не место в
+  /// постоянно видимой кнопке.
+  final VoidCallback? onLongPress;
 
   /// Выделенная карточка — рамка фирменным синим.
   final bool accent;
@@ -60,10 +65,11 @@ class PixelCard extends StatelessWidget {
       ),
     );
 
-    final tappable = onTap == null
+    final tappable = onTap == null && onLongPress == null
         ? content
         : InkWell(
             onTap: onTap,
+            onLongPress: onLongPress,
             borderRadius: AppRadius.cardMediumAll,
             child: content,
           );

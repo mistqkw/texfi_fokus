@@ -704,4 +704,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsNightCapHour => 'Night starts at';
+
+  @override
+  String get habitByWeekdays => 'On chosen weekdays';
+
+  @override
+  String get habitTimesPerWeek => 'N times a week';
+
+  @override
+  String get habitTimesPerWeekLabel => 'Times a week';
+
+  @override
+  String habitTimesPerWeekValue(int count) {
+    return '$count× a week';
+  }
+
+  @override
+  String get habitRewardLabel => 'If you keep it up';
+
+  @override
+  String get habitRewardHint => 'A long bath, that game, a day off';
+
+  @override
+  String get habitRewardExplainer =>
+      'Optional, and just as much your own deal as the penalty — the app only remembers it and shows it when you get there.';
+
+  @override
+  String get habitRewardStreakDays => 'Streak needed';
+
+  @override
+  String habitRewardAfter(int count) {
+    return 'Reward after $count days';
+  }
+
+  @override
+  String habitRewardEarned(int count) {
+    return 'Earned — $count days in a row';
+  }
+
+  @override
+  String habitStreakWeeks(int count) {
+    return '$count weeks in a row';
+  }
+
+  @override
+  String habitWeekProgress(int done, int target) {
+    return '$done of $target this week';
+  }
+
+  @override
+  String get habitFreezeAllow => 'Allow streak freeze';
+
+  @override
+  String habitFreezeAllowSubtitle(int days) {
+    return 'One skipped day every $days days keeps the streak';
+  }
+
+  @override
+  String get habitFreezeToday => 'Freeze';
+
+  @override
+  String get habitFreezeUndo => 'Unfreeze';
+
+  @override
+  String get habitFreezeHint => 'Skip today without losing the streak';
+
+  @override
+  String get habitFreezeUndoHint => 'Today is frozen — the streak holds';
+
+  @override
+  String get habitFreezeUnavailable => 'No freeze left yet';
+
+  @override
+  String get habitFrozenToday => 'Frozen';
+
+  @override
+  String get statsPunishment => 'When the penalty bit';
+
+  @override
+  String statsPunishmentCount(int missed, int scheduled) {
+    return '$missed of $scheduled days missed';
+  }
+
+  @override
+  String get statsPunishmentEmpty => 'Nothing missed in this period.';
+
+  @override
+  String get statsInterruptions => 'Why sessions broke off';
+
+  @override
+  String get statsInterruptionsEmpty =>
+      'No interrupted sessions in this period.';
+
+  @override
+  String get statsInterruptionUnnamed => 'No reason given';
 }

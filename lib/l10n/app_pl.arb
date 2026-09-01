@@ -232,5 +232,87 @@
   "settingsShortBreakOff": "Wyłączone",
   "settingsNightCap": "Nocny limit",
   "settingsNightCapSubtitle": "Nocą nie proponuj dłużej niż 25/5",
-  "settingsNightCapHour": "Noc zaczyna się o"
+  "settingsNightCapHour": "Noc zaczyna się o",
+
+  "habitByWeekdays": "W wybrane dni",
+  "habitTimesPerWeek": "N razy w tygodniu",
+  "habitTimesPerWeekLabel": "Razy w tygodniu",
+  "habitTimesPerWeekValue": "{count}× w tygodniu",
+  "@habitTimesPerWeekValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardLabel": "Jeśli wytrwasz",
+  "habitRewardHint": "Długa kąpiel, ta gra, wolny dzień",
+  "habitRewardExplainer": "Opcjonalne i dokładnie tak samo twoja umowa z sobą jak kara — aplikacja tylko zapamięta i pokaże, gdy dojdziesz.",
+  "habitRewardStreakDays": "Potrzebna seria",
+  "habitRewardAfter": "Nagroda po {count} dniach",
+  "@habitRewardAfter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardEarned": "Zasłużone — {count} dni z rzędu",
+  "@habitRewardEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitStreakWeeks": "{count} tygodni z rzędu",
+  "@habitStreakWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitWeekProgress": "{done} z {target} w tym tygodniu",
+  "@habitWeekProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeAllow": "Pozwól zamrozić serię",
+  "habitFreezeAllowSubtitle": "Jeden pominięty dzień co {days} dni nie psuje serii",
+  "@habitFreezeAllowSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeToday": "Zamroź",
+  "habitFreezeUndo": "Odmroź",
+  "habitFreezeHint": "Pomiń dziś bez utraty serii",
+  "habitFreezeUndoHint": "Dziś zamrożone — seria trwa",
+  "habitFreezeUnavailable": "Zamrożenie jeszcze niedostępne",
+  "habitFrozenToday": "Zamrożone",
+  "statsPunishment": "Kiedy kara zadziałała",
+  "statsPunishmentCount": "{missed} z {scheduled} dni pominięto",
+  "@statsPunishmentCount": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      }
+    }
+  },
+  "statsPunishmentEmpty": "W tym okresie nic nie pominięto.",
+  "statsInterruptions": "Dlaczego sesje się urywały",
+  "statsInterruptionsEmpty": "W tym okresie nie było przerwanych sesji.",
+  "statsInterruptionUnnamed": "Bez podanego powodu"
 }

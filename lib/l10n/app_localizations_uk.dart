@@ -703,4 +703,97 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsNightCapHour => 'Ніч починається о';
+
+  @override
+  String get habitByWeekdays => 'У вибрані дні';
+
+  @override
+  String get habitTimesPerWeek => 'N разів на тиждень';
+
+  @override
+  String get habitTimesPerWeekLabel => 'Разів на тиждень';
+
+  @override
+  String habitTimesPerWeekValue(int count) {
+    return '$count× на тиждень';
+  }
+
+  @override
+  String get habitRewardLabel => 'Якщо витримаєш';
+
+  @override
+  String get habitRewardHint => 'Довга ванна, та сама гра, вихідний';
+
+  @override
+  String get habitRewardExplainer =>
+      'Необов\'язково і так само твоя домовленість із собою, як і покарання, — застосунок лише запам\'ятає й покаже, коли дійдеш.';
+
+  @override
+  String get habitRewardStreakDays => 'Потрібна серія';
+
+  @override
+  String habitRewardAfter(int count) {
+    return 'Нагорода за $count днів';
+  }
+
+  @override
+  String habitRewardEarned(int count) {
+    return 'Заслужено — $count днів поспіль';
+  }
+
+  @override
+  String habitStreakWeeks(int count) {
+    return '$count тижнів поспіль';
+  }
+
+  @override
+  String habitWeekProgress(int done, int target) {
+    return '$done із $target цього тижня';
+  }
+
+  @override
+  String get habitFreezeAllow => 'Дозволити заморозку серії';
+
+  @override
+  String habitFreezeAllowSubtitle(int days) {
+    return 'Один пропуск раз на $days днів зберігає серію';
+  }
+
+  @override
+  String get habitFreezeToday => 'Заморозити';
+
+  @override
+  String get habitFreezeUndo => 'Розморозити';
+
+  @override
+  String get habitFreezeHint => 'Пропустити сьогодні, не втрачаючи серію';
+
+  @override
+  String get habitFreezeUndoHint => 'Сьогодні заморожено — серія тримається';
+
+  @override
+  String get habitFreezeUnavailable => 'Заморозка поки недоступна';
+
+  @override
+  String get habitFrozenToday => 'Заморожено';
+
+  @override
+  String get statsPunishment => 'Коли покарання спрацювало';
+
+  @override
+  String statsPunishmentCount(int missed, int scheduled) {
+    return '$missed із $scheduled днів пропущено';
+  }
+
+  @override
+  String get statsPunishmentEmpty => 'За період нічого не пропущено.';
+
+  @override
+  String get statsInterruptions => 'Чому сесії обривались';
+
+  @override
+  String get statsInterruptionsEmpty => 'За період перерваних сесій не було.';
+
+  @override
+  String get statsInterruptionUnnamed => 'Причину не названо';
 }

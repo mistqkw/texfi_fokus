@@ -1,4 +1,5 @@
 import 'mood.dart';
+import 'session_entity.dart';
 import 'task_category.dart';
 
 /// Сколько времени в фокусе пришлось на конкретный день. Основа и для
@@ -86,4 +87,47 @@ class FocusSummary {
 
   double get completionRate =>
       sessionCount == 0 ? 0 : completedCount / sessionCount;
+}
+
+/// Сколько раз за период «наказание» по привычке реально сработало.
+///
+/// Сработало — значит день был запланирован, не закрыт и не заморожен.
+/// Сегодняшний день сюда не входит: он ещё не проигран.
+class HabitPunishmentStat {
+  const HabitPunishmentStat({
+    required this.habitId,
+    required this.habitName,
+    required this.punishment,
+    required this.missedDays,
+    required this.scheduledDays,
+    required this.frozenDays,
+  });
+
+  final String habitId;
+  final String habitName;
+  final String punishment;
+
+  /// Дни, когда наказание сработало.
+  final int missedDays;
+
+  /// Сколько дней вообще было запланировано — без него «пропущено 3»
+  /// не отличить от катастрофы и от мелочи.
+  final int scheduledDays;
+
+  /// Сколько раз пропуск был осознанным, через заморозку.
+  final int frozenDays;
+
+  double get missRate => scheduledDays == 0 ? 0 : missedDays / scheduledDays;
+}
+
+/// Разбивка прерванных сессий по названным причинам.
+class InterruptionReasonStat {
+  const InterruptionReasonStat({
+    required this.reason,
+    required this.count,
+  });
+
+  /// null — причину не назвали.
+  final InterruptionReason? reason;
+  final int count;
 }

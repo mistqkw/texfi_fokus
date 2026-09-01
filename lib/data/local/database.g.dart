@@ -45,6 +45,18 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _frequencyTypeMeta = const VerificationMeta(
+    'frequencyType',
+  );
+  @override
+  late final GeneratedColumn<int> frequencyType = GeneratedColumn<int>(
+    'frequency_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _weekdayMaskMeta = const VerificationMeta(
     'weekdayMask',
   );
@@ -56,6 +68,50 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultValue: const Constant(0x7F),
+  );
+  static const VerificationMeta _timesPerWeekMeta = const VerificationMeta(
+    'timesPerWeek',
+  );
+  @override
+  late final GeneratedColumn<int> timesPerWeek = GeneratedColumn<int>(
+    'times_per_week',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(3),
+  );
+  static const VerificationMeta _rewardMeta = const VerificationMeta('reward');
+  @override
+  late final GeneratedColumn<String> reward = GeneratedColumn<String>(
+    'reward',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rewardStreakDaysMeta = const VerificationMeta(
+    'rewardStreakDays',
+  );
+  @override
+  late final GeneratedColumn<int> rewardStreakDays = GeneratedColumn<int>(
+    'reward_streak_days',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(7),
+  );
+  static const VerificationMeta _freezeIntervalDaysMeta =
+      const VerificationMeta('freezeIntervalDays');
+  @override
+  late final GeneratedColumn<int> freezeIntervalDays = GeneratedColumn<int>(
+    'freeze_interval_days',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(7),
   );
   static const VerificationMeta _reminderMinutesMeta = const VerificationMeta(
     'reminderMinutes',
@@ -112,7 +168,12 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     id,
     name,
     punishment,
+    frequencyType,
     weekdayMask,
+    timesPerWeek,
+    reward,
+    rewardStreakDays,
+    freezeIntervalDays,
     reminderMinutes,
     archived,
     sortOrder,
@@ -151,12 +212,54 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     } else if (isInserting) {
       context.missing(_punishmentMeta);
     }
+    if (data.containsKey('frequency_type')) {
+      context.handle(
+        _frequencyTypeMeta,
+        frequencyType.isAcceptableOrUnknown(
+          data['frequency_type']!,
+          _frequencyTypeMeta,
+        ),
+      );
+    }
     if (data.containsKey('weekday_mask')) {
       context.handle(
         _weekdayMaskMeta,
         weekdayMask.isAcceptableOrUnknown(
           data['weekday_mask']!,
           _weekdayMaskMeta,
+        ),
+      );
+    }
+    if (data.containsKey('times_per_week')) {
+      context.handle(
+        _timesPerWeekMeta,
+        timesPerWeek.isAcceptableOrUnknown(
+          data['times_per_week']!,
+          _timesPerWeekMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reward')) {
+      context.handle(
+        _rewardMeta,
+        reward.isAcceptableOrUnknown(data['reward']!, _rewardMeta),
+      );
+    }
+    if (data.containsKey('reward_streak_days')) {
+      context.handle(
+        _rewardStreakDaysMeta,
+        rewardStreakDays.isAcceptableOrUnknown(
+          data['reward_streak_days']!,
+          _rewardStreakDaysMeta,
+        ),
+      );
+    }
+    if (data.containsKey('freeze_interval_days')) {
+      context.handle(
+        _freezeIntervalDaysMeta,
+        freezeIntervalDays.isAcceptableOrUnknown(
+          data['freeze_interval_days']!,
+          _freezeIntervalDaysMeta,
         ),
       );
     }
@@ -208,9 +311,29 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.string,
         data['${effectivePrefix}punishment'],
       )!,
+      frequencyType: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}frequency_type'],
+      )!,
       weekdayMask: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}weekday_mask'],
+      )!,
+      timesPerWeek: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}times_per_week'],
+      )!,
+      reward: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reward'],
+      ),
+      rewardStreakDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reward_streak_days'],
+      )!,
+      freezeIntervalDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}freeze_interval_days'],
       )!,
       reminderMinutes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -245,8 +368,27 @@ class Habit extends DataClass implements Insertable<Habit> {
   /// и показывает в напоминании — никакой автоматизации.
   final String punishment;
 
+  /// Индекс `HabitFrequencyType`: 0 — по дням недели, 1 — N раз в неделю.
+  final int frequencyType;
+
   /// Битовая маска дней недели, бит 0 — понедельник. 0x7F — каждый день.
+  /// Осмысленна только при `frequencyType == 0`.
   final int weekdayMask;
+
+  /// Сколько раз в неделю нужно закрыть привычку без привязки к дням.
+  /// Осмысленно только при `frequencyType == 1`.
+  final int timesPerWeek;
+
+  /// Награда, которую пользователь назначил себе сам за стрик. null —
+  /// не задана; приложение её не автоматизирует, только показывает.
+  final String? reward;
+
+  /// За сколько дней подряд полагается [reward].
+  final int rewardStreakDays;
+
+  /// Как часто можно «заморозить» день, не теряя стрик. 0 — заморозки
+  /// выключены для этой привычки.
+  final int freezeIntervalDays;
 
   /// Минуты от полуночи для персонального напоминания; null — выключено.
   final int? reminderMinutes;
@@ -257,7 +399,12 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.id,
     required this.name,
     required this.punishment,
+    required this.frequencyType,
     required this.weekdayMask,
+    required this.timesPerWeek,
+    this.reward,
+    required this.rewardStreakDays,
+    required this.freezeIntervalDays,
     this.reminderMinutes,
     required this.archived,
     required this.sortOrder,
@@ -269,7 +416,14 @@ class Habit extends DataClass implements Insertable<Habit> {
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['punishment'] = Variable<String>(punishment);
+    map['frequency_type'] = Variable<int>(frequencyType);
     map['weekday_mask'] = Variable<int>(weekdayMask);
+    map['times_per_week'] = Variable<int>(timesPerWeek);
+    if (!nullToAbsent || reward != null) {
+      map['reward'] = Variable<String>(reward);
+    }
+    map['reward_streak_days'] = Variable<int>(rewardStreakDays);
+    map['freeze_interval_days'] = Variable<int>(freezeIntervalDays);
     if (!nullToAbsent || reminderMinutes != null) {
       map['reminder_minutes'] = Variable<int>(reminderMinutes);
     }
@@ -284,7 +438,14 @@ class Habit extends DataClass implements Insertable<Habit> {
       id: Value(id),
       name: Value(name),
       punishment: Value(punishment),
+      frequencyType: Value(frequencyType),
       weekdayMask: Value(weekdayMask),
+      timesPerWeek: Value(timesPerWeek),
+      reward: reward == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reward),
+      rewardStreakDays: Value(rewardStreakDays),
+      freezeIntervalDays: Value(freezeIntervalDays),
       reminderMinutes: reminderMinutes == null && nullToAbsent
           ? const Value.absent()
           : Value(reminderMinutes),
@@ -303,7 +464,12 @@ class Habit extends DataClass implements Insertable<Habit> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       punishment: serializer.fromJson<String>(json['punishment']),
+      frequencyType: serializer.fromJson<int>(json['frequencyType']),
       weekdayMask: serializer.fromJson<int>(json['weekdayMask']),
+      timesPerWeek: serializer.fromJson<int>(json['timesPerWeek']),
+      reward: serializer.fromJson<String?>(json['reward']),
+      rewardStreakDays: serializer.fromJson<int>(json['rewardStreakDays']),
+      freezeIntervalDays: serializer.fromJson<int>(json['freezeIntervalDays']),
       reminderMinutes: serializer.fromJson<int?>(json['reminderMinutes']),
       archived: serializer.fromJson<bool>(json['archived']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
@@ -317,7 +483,12 @@ class Habit extends DataClass implements Insertable<Habit> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'punishment': serializer.toJson<String>(punishment),
+      'frequencyType': serializer.toJson<int>(frequencyType),
       'weekdayMask': serializer.toJson<int>(weekdayMask),
+      'timesPerWeek': serializer.toJson<int>(timesPerWeek),
+      'reward': serializer.toJson<String?>(reward),
+      'rewardStreakDays': serializer.toJson<int>(rewardStreakDays),
+      'freezeIntervalDays': serializer.toJson<int>(freezeIntervalDays),
       'reminderMinutes': serializer.toJson<int?>(reminderMinutes),
       'archived': serializer.toJson<bool>(archived),
       'sortOrder': serializer.toJson<int>(sortOrder),
@@ -329,7 +500,12 @@ class Habit extends DataClass implements Insertable<Habit> {
     String? id,
     String? name,
     String? punishment,
+    int? frequencyType,
     int? weekdayMask,
+    int? timesPerWeek,
+    Value<String?> reward = const Value.absent(),
+    int? rewardStreakDays,
+    int? freezeIntervalDays,
     Value<int?> reminderMinutes = const Value.absent(),
     bool? archived,
     int? sortOrder,
@@ -338,7 +514,12 @@ class Habit extends DataClass implements Insertable<Habit> {
     id: id ?? this.id,
     name: name ?? this.name,
     punishment: punishment ?? this.punishment,
+    frequencyType: frequencyType ?? this.frequencyType,
     weekdayMask: weekdayMask ?? this.weekdayMask,
+    timesPerWeek: timesPerWeek ?? this.timesPerWeek,
+    reward: reward.present ? reward.value : this.reward,
+    rewardStreakDays: rewardStreakDays ?? this.rewardStreakDays,
+    freezeIntervalDays: freezeIntervalDays ?? this.freezeIntervalDays,
     reminderMinutes: reminderMinutes.present
         ? reminderMinutes.value
         : this.reminderMinutes,
@@ -353,9 +534,22 @@ class Habit extends DataClass implements Insertable<Habit> {
       punishment: data.punishment.present
           ? data.punishment.value
           : this.punishment,
+      frequencyType: data.frequencyType.present
+          ? data.frequencyType.value
+          : this.frequencyType,
       weekdayMask: data.weekdayMask.present
           ? data.weekdayMask.value
           : this.weekdayMask,
+      timesPerWeek: data.timesPerWeek.present
+          ? data.timesPerWeek.value
+          : this.timesPerWeek,
+      reward: data.reward.present ? data.reward.value : this.reward,
+      rewardStreakDays: data.rewardStreakDays.present
+          ? data.rewardStreakDays.value
+          : this.rewardStreakDays,
+      freezeIntervalDays: data.freezeIntervalDays.present
+          ? data.freezeIntervalDays.value
+          : this.freezeIntervalDays,
       reminderMinutes: data.reminderMinutes.present
           ? data.reminderMinutes.value
           : this.reminderMinutes,
@@ -371,7 +565,12 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('punishment: $punishment, ')
+          ..write('frequencyType: $frequencyType, ')
           ..write('weekdayMask: $weekdayMask, ')
+          ..write('timesPerWeek: $timesPerWeek, ')
+          ..write('reward: $reward, ')
+          ..write('rewardStreakDays: $rewardStreakDays, ')
+          ..write('freezeIntervalDays: $freezeIntervalDays, ')
           ..write('reminderMinutes: $reminderMinutes, ')
           ..write('archived: $archived, ')
           ..write('sortOrder: $sortOrder, ')
@@ -385,7 +584,12 @@ class Habit extends DataClass implements Insertable<Habit> {
     id,
     name,
     punishment,
+    frequencyType,
     weekdayMask,
+    timesPerWeek,
+    reward,
+    rewardStreakDays,
+    freezeIntervalDays,
     reminderMinutes,
     archived,
     sortOrder,
@@ -398,7 +602,12 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.id == this.id &&
           other.name == this.name &&
           other.punishment == this.punishment &&
+          other.frequencyType == this.frequencyType &&
           other.weekdayMask == this.weekdayMask &&
+          other.timesPerWeek == this.timesPerWeek &&
+          other.reward == this.reward &&
+          other.rewardStreakDays == this.rewardStreakDays &&
+          other.freezeIntervalDays == this.freezeIntervalDays &&
           other.reminderMinutes == this.reminderMinutes &&
           other.archived == this.archived &&
           other.sortOrder == this.sortOrder &&
@@ -409,7 +618,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> punishment;
+  final Value<int> frequencyType;
   final Value<int> weekdayMask;
+  final Value<int> timesPerWeek;
+  final Value<String?> reward;
+  final Value<int> rewardStreakDays;
+  final Value<int> freezeIntervalDays;
   final Value<int?> reminderMinutes;
   final Value<bool> archived;
   final Value<int> sortOrder;
@@ -419,7 +633,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.punishment = const Value.absent(),
+    this.frequencyType = const Value.absent(),
     this.weekdayMask = const Value.absent(),
+    this.timesPerWeek = const Value.absent(),
+    this.reward = const Value.absent(),
+    this.rewardStreakDays = const Value.absent(),
+    this.freezeIntervalDays = const Value.absent(),
     this.reminderMinutes = const Value.absent(),
     this.archived = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -430,7 +649,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     required String id,
     required String name,
     required String punishment,
+    this.frequencyType = const Value.absent(),
     this.weekdayMask = const Value.absent(),
+    this.timesPerWeek = const Value.absent(),
+    this.reward = const Value.absent(),
+    this.rewardStreakDays = const Value.absent(),
+    this.freezeIntervalDays = const Value.absent(),
     this.reminderMinutes = const Value.absent(),
     this.archived = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -443,7 +667,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? punishment,
+    Expression<int>? frequencyType,
     Expression<int>? weekdayMask,
+    Expression<int>? timesPerWeek,
+    Expression<String>? reward,
+    Expression<int>? rewardStreakDays,
+    Expression<int>? freezeIntervalDays,
     Expression<int>? reminderMinutes,
     Expression<bool>? archived,
     Expression<int>? sortOrder,
@@ -454,7 +683,13 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (punishment != null) 'punishment': punishment,
+      if (frequencyType != null) 'frequency_type': frequencyType,
       if (weekdayMask != null) 'weekday_mask': weekdayMask,
+      if (timesPerWeek != null) 'times_per_week': timesPerWeek,
+      if (reward != null) 'reward': reward,
+      if (rewardStreakDays != null) 'reward_streak_days': rewardStreakDays,
+      if (freezeIntervalDays != null)
+        'freeze_interval_days': freezeIntervalDays,
       if (reminderMinutes != null) 'reminder_minutes': reminderMinutes,
       if (archived != null) 'archived': archived,
       if (sortOrder != null) 'sort_order': sortOrder,
@@ -467,7 +702,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Value<String>? id,
     Value<String>? name,
     Value<String>? punishment,
+    Value<int>? frequencyType,
     Value<int>? weekdayMask,
+    Value<int>? timesPerWeek,
+    Value<String?>? reward,
+    Value<int>? rewardStreakDays,
+    Value<int>? freezeIntervalDays,
     Value<int?>? reminderMinutes,
     Value<bool>? archived,
     Value<int>? sortOrder,
@@ -478,7 +718,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       id: id ?? this.id,
       name: name ?? this.name,
       punishment: punishment ?? this.punishment,
+      frequencyType: frequencyType ?? this.frequencyType,
       weekdayMask: weekdayMask ?? this.weekdayMask,
+      timesPerWeek: timesPerWeek ?? this.timesPerWeek,
+      reward: reward ?? this.reward,
+      rewardStreakDays: rewardStreakDays ?? this.rewardStreakDays,
+      freezeIntervalDays: freezeIntervalDays ?? this.freezeIntervalDays,
       reminderMinutes: reminderMinutes ?? this.reminderMinutes,
       archived: archived ?? this.archived,
       sortOrder: sortOrder ?? this.sortOrder,
@@ -499,8 +744,23 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     if (punishment.present) {
       map['punishment'] = Variable<String>(punishment.value);
     }
+    if (frequencyType.present) {
+      map['frequency_type'] = Variable<int>(frequencyType.value);
+    }
     if (weekdayMask.present) {
       map['weekday_mask'] = Variable<int>(weekdayMask.value);
+    }
+    if (timesPerWeek.present) {
+      map['times_per_week'] = Variable<int>(timesPerWeek.value);
+    }
+    if (reward.present) {
+      map['reward'] = Variable<String>(reward.value);
+    }
+    if (rewardStreakDays.present) {
+      map['reward_streak_days'] = Variable<int>(rewardStreakDays.value);
+    }
+    if (freezeIntervalDays.present) {
+      map['freeze_interval_days'] = Variable<int>(freezeIntervalDays.value);
     }
     if (reminderMinutes.present) {
       map['reminder_minutes'] = Variable<int>(reminderMinutes.value);
@@ -526,7 +786,12 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('punishment: $punishment, ')
+          ..write('frequencyType: $frequencyType, ')
           ..write('weekdayMask: $weekdayMask, ')
+          ..write('timesPerWeek: $timesPerWeek, ')
+          ..write('reward: $reward, ')
+          ..write('rewardStreakDays: $rewardStreakDays, ')
+          ..write('freezeIntervalDays: $freezeIntervalDays, ')
           ..write('reminderMinutes: $reminderMinutes, ')
           ..write('archived: $archived, ')
           ..write('sortOrder: $sortOrder, ')
@@ -847,6 +1112,316 @@ class HabitCompletionsCompanion extends UpdateCompanion<HabitCompletion> {
           ..write('habitId: $habitId, ')
           ..write('day: $day, ')
           ..write('completedAt: $completedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HabitFreezesTable extends HabitFreezes
+    with TableInfo<$HabitFreezesTable, HabitFreeze> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HabitFreezesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _habitIdMeta = const VerificationMeta(
+    'habitId',
+  );
+  @override
+  late final GeneratedColumn<String> habitId = GeneratedColumn<String>(
+    'habit_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<DateTime> day = GeneratedColumn<DateTime>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, habitId, day, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'habit_freezes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HabitFreeze> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('habit_id')) {
+      context.handle(
+        _habitIdMeta,
+        habitId.isAcceptableOrUnknown(data['habit_id']!, _habitIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_habitIdMeta);
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HabitFreeze map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HabitFreeze(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      habitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}habit_id'],
+      )!,
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}day'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HabitFreezesTable createAlias(String alias) {
+    return $HabitFreezesTable(attachedDatabase, alias);
+  }
+}
+
+class HabitFreeze extends DataClass implements Insertable<HabitFreeze> {
+  final String id;
+
+  /// Ссылается на `Habits.id`.
+  final String habitId;
+
+  /// День, нормализованный к локальной полуночи.
+  final DateTime day;
+  final DateTime createdAt;
+  const HabitFreeze({
+    required this.id,
+    required this.habitId,
+    required this.day,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['habit_id'] = Variable<String>(habitId);
+    map['day'] = Variable<DateTime>(day);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  HabitFreezesCompanion toCompanion(bool nullToAbsent) {
+    return HabitFreezesCompanion(
+      id: Value(id),
+      habitId: Value(habitId),
+      day: Value(day),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory HabitFreeze.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HabitFreeze(
+      id: serializer.fromJson<String>(json['id']),
+      habitId: serializer.fromJson<String>(json['habitId']),
+      day: serializer.fromJson<DateTime>(json['day']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'habitId': serializer.toJson<String>(habitId),
+      'day': serializer.toJson<DateTime>(day),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  HabitFreeze copyWith({
+    String? id,
+    String? habitId,
+    DateTime? day,
+    DateTime? createdAt,
+  }) => HabitFreeze(
+    id: id ?? this.id,
+    habitId: habitId ?? this.habitId,
+    day: day ?? this.day,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  HabitFreeze copyWithCompanion(HabitFreezesCompanion data) {
+    return HabitFreeze(
+      id: data.id.present ? data.id.value : this.id,
+      habitId: data.habitId.present ? data.habitId.value : this.habitId,
+      day: data.day.present ? data.day.value : this.day,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HabitFreeze(')
+          ..write('id: $id, ')
+          ..write('habitId: $habitId, ')
+          ..write('day: $day, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, habitId, day, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HabitFreeze &&
+          other.id == this.id &&
+          other.habitId == this.habitId &&
+          other.day == this.day &&
+          other.createdAt == this.createdAt);
+}
+
+class HabitFreezesCompanion extends UpdateCompanion<HabitFreeze> {
+  final Value<String> id;
+  final Value<String> habitId;
+  final Value<DateTime> day;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const HabitFreezesCompanion({
+    this.id = const Value.absent(),
+    this.habitId = const Value.absent(),
+    this.day = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HabitFreezesCompanion.insert({
+    required String id,
+    required String habitId,
+    required DateTime day,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       habitId = Value(habitId),
+       day = Value(day);
+  static Insertable<HabitFreeze> custom({
+    Expression<String>? id,
+    Expression<String>? habitId,
+    Expression<DateTime>? day,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (habitId != null) 'habit_id': habitId,
+      if (day != null) 'day': day,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HabitFreezesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? habitId,
+    Value<DateTime>? day,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return HabitFreezesCompanion(
+      id: id ?? this.id,
+      habitId: habitId ?? this.habitId,
+      day: day ?? this.day,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (habitId.present) {
+      map['habit_id'] = Variable<String>(habitId.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<DateTime>(day.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HabitFreezesCompanion(')
+          ..write('id: $id, ')
+          ..write('habitId: $habitId, ')
+          ..write('day: $day, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3187,6 +3762,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HabitCompletionsTable habitCompletions = $HabitCompletionsTable(
     this,
   );
+  late final $HabitFreezesTable habitFreezes = $HabitFreezesTable(this);
   late final $TasksTable tasks = $TasksTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $MoodEntriesTable moodEntries = $MoodEntriesTable(this);
@@ -3199,6 +3775,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     habits,
     habitCompletions,
+    habitFreezes,
     tasks,
     sessions,
     moodEntries,
@@ -3211,7 +3788,12 @@ typedef $$HabitsTableCreateCompanionBuilder =
       required String id,
       required String name,
       required String punishment,
+      Value<int> frequencyType,
       Value<int> weekdayMask,
+      Value<int> timesPerWeek,
+      Value<String?> reward,
+      Value<int> rewardStreakDays,
+      Value<int> freezeIntervalDays,
       Value<int?> reminderMinutes,
       Value<bool> archived,
       Value<int> sortOrder,
@@ -3223,7 +3805,12 @@ typedef $$HabitsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> name,
       Value<String> punishment,
+      Value<int> frequencyType,
       Value<int> weekdayMask,
+      Value<int> timesPerWeek,
+      Value<String?> reward,
+      Value<int> rewardStreakDays,
+      Value<int> freezeIntervalDays,
       Value<int?> reminderMinutes,
       Value<bool> archived,
       Value<int> sortOrder,
@@ -3255,8 +3842,33 @@ class $$HabitsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get frequencyType => $composableBuilder(
+    column: $table.frequencyType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get weekdayMask => $composableBuilder(
     column: $table.weekdayMask,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timesPerWeek => $composableBuilder(
+    column: $table.timesPerWeek,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reward => $composableBuilder(
+    column: $table.reward,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rewardStreakDays => $composableBuilder(
+    column: $table.rewardStreakDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get freezeIntervalDays => $composableBuilder(
+    column: $table.freezeIntervalDays,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3305,8 +3917,33 @@ class $$HabitsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get frequencyType => $composableBuilder(
+    column: $table.frequencyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get weekdayMask => $composableBuilder(
     column: $table.weekdayMask,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timesPerWeek => $composableBuilder(
+    column: $table.timesPerWeek,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reward => $composableBuilder(
+    column: $table.reward,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rewardStreakDays => $composableBuilder(
+    column: $table.rewardStreakDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get freezeIntervalDays => $composableBuilder(
+    column: $table.freezeIntervalDays,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3351,8 +3988,31 @@ class $$HabitsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get frequencyType => $composableBuilder(
+    column: $table.frequencyType,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get weekdayMask => $composableBuilder(
     column: $table.weekdayMask,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get timesPerWeek => $composableBuilder(
+    column: $table.timesPerWeek,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reward =>
+      $composableBuilder(column: $table.reward, builder: (column) => column);
+
+  GeneratedColumn<int> get rewardStreakDays => $composableBuilder(
+    column: $table.rewardStreakDays,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get freezeIntervalDays => $composableBuilder(
+    column: $table.freezeIntervalDays,
     builder: (column) => column,
   );
 
@@ -3402,7 +4062,12 @@ class $$HabitsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> punishment = const Value.absent(),
+                Value<int> frequencyType = const Value.absent(),
                 Value<int> weekdayMask = const Value.absent(),
+                Value<int> timesPerWeek = const Value.absent(),
+                Value<String?> reward = const Value.absent(),
+                Value<int> rewardStreakDays = const Value.absent(),
+                Value<int> freezeIntervalDays = const Value.absent(),
                 Value<int?> reminderMinutes = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -3412,7 +4077,12 @@ class $$HabitsTableTableManager
                 id: id,
                 name: name,
                 punishment: punishment,
+                frequencyType: frequencyType,
                 weekdayMask: weekdayMask,
+                timesPerWeek: timesPerWeek,
+                reward: reward,
+                rewardStreakDays: rewardStreakDays,
+                freezeIntervalDays: freezeIntervalDays,
                 reminderMinutes: reminderMinutes,
                 archived: archived,
                 sortOrder: sortOrder,
@@ -3424,7 +4094,12 @@ class $$HabitsTableTableManager
                 required String id,
                 required String name,
                 required String punishment,
+                Value<int> frequencyType = const Value.absent(),
                 Value<int> weekdayMask = const Value.absent(),
+                Value<int> timesPerWeek = const Value.absent(),
+                Value<String?> reward = const Value.absent(),
+                Value<int> rewardStreakDays = const Value.absent(),
+                Value<int> freezeIntervalDays = const Value.absent(),
                 Value<int?> reminderMinutes = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -3434,7 +4109,12 @@ class $$HabitsTableTableManager
                 id: id,
                 name: name,
                 punishment: punishment,
+                frequencyType: frequencyType,
                 weekdayMask: weekdayMask,
+                timesPerWeek: timesPerWeek,
+                reward: reward,
+                rewardStreakDays: rewardStreakDays,
+                freezeIntervalDays: freezeIntervalDays,
                 reminderMinutes: reminderMinutes,
                 archived: archived,
                 sortOrder: sortOrder,
@@ -3650,6 +4330,187 @@ typedef $$HabitCompletionsTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $HabitCompletionsTable, HabitCompletion>,
       ),
       HabitCompletion,
+      PrefetchHooks Function()
+    >;
+typedef $$HabitFreezesTableCreateCompanionBuilder =
+    HabitFreezesCompanion Function({
+      required String id,
+      required String habitId,
+      required DateTime day,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$HabitFreezesTableUpdateCompanionBuilder =
+    HabitFreezesCompanion Function({
+      Value<String> id,
+      Value<String> habitId,
+      Value<DateTime> day,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$HabitFreezesTableFilterComposer
+    extends Composer<_$AppDatabase, $HabitFreezesTable> {
+  $$HabitFreezesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get habitId => $composableBuilder(
+    column: $table.habitId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HabitFreezesTableOrderingComposer
+    extends Composer<_$AppDatabase, $HabitFreezesTable> {
+  $$HabitFreezesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get habitId => $composableBuilder(
+    column: $table.habitId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HabitFreezesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HabitFreezesTable> {
+  $$HabitFreezesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get habitId =>
+      $composableBuilder(column: $table.habitId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$HabitFreezesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HabitFreezesTable,
+          HabitFreeze,
+          $$HabitFreezesTableFilterComposer,
+          $$HabitFreezesTableOrderingComposer,
+          $$HabitFreezesTableAnnotationComposer,
+          $$HabitFreezesTableCreateCompanionBuilder,
+          $$HabitFreezesTableUpdateCompanionBuilder,
+          (
+            HabitFreeze,
+            BaseReferences<_$AppDatabase, $HabitFreezesTable, HabitFreeze>,
+          ),
+          HabitFreeze,
+          PrefetchHooks Function()
+        > {
+  $$HabitFreezesTableTableManager(_$AppDatabase db, $HabitFreezesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HabitFreezesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HabitFreezesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HabitFreezesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> habitId = const Value.absent(),
+                Value<DateTime> day = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HabitFreezesCompanion(
+                id: id,
+                habitId: habitId,
+                day: day,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String habitId,
+                required DateTime day,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HabitFreezesCompanion.insert(
+                id: id,
+                habitId: habitId,
+                day: day,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HabitFreezesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HabitFreezesTable,
+      HabitFreeze,
+      $$HabitFreezesTableFilterComposer,
+      $$HabitFreezesTableOrderingComposer,
+      $$HabitFreezesTableAnnotationComposer,
+      $$HabitFreezesTableCreateCompanionBuilder,
+      $$HabitFreezesTableUpdateCompanionBuilder,
+      (
+        HabitFreeze,
+        BaseReferences<_$AppDatabase, $HabitFreezesTable, HabitFreeze>,
+      ),
+      HabitFreeze,
       PrefetchHooks Function()
     >;
 typedef $$TasksTableCreateCompanionBuilder =
@@ -4797,6 +5658,8 @@ class $AppDatabaseManager {
       $$HabitsTableTableManager(_db, _db.habits);
   $$HabitCompletionsTableTableManager get habitCompletions =>
       $$HabitCompletionsTableTableManager(_db, _db.habitCompletions);
+  $$HabitFreezesTableTableManager get habitFreezes =>
+      $$HabitFreezesTableTableManager(_db, _db.habitFreezes);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
   $$SessionsTableTableManager get sessions =>

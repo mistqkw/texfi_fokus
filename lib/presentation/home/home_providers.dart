@@ -76,3 +76,19 @@ final toggleHabitProvider =
         done: done,
       );
 });
+
+/// Замораживает или снимает заморозку сегодняшнего дня.
+///
+/// Возвращает `false`, если заморозку потратить нельзя: лимит по частоте
+/// ещё не истёк. Экран по этому ответу решает, показать ли отказ, —
+/// молча проигнорированный тап выглядел бы поломкой.
+final toggleFreezeProvider =
+    Provider<Future<bool> Function(String habitId, bool frozen)>((ref) {
+  final repository = ref.watch(habitRepositoryProvider);
+  final today = ref.watch(todayProvider);
+  return (habitId, frozen) => repository.setFreeze(
+        habitId: habitId,
+        day: today,
+        frozen: frozen,
+      );
+});
