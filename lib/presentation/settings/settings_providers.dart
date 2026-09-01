@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/haptics/haptics.dart';
+import '../../core/theme/app_accent.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/session_guards.dart';
 
@@ -17,6 +18,7 @@ abstract final class PrefKeys {
   static const notificationsEnabled = 'notifications_enabled';
   static const dailySummaryMinutes = 'daily_summary_minutes';
   static const onboardingDone = 'onboarding_done';
+  static const accent = 'accent_color';
   static const shortBreakMinutes = 'short_break_minutes';
   static const nightCapEnabled = 'night_cap_enabled';
   static const nightCapHour = 'night_cap_hour';
@@ -55,6 +57,24 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 final themeModeProvider =
     StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+/// Акцентный тон интерфейса. Хранится ключом, а не индексом: порядок
+/// пресетов может поменяться, а выбор пользователя — нет.
+class AccentNotifier extends StateNotifier<AppAccent> {
+  AccentNotifier(this._prefs)
+      : super(AppAccent.fromKey(_prefs.getString(PrefKeys.accent)));
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(AppAccent accent) async {
+    state = accent;
+    await _prefs.setString(PrefKeys.accent, accent.key);
+  }
+}
+
+final accentProvider = StateNotifierProvider<AccentNotifier, AppAccent>((ref) {
+  return AccentNotifier(ref.watch(sharedPreferencesProvider));
 });
 
 // --- Язык ---

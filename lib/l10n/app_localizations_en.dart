@@ -861,4 +861,69 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationDailyAllDone =>
       'Everything is closed today. Well done.';
+
+  @override
+  String get settingsAccent => 'Accent colour';
+
+  @override
+  String get settingsAccentSubtitle =>
+      'Only the accent tone changes — the rest of the palette stays as it is.';
+
+  @override
+  String get settingsImport => 'Import from JSON';
+
+  @override
+  String get settingsImportSubtitle =>
+      'Restore an earlier export on a new device';
+
+  @override
+  String get settingsImportPathHint => 'Full path to the exported .json file.';
+
+  @override
+  String get settingsImportNoFile => 'No file at that path';
+
+  @override
+  String get settingsImportWarnTitle => 'This touches your data';
+
+  @override
+  String get settingsImportWarnBody =>
+      'Merge keeps what you already have and adds what is missing. Replace wipes the current history first — there is no undo.';
+
+  @override
+  String get settingsImportMerge => 'Merge';
+
+  @override
+  String get settingsImportReplace => 'Replace everything';
+
+  @override
+  String settingsImportDone(int habits, int tasks, int sessions) {
+    return 'Imported: $habits habits, $tasks tasks, $sessions sessions';
+  }
+
+  @override
+  String get settingsImportFailed => 'Import failed';
+
+  @override
+  String get timerRepeat => 'One more like this';
+
+  @override
+  String get recommendationEvidenceScopeLabel => 'Context match';
+
+  @override
+  String get recommendationEvidenceCountLabel => 'Sessions behind it';
+
+  @override
+  String get recommendationEvidenceRateLabel => 'Worked out';
+
+  @override
+  String get recommendationScopeExact => 'exactly this one';
+
+  @override
+  String get recommendationScopeSimilar => 'similar work';
+
+  @override
+  String get recommendationScopeBroad => 'this mood in general';
+
+  @override
+  String get recommendationScopeNone => 'no data yet';
 }

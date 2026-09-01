@@ -34,6 +34,7 @@ void main() {
         'minus': PixelSprites.minus,
         'bell': PixelSprites.bell,
         'download': PixelSprites.download,
+        'upload': PixelSprites.upload,
         'repeat': PixelSprites.repeat,
         'insight': PixelSprites.insight,
         'moodFace': PixelSprites.moodFace,

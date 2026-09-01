@@ -363,5 +363,39 @@
       }
     }
   },
-  "notificationDailyAllDone": "Dziś wszystko zamknięte. Dobra robota."
+  "notificationDailyAllDone": "Dziś wszystko zamknięte. Dobra robota.",
+
+  "settingsAccent": "Kolor akcentu",
+  "settingsAccentSubtitle": "Zmienia się tylko ton akcentu — reszta palety zostaje bez zmian.",
+  "settingsImport": "Import z JSON",
+  "settingsImportSubtitle": "Przywróć wcześniejszy eksport na nowym urządzeniu",
+  "settingsImportPathHint": "Pełna ścieżka do wyeksportowanego pliku .json.",
+  "settingsImportNoFile": "Pod tą ścieżką nie ma pliku",
+  "settingsImportWarnTitle": "To dotknie twoich danych",
+  "settingsImportWarnBody": "Scalanie zachowa to, co już masz, i doda brakujące. Zamiana najpierw wymaże obecną historię — bez cofnięcia.",
+  "settingsImportMerge": "Scal",
+  "settingsImportReplace": "Zamień wszystko",
+  "settingsImportDone": "Zaimportowano: nawyki — {habits}, zadania — {tasks}, sesje — {sessions}",
+  "@settingsImportDone": {
+    "placeholders": {
+      "habits": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsImportFailed": "Import nieudany",
+  "timerRepeat": "Jeszcze jedna taka sama",
+  "recommendationEvidenceScopeLabel": "Dopasowanie kontekstu",
+  "recommendationEvidenceCountLabel": "Sesji u podstaw",
+  "recommendationEvidenceRateLabel": "Zadziałało",
+  "recommendationScopeExact": "dokładnie ten",
+  "recommendationScopeSimilar": "podobna praca",
+  "recommendationScopeBroad": "ten nastrój ogólnie",
+  "recommendationScopeNone": "brak danych"
 }

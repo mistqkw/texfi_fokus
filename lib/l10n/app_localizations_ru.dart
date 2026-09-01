@@ -858,4 +858,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationDailyAllDone => 'Сегодня всё закрыто. Хорошо.';
+
+  @override
+  String get settingsAccent => 'Акцентный цвет';
+
+  @override
+  String get settingsAccentSubtitle =>
+      'Меняется только акцентный тон — остальная палитра остаётся прежней.';
+
+  @override
+  String get settingsImport => 'Импорт из JSON';
+
+  @override
+  String get settingsImportSubtitle =>
+      'Восстановить выгрузку на новом устройстве';
+
+  @override
+  String get settingsImportPathHint =>
+      'Полный путь к выгруженному .json-файлу.';
+
+  @override
+  String get settingsImportNoFile => 'По этому пути файла нет';
+
+  @override
+  String get settingsImportWarnTitle => 'Это затронет твои данные';
+
+  @override
+  String get settingsImportWarnBody =>
+      'Слияние оставит то, что уже есть, и добавит недостающее. Замена сначала сотрёт текущую историю — отменить будет нельзя.';
+
+  @override
+  String get settingsImportMerge => 'Слить';
+
+  @override
+  String get settingsImportReplace => 'Заменить всё';
+
+  @override
+  String settingsImportDone(int habits, int tasks, int sessions) {
+    return 'Импортировано: привычек — $habits, задач — $tasks, сессий — $sessions';
+  }
+
+  @override
+  String get settingsImportFailed => 'Импорт не удался';
+
+  @override
+  String get timerRepeat => 'Ещё одну такую же';
+
+  @override
+  String get recommendationEvidenceScopeLabel => 'Совпадение контекста';
+
+  @override
+  String get recommendationEvidenceCountLabel => 'Сессий в основе';
+
+  @override
+  String get recommendationEvidenceRateLabel => 'Срабатывало';
+
+  @override
+  String get recommendationScopeExact => 'ровно этот';
+
+  @override
+  String get recommendationScopeSimilar => 'похожая работа';
+
+  @override
+  String get recommendationScopeBroad => 'это настроение вообще';
+
+  @override
+  String get recommendationScopeNone => 'данных пока нет';
 }

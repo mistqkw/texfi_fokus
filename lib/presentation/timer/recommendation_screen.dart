@@ -282,6 +282,37 @@ class _WhyCard extends StatelessWidget {
               ),
             ],
           ),
+
+          // Разбор выкладки по строкам. Одной фразы и шкалы мало: «63%
+          // уверенности» — это про движок, а пользователю нужно знать, на
+          // скольких его собственных сессиях и на каком совпадении
+          // контекста это держится. Три строки дешевле любого объяснения
+          // словами и не дают выдать общую статистику за личную.
+          if (evidence.hasData) ...[
+            AppSpacing.gapMd,
+            Container(height: AppRadius.pixelBorder, color: colors.divider),
+            AppSpacing.gapMd,
+            _EvidenceRow(
+              label: l10n.recommendationEvidenceScopeLabel,
+              value: switch (evidence.scope) {
+                EvidenceScope.exact => l10n.recommendationScopeExact,
+                EvidenceScope.similar => l10n.recommendationScopeSimilar,
+                EvidenceScope.broad => l10n.recommendationScopeBroad,
+                EvidenceScope.none => l10n.recommendationScopeNone,
+              },
+            ),
+            _EvidenceRow(
+              label: l10n.recommendationEvidenceCountLabel,
+              value: '${evidence.matchedSessions}',
+            ),
+            _EvidenceRow(
+              label: l10n.recommendationEvidenceRateLabel,
+              value: '${(evidence.successRate * 100).round()}%',
+              valueColor: evidence.successRate >= 0.5
+                  ? colors.success
+                  : colors.warning,
+            ),
+          ],
         ],
       ),
     );
@@ -324,6 +355,37 @@ class _WarningBanner extends StatelessWidget {
           ),
           AppSpacing.gapSm,
           Text(body, style: context.text.body),
+        ],
+      ),
+    );
+  }
+}
+
+/// Строка выкладки: подпись слева, значение справа, ничего лишнего.
+class _EvidenceRow extends StatelessWidget {
+  const _EvidenceRow({
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(label, style: context.text.caption)),
+          AppSpacing.wGapMd,
+          Text(
+            value,
+            style: context.text.chartLabel.copyWith(color: valueColor),
+          ),
         ],
       ),
     );

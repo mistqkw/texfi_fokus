@@ -472,5 +472,39 @@
       }
     }
   },
-  "notificationDailyAllDone": "Everything is closed today. Well done."
+  "notificationDailyAllDone": "Everything is closed today. Well done.",
+
+  "settingsAccent": "Accent colour",
+  "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
+  "settingsImport": "Import from JSON",
+  "settingsImportSubtitle": "Restore an earlier export on a new device",
+  "settingsImportPathHint": "Full path to the exported .json file.",
+  "settingsImportNoFile": "No file at that path",
+  "settingsImportWarnTitle": "This touches your data",
+  "settingsImportWarnBody": "Merge keeps what you already have and adds what is missing. Replace wipes the current history first — there is no undo.",
+  "settingsImportMerge": "Merge",
+  "settingsImportReplace": "Replace everything",
+  "settingsImportDone": "Imported: {habits} habits, {tasks} tasks, {sessions} sessions",
+  "@settingsImportDone": {
+    "placeholders": {
+      "habits": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsImportFailed": "Import failed",
+  "timerRepeat": "One more like this",
+  "recommendationEvidenceScopeLabel": "Context match",
+  "recommendationEvidenceCountLabel": "Sessions behind it",
+  "recommendationEvidenceRateLabel": "Worked out",
+  "recommendationScopeExact": "exactly this one",
+  "recommendationScopeSimilar": "similar work",
+  "recommendationScopeBroad": "this mood in general",
+  "recommendationScopeNone": "no data yet"
 }
