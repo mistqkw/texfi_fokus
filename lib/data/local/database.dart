@@ -33,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -75,6 +75,13 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(playerProgress);
             await m.createTable(mapNodes);
             await m.createTable(gameSettings);
+          }
+
+          // v6: фото-контекст сессии. Ровно одна nullable-колонка в уже
+          // существующей таблице: у старых сессий её значение — null, и это
+          // честное «фото не прикладывали», а не потеря данных.
+          if (from < 6) {
+            await m.addColumn(sessions, sessions.photoPath);
           }
         },
       );

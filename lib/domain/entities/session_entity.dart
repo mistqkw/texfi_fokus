@@ -67,6 +67,7 @@ class SessionEntity {
     this.wasManualOverride = false,
     this.interruptionReason,
     this.sessionNote,
+    this.photoPath,
   });
 
   final String id;
@@ -114,6 +115,14 @@ class SessionEntity {
 
   /// Короткая заметка пользователя «как прошло». null — пропустили.
   final String? sessionNote;
+
+  /// Путь к прикреплённому фото на диске. null — фото не прикладывали.
+  ///
+  /// Полностью необязательное поле: ни статистика, ни движок рекомендаций
+  /// его не читают, и сессия без фото ничем не отличается от прежних.
+  final String? photoPath;
+
+  bool get hasPhoto => photoPath != null && photoPath!.isNotEmpty;
 
   int get actualFocusMinutes => (actualFocusSeconds / 60).round();
 

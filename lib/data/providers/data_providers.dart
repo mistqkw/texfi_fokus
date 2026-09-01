@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/notifications/notification_service.dart';
+import '../../core/photos/session_photo_picker.dart';
+import '../../core/photos/session_photo_store.dart';
 import '../../domain/entities/recommendation_engine.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../../domain/repositories/habit_repository.dart';
@@ -51,8 +53,22 @@ final plannerRepositoryProvider = Provider<PlannerRepository>((ref) {
   return PlannerRepositoryImpl(ref.watch(databaseProvider));
 });
 
+/// Файлы прикреплённых к сессиям фотографий: копирование к себе и удаление.
+final sessionPhotoStoreProvider = Provider<SessionPhotoStore>((ref) {
+  return FileSessionPhotoStore();
+});
+
+/// Съёмка и выбор фото. Отдельно от хранилища: это системный плагин, и на
+/// части платформ его нет вовсе.
+final sessionPhotoPickerProvider = Provider<SessionPhotoPicker>((ref) {
+  return SessionPhotoPicker();
+});
+
 final sessionRepositoryProvider = Provider<SessionRepository>((ref) {
-  return SessionRepositoryImpl(ref.watch(databaseProvider));
+  return SessionRepositoryImpl(
+    ref.watch(databaseProvider),
+    photos: ref.watch(sessionPhotoStoreProvider),
+  );
 });
 
 final moodRepositoryProvider = Provider<MoodRepository>((ref) {
@@ -78,5 +94,8 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 });
 
 final exportServiceProvider = Provider<ExportService>((ref) {
-  return ExportService(ref.watch(databaseProvider));
+  return ExportService(
+    ref.watch(databaseProvider),
+    photos: ref.watch(sessionPhotoStoreProvider),
+  );
 });
