@@ -14,6 +14,7 @@ class PixelHeatmap extends StatelessWidget {
     required this.days,
     this.cellSize = 14,
     this.onDayTap,
+    this.weekStartWeekday = DateTime.monday,
   });
 
   /// Дни по возрастанию даты. Пропусков быть не должно: сетка рисуется
@@ -22,6 +23,10 @@ class PixelHeatmap extends StatelessWidget {
 
   final double cellSize;
   final ValueChanged<DailyFocus>? onDayTap;
+
+  /// С какого дня недели начинается колонка. 1 — понедельник, 7 —
+  /// воскресенье, как в [DateTime.weekday].
+  final int weekStartWeekday;
 
   /// Порог в минутах для верхней ступени яркости. Всё, что выше, — максимум.
   static const int _maxMinutes = 120;
@@ -50,9 +55,10 @@ class PixelHeatmap extends StatelessWidget {
   Widget build(BuildContext context) {
     if (days.isEmpty) return const SizedBox.shrink();
 
-    // Сетку выравниваем по неделям: первая колонка начинается с понедельника,
-    // иначе строки перестают соответствовать дням недели.
-    final leadingBlanks = days.first.day.weekday - 1;
+    // Сетку выравниваем по неделям: первая колонка начинается с того дня,
+    // который пользователь считает началом недели, иначе строки перестают
+    // соответствовать дням недели. `% 7` не даёт сдвигу уйти в минус.
+    final leadingBlanks = (days.first.day.weekday - weekStartWeekday) % 7;
     final cells = <Widget>[
       for (var i = 0; i < leadingBlanks; i++) const SizedBox.shrink(),
       for (final day in days) _HeatCell(

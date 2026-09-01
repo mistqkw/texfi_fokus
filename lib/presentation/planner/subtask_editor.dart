@@ -101,7 +101,11 @@ class _SubtaskEditorSheetState extends ConsumerState<_SubtaskEditorSheet> {
                       ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: Icon(Icons.close, color: colors.textTertiary),
+                        icon: PixelSprite(
+                rows: PixelSprites.close,
+                size: 14,
+                color: colors.textTertiary,
+              ),
                         onPressed: () {
                           Haptics.tap();
                           planner.deleteSubtask(subtask.id);

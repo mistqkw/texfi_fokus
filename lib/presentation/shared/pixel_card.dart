@@ -119,3 +119,33 @@ class PixelSectionHeader extends StatelessWidget {
     );
   }
 }
+
+/// Разделитель внутри карточки.
+///
+/// Material `Divider` рисует линию толщиной в один логический пиксель — на
+/// экране с плотностью 3x это волосок, который в окружении рубленых рамок
+/// толщиной [AppRadius.pixelBorder] выглядит браком печати, а не элементом
+/// оформления. Здесь та же толщина, что у всех остальных границ.
+///
+/// Второе отличие: `Divider(height:)` задаёт высоту всей коробки вместе с
+/// отступами, а не зазор, — и это регулярно принимают за отступ. Тут
+/// [gap] — именно зазор с каждой стороны от линии.
+class PixelDivider extends StatelessWidget {
+  const PixelDivider({super.key, this.gap = AppSpacing.md});
+
+  final double gap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: gap),
+      child: SizedBox(
+        height: AppRadius.pixelBorder,
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: context.colors.divider),
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
+}

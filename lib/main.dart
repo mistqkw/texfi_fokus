@@ -9,6 +9,7 @@ import 'core/constants/app_info.dart';
 import 'core/haptics/haptics.dart';
 import 'core/theme/app_motion.dart';
 import 'core/theme/app_theme.dart';
+import 'data/local/backup_scheduler.dart';
 import 'data/providers/data_providers.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/boot/boot_gate.dart';
@@ -52,7 +53,23 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
     // ждать сеть. Если GitHub недоступен или лимит исчерпан — проверка молча
     // ничего не найдёт, и запуск от этого не изменится ни на кадр.
     unawaited(ref.read(updateControllerProvider.notifier).checkOnLaunch());
+
+    // Резервная копия тоже не ожидается: она читает всю базу и пишет файл,
+    // и держать ради этого заставку на экране незачем. Сама она проверит,
+    // назрела ли, и в обычный запуск не сделает ничего.
+    unawaited(_runScheduledBackup());
+
     return ref.read(notificationServiceProvider).init();
+  }
+
+  Future<void> _runScheduledBackup() async {
+    final path = await ref.read(backupRunnerProvider).runIfDue(
+          enabled: ref.read(autoBackupEnabledProvider),
+        );
+    if (path == null || !mounted) return;
+    // Дата под тумблером в настройках должна обновиться в этом же запуске,
+    // а не после перезахода.
+    ref.read(lastAutoBackupProvider.notifier).state = DateTime.now();
   }
 
   @override

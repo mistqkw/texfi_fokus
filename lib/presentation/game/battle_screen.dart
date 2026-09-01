@@ -219,7 +219,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
             backgroundColor: Colors.transparent,
             leading: outcome == null
                 ? IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: PixelSprite(rows: PixelSprites.close, size: 16, color: context.colors.textSecondary),
                     onPressed: _confirmStop,
                   )
                 : null,
@@ -228,7 +228,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
               if (outcome == null)
                 IconButton(
                   tooltip: l10n.timerQuietMode,
-                  icon: const Icon(Icons.nightlight_round),
+                  icon: PixelSprite(rows: PixelSprites.moon, size: 16, color: context.colors.textSecondary),
                   onPressed: () => _setQuiet(true),
                 ),
             ],

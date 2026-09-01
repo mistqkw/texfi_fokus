@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:texfi_fokus/core/theme/app_accent.dart';
 import 'package:texfi_fokus/core/theme/app_theme.dart';
 import 'package:texfi_fokus/data/local/database.dart';
@@ -69,6 +70,11 @@ void main() {
   });
 
   Future<void> pumpStatistics(WidgetTester tester) async {
+    // Экран читает настройку начала недели (её использует heatmap), поэтому
+    // без SharedPreferences он теперь не поднимается.
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
     // Экран статистики длинный, а лента истории — в самом низу. Вместо
     // прокрутки даём тесту высокое «окно»: на экране со статистикой живут
     // несколько вложенных прокручиваемых областей (графики, heatmap), и
@@ -80,7 +86,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [databaseProvider.overrideWithValue(db)],
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

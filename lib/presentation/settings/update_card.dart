@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
-import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/update/app_release.dart';
 import '../../core/update/update_service.dart';
+import '../game/game_widgets.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import 'update_providers.dart';
@@ -97,12 +97,10 @@ class UpdateCard extends ConsumerWidget {
             if (state.stage == UpdateStage.downloading) ...[
               // Прогресс именно линейкой: пакет весит десятки мегабайт, и
               // бесконечный спиннер на таком времени выглядит как зависание.
-              LinearProgressIndicator(
-                value: state.progress,
-                minHeight: AppRadius.pixelBorder * 3,
-                backgroundColor: colors.divider,
-                color: colors.accent,
-              ),
+              // Не Material-линейка: сглаженная полоса — единственная
+              // гладкая фигура на пиксельной карточке. PixelStatBar рисует
+              // тот же прогресс сегментами, как полоски HP в бою.
+              PixelStatBar(value: state.progress, color: colors.accent),
               AppSpacing.gapSm,
               Text(
                 l10n.updateDownloading((state.progress * 100).round()),

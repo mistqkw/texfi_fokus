@@ -202,7 +202,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
               : AppBar(
                   backgroundColor: Colors.transparent,
                   leading: IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: PixelSprite(rows: PixelSprites.close, size: 16, color: context.colors.textSecondary),
                     onPressed: _confirmStop,
                   ),
                   title: Text(
@@ -215,12 +215,12 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                   actions: [
                     IconButton(
                       tooltip: l10n.timerQuietMode,
-                      icon: const Icon(Icons.nightlight_round),
+                      icon: PixelSprite(rows: PixelSprites.moon, size: 16, color: context.colors.textSecondary),
                       onPressed: () => _setQuiet(true),
                     ),
                     IconButton(
                       tooltip: l10n.timerFullscreen,
-                      icon: const Icon(Icons.fullscreen),
+                      icon: PixelSprite(rows: PixelSprites.fullscreen, size: 16, color: context.colors.textSecondary),
                       onPressed: () {
                         Haptics.tap();
                         setState(() => _fullscreen = true);

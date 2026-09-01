@@ -137,7 +137,7 @@ class _StagesCard extends StatelessWidget {
           for (var stage = 0;
               stage < GameRules.avatarStageCount;
               stage++) ...[
-            if (stage > 0) const Divider(height: AppSpacing.lg),
+            if (stage > 0) const PixelDivider(gap: AppSpacing.sm),
             _StageRow(
               stage: stage,
               unlockLevel: GameRules.avatarStageLevels[stage],
@@ -238,13 +238,13 @@ class _StatsCard extends StatelessWidget {
             label: l10n.characterDriftersDefeated,
             value: '${progress.drifterKills}',
           ),
-          const Divider(height: AppSpacing.xl),
+          const PixelDivider(gap: AppSpacing.md),
           _StatLine(
             sprite: GameSprites.nodeCleared,
             label: l10n.characterBossesDefeated,
             value: '${progress.bossKills}',
           ),
-          const Divider(height: AppSpacing.xl),
+          const PixelDivider(gap: AppSpacing.md),
           _StatLine(
             sprite: GameSprites.avatarFlame,
             label: l10n.characterTotalXp,

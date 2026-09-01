@@ -181,7 +181,11 @@ class _PlanEntryCard extends ConsumerWidget {
               IconButton(
                 tooltip: l10n.commonDelete,
                 visualDensity: VisualDensity.compact,
-                icon: Icon(Icons.close, color: colors.textTertiary),
+                icon: PixelSprite(
+                rows: PixelSprites.close,
+                size: 14,
+                color: colors.textTertiary,
+              ),
                 onPressed: () {
                   Haptics.tap();
                   planner.removeFromPlan(entry.id);

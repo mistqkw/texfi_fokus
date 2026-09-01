@@ -13,11 +13,13 @@ import '../../core/utils/duration_format.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/statistics.dart';
+import '../settings/settings_providers.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_heatmap.dart';
 import '../shared/pixel_shadow.dart';
+import '../shared/pixel_sprite.dart';
 import '../shared/session_photo.dart';
 import 'statistics_providers.dart';
 
@@ -135,6 +137,14 @@ class _SummaryRow extends ConsumerWidget {
     final summary =
         ref.watch(statsSummaryProvider).valueOrNull ?? FocusSummary.empty;
 
+    // Три нуля без единого слова читались как поломка, а не как «сессий не
+    // было»: показываем строку-объяснение над ними.
+    if (summary.sessionCount == 0) {
+      return PixelCard(
+        child: Text(l10n.statsSummaryEmpty, style: context.text.body),
+      );
+    }
+
     // Внутри ListView высота не ограничена, поэтому равную высоту карточек
     // задаёт IntrinsicHeight, а не stretch.
     return IntrinsicHeight(
@@ -215,9 +225,19 @@ class _ActivitySection extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PixelHeatmap(days: days),
-              AppSpacing.gapSm,
-              Text(l10n.statsActivityHint, style: context.text.caption),
+              // Пустая сетка исчезала целиком, а подпись под ней оставалась
+              // и описывала квадраты, которых на экране нет. Пока данных
+              // нет — объясняем, чем календарь станет.
+              if (days.isEmpty)
+                Text(l10n.statsActivityEmpty, style: context.text.body)
+              else ...[
+                PixelHeatmap(
+                  days: days,
+                  weekStartWeekday: ref.watch(weekStartDayProvider).weekday,
+                ),
+                AppSpacing.gapSm,
+                Text(l10n.statsActivityHint, style: context.text.caption),
+              ],
             ],
           ),
         ),
@@ -515,7 +535,7 @@ class _HabitSuccessSection extends ConsumerWidget {
         PixelSectionHeader(title: l10n.statsHabitSuccess),
         PixelCard(
           child: withData.isEmpty
-              ? Text(l10n.statsEmpty, style: context.text.body)
+              ? Text(l10n.statsHabitsEmpty, style: context.text.body)
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -803,7 +823,11 @@ class _SessionTile extends ConsumerWidget {
           ),
           IconButton(
             tooltip: l10n.historyDelete,
-            icon: Icon(Icons.close, size: 18, color: colors.textTertiary),
+            icon: PixelSprite(
+                rows: PixelSprites.close,
+                size: 14,
+                color: colors.textTertiary,
+              ),
             onPressed: () => _confirmDelete(context, ref),
           ),
         ],

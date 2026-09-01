@@ -368,7 +368,7 @@ class WeekStartNotifier extends StateNotifier<WeekStartDay> {
   }
 }
 
-final weekStartProvider =
+final weekStartDayProvider =
     StateNotifierProvider<WeekStartNotifier, WeekStartDay>((ref) {
   return WeekStartNotifier(ref.watch(sharedPreferencesProvider));
 });

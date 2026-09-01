@@ -18,6 +18,7 @@ import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
 import 'manual_timer_screen.dart';
 import 'session_guard_dialog.dart';
@@ -71,7 +72,7 @@ class RecommendationScreen extends ConsumerWidget {
           title: Text(l10n.recommendationTitle),
         ),
         body: recommendation.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: PixelSpinner()),
           error: (error, _) => Padding(
             padding: AppSpacing.screen,
             child: Text('$error', style: context.text.body),

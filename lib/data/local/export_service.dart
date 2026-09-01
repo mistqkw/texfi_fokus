@@ -71,6 +71,68 @@ class ExportService {
     return file.path;
   }
 
+  /// Сколько автоматических копий держим. Смысл резервной копии в том, что
+  /// сбой можно заметить не сразу: одна-единственная копия, перезаписанная
+  /// уже испорченными данными, не спасает ни от чего.
+  static const int keepBackups = 4;
+
+  /// Как часто снимается автоматическая копия.
+  static const Duration backupInterval = Duration(days: 7);
+
+  /// Имя папки внутри документов приложения.
+  static const String backupDirName = 'backups';
+
+  /// Дата в имени файла: `texfi-fokus-backup-2026-09-01.json`. Только день,
+  /// без времени — копия за неделю одна, и секунды в имени лишь мешали бы
+  /// глазами найти нужную.
+  static String backupFileName(DateTime at) {
+    final y = at.year.toString().padLeft(4, '0');
+    final m = at.month.toString().padLeft(2, '0');
+    final d = at.day.toString().padLeft(2, '0');
+    return 'texfi-fokus-backup-$y-$m-$d.json';
+  }
+
+  /// Пишет автоматическую копию в `<documents>/backups/` и подчищает старые.
+  ///
+  /// Возвращает путь к записанному файлу. Ошибки наверх не глушим: вызывающий
+  /// (планировщик на старте) сам решает, что молча пропустить неудачную
+  /// попытку лучше, чем показать человеку диалог про бэкап при запуске.
+  Future<String> writeScheduledBackup({DateTime? at}) async {
+    final moment = at ?? DateTime.now();
+    final snapshot = await buildSnapshot();
+    final json = const JsonEncoder.withIndent('  ').convert(snapshot);
+
+    final root = await _exportDirectory();
+    final dir = Directory(p.join(root.path, backupDirName));
+    await dir.create(recursive: true);
+
+    final file = File(p.join(dir.path, backupFileName(moment)));
+    await file.writeAsString(json);
+
+    await _pruneBackups(dir);
+    return file.path;
+  }
+
+  /// Оставляет только [keepBackups] самых свежих копий. Сортируем по имени, а
+  /// не по времени файла: имя содержит дату в формате, который сортируется
+  /// лексикографически, и на него не влияет копирование папки.
+  Future<void> _pruneBackups(Directory dir) async {
+    final files = <File>[
+      for (final entry in await dir.list().toList())
+        if (entry is File && p.basename(entry.path).endsWith('.json'))
+          entry,
+    ]..sort((a, b) => p.basename(b.path).compareTo(p.basename(a.path)));
+
+    for (final stale in files.skip(keepBackups)) {
+      try {
+        await stale.delete();
+      } on FileSystemException {
+        // Не смогли удалить старую копию — это не повод считать неудачной
+        // саму копию, которую только что записали.
+      }
+    }
+  }
+
   /// На десктопе кладём выгрузку в «Документы», на мобильных — в доступную
   /// приложению папку документов.
   Future<Directory> _exportDirectory() async {
