@@ -1580,7 +1580,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonUndo => 'Undo';
 
   @override
-  String get habitUndone => 'Habit unmarked';
+  String get habitUndone => 'Habit marked done';
 
   @override
   String get habitsSearchHint => 'Find a habit';

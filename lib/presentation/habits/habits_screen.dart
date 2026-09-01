@@ -108,22 +108,47 @@ class HabitsScreen extends ConsumerWidget {
               );
             }
 
+            // Поле поиска появляется только на длинном списке: на пяти
+            // привычках оно отняло бы высоту у самого списка, не дав ничего
+            // взамен.
+            final searchable = items.length >= habitSearchThreshold;
+            final query = ref.watch(habitSearchQueryProvider);
+            final shown = searchable ? filterHabits(items, query) : items;
+
+            if (searchable && shown.isEmpty) {
+              return ListView(
+                padding: AppSpacing.screen,
+                children: [
+                  const _HabitSearchField(),
+                  AppSpacing.gapMd,
+                  PixelCard(
+                    child: Text(
+                      l10n.habitsSearchNothing,
+                      style: context.text.body,
+                    ),
+                  ),
+                ],
+              );
+            }
+
             return ListView.separated(
               padding: AppSpacing.screenWithFab,
-              itemCount: items.length,
+              itemCount: shown.length + (searchable ? 1 : 0),
               separatorBuilder: (_, _) => AppSpacing.gapMd,
-              itemBuilder: (context, index) => _HabitCard(
-                habit: items[index],
-                onEdit: () {
-                  Haptics.tap();
-                  Navigator.of(context).push(
-                    pixelDissolveRoute<void>(
-                      HabitEditScreen(habit: items[index]),
-                    ),
-                  );
-                },
-                onDelete: () => _confirmDelete(context, ref, items[index]),
-              ),
+              itemBuilder: (context, index) {
+                if (searchable && index == 0) return const _HabitSearchField();
+                final habit = shown[index - (searchable ? 1 : 0)];
+                return _HabitCard(
+                  habit: habit,
+                  onEdit: () {
+                    Haptics.tap();
+                    Navigator.of(context).push(
+                      pixelDissolveRoute<void>(HabitEditScreen(habit: habit)),
+                    );
+                  },
+                  onDelete: () => _confirmDelete(context, ref, habit),
+                );
+              },
             );
           },
         ),
@@ -279,6 +304,81 @@ class _HabitCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Поле фильтра над длинным списком привычек.
+///
+/// Собственный контроллер, а не чтение провайдера в `initialValue`: иначе
+/// каждое нажатие клавиши перестраивало бы поле из состояния и роняло
+/// позицию курсора.
+class _HabitSearchField extends ConsumerStatefulWidget {
+  const _HabitSearchField();
+
+  @override
+  ConsumerState<_HabitSearchField> createState() => _HabitSearchFieldState();
+}
+
+class _HabitSearchFieldState extends ConsumerState<_HabitSearchField> {
+  late final TextEditingController _controller =
+      TextEditingController(text: ref.read(habitSearchQueryProvider));
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final query = ref.watch(habitSearchQueryProvider);
+
+    return PixelCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      child: Row(
+        children: [
+          PixelSprite(
+            rows: PixelSprites.search,
+            size: 16,
+            color: colors.textTertiary,
+          ),
+          AppSpacing.wGapSm,
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              style: context.text.body,
+              decoration: InputDecoration(
+                hintText: l10n.habitsSearchHint,
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (value) =>
+                  ref.read(habitSearchQueryProvider.notifier).state = value,
+            ),
+          ),
+          // Крестик только когда есть что стирать: пустое поле с кнопкой
+          // очистки выглядит как неработающая кнопка.
+          if (query.isNotEmpty)
+            IconButton(
+              icon: PixelSprite(
+                rows: PixelSprites.close,
+                size: 12,
+                color: colors.textTertiary,
+              ),
+              onPressed: () {
+                Haptics.tap();
+                _controller.clear();
+                ref.read(habitSearchQueryProvider.notifier).state = '';
+              },
+            ),
         ],
       ),
     );

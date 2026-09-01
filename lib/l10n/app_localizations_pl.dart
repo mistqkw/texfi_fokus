@@ -1579,7 +1579,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get commonUndo => 'Cofnij';
 
   @override
-  String get habitUndone => 'Odznaczono nawyk';
+  String get habitUndone => 'Nawyk odznaczony jako zrobiony';
 
   @override
   String get habitsSearchHint => 'Znajdź nawyk';

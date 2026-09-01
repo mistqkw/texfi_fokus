@@ -1577,7 +1577,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonUndo => 'Отменить';
 
   @override
-  String get habitUndone => 'Отметка снята';
+  String get habitUndone => 'Привычка отмечена';
 
   @override
   String get habitsSearchHint => 'Найти привычку';

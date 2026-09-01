@@ -24,6 +24,7 @@ import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
+import '../shared/undo_snackbar.dart';
 import 'home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -411,12 +412,25 @@ class _HabitTileState extends ConsumerState<_HabitTile> {
           setState(() => _showFreeze = true);
           return;
         }
-        if (!item.doneToday) {
+        final nowDone = !item.doneToday;
+        if (nowDone) {
           Haptics.success();
         } else {
           Haptics.tap();
         }
-        toggle(habit.id, !item.doneToday);
+        toggle(habit.id, nowDone);
+
+        // Отменять предлагаем только отметку «выполнено»: снятие галочки и
+        // так возвращает всё на место, и предлагать отменить отмену —
+        // бессмыслица. Опыт при отмене не отбирается, как и при обычном
+        // снятии отметки.
+        if (nowDone) {
+          showUndoSnackBar(
+            context,
+            message: l10n.habitUndone,
+            onUndo: () => toggle(habit.id, false),
+          );
+        }
       },
       onLongPress: habit.freezeEnabled
           ? () {
