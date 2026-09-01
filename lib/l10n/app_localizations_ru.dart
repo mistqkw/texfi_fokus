@@ -972,16 +972,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get characterTotalXp => 'Опыта заработано';
 
   @override
-  String get characterStage1 => 'Искра';
+  String get characterStage1 => 'Только ядро';
 
   @override
-  String get characterStage2 => 'Ровный огонёк';
+  String get characterStage2 => 'Огонёк обрёл форму';
 
   @override
-  String get characterStage3 => 'Огонёк с аурой';
+  String get characterStage3 => 'Ореол из искр';
 
   @override
-  String get characterStage4 => 'Огонёк с короной';
+  String get characterStage4 => 'Корона';
 
   @override
   String get drifterBuzz => 'Гудок';
@@ -1152,4 +1152,235 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get recommendationScopeNone => 'данных пока нет';
+
+  @override
+  String get drifterTangle => 'Клубок';
+
+  @override
+  String get drifterTangleFlavor =>
+      'Две воронки, сходящиеся в одной нити. Чем дольше тянешь, тем туже сидит.';
+
+  @override
+  String get drifterMote => 'Мошкара';
+
+  @override
+  String get drifterMoteFlavor =>
+      'Не одно существо, а восемь мелких по краям. Каждое по отдельности не весит ничего.';
+
+  @override
+  String get drifterHusk => 'Скорлупа';
+
+  @override
+  String get drifterHuskFlavor =>
+      'Замкнутая оболочка, внутри пусто. Эту задачу кто-то давно выпотрошил.';
+
+  @override
+  String get drifterSiphon => 'Воронка';
+
+  @override
+  String get drifterSiphonFlavor =>
+      'Широкая сверху, тонкая струйка снизу. Входит всё, выходит почти ничего.';
+
+  @override
+  String get drifterKnot => 'Узел';
+
+  @override
+  String get drifterKnotFlavor =>
+      'Столб с двумя перекладинами. Не существо — просто то, что стоит поперёк.';
+
+  @override
+  String get drifterVeil => 'Полог';
+
+  @override
+  String get drifterVeilFlavor =>
+      'Тяжёлая занавесь наискось через весь кадр. Не прячет работу, а приглушает.';
+
+  @override
+  String get mapWorld1Name => 'Тихая комната';
+
+  @override
+  String get mapWorld2Name => 'Громкое поле';
+
+  @override
+  String get mapWorld3Name => 'Длинный зал';
+
+  @override
+  String get characterStage5 => 'Полная корона';
+
+  @override
+  String get characterStage6 => 'Почти солнце';
+
+  @override
+  String get characterRank1 => 'Искра';
+
+  @override
+  String get characterRank2 => 'Проблеск';
+
+  @override
+  String get characterRank3 => 'Уголёк';
+
+  @override
+  String get characterRank4 => 'Ровное пламя';
+
+  @override
+  String get characterRank5 => 'Факел';
+
+  @override
+  String get characterRank6 => 'Маяк';
+
+  @override
+  String get characterRank7 => 'Горн';
+
+  @override
+  String get characterRank8 => 'Маленькое солнце';
+
+  @override
+  String get characterStagesTitle => 'Как он растёт';
+
+  @override
+  String get characterStagesBody =>
+      'Вид меняется сам на этих уровнях. Здесь ничего не спрятано — это вся лестница целиком.';
+
+  @override
+  String characterStageAtLevel(int level) {
+    return 'Уровень $level';
+  }
+
+  @override
+  String get characterStageCurrent => 'Ты здесь';
+
+  @override
+  String characterNextStage(int level) {
+    return 'Следующее изменение на уровне $level';
+  }
+
+  @override
+  String get characterFinalStage =>
+      'Последняя ступень. Дальше — только больше того же.';
+
+  @override
+  String get battleTitle => 'Столкновение';
+
+  @override
+  String get battleEnemyHp => 'Его HP';
+
+  @override
+  String get battleProgressHint =>
+      'Его HP убывает вместе с временем в фокусе. Доведёшь сессию до конца — урон закрепится.';
+
+  @override
+  String get battleVictoryTitle => 'Готов.';
+
+  @override
+  String get battleVictoryBody =>
+      'Ты отсидел сессию до конца, и этого хватило. Уважение.';
+
+  @override
+  String get battleBossVictoryTitle => 'Дорога открыта.';
+
+  @override
+  String get battleHeldTitle => 'Устоял.';
+
+  @override
+  String get battleHeldBody =>
+      'Ты остановился раньше — он перестал получать урон. Он всё ещё стоит, и ты тоже. Вернёшься.';
+
+  @override
+  String get battleBossResetTitle => 'Он собрался обратно.';
+
+  @override
+  String get battleBossResetBody =>
+      'Выносливость кончилась, и босс снова с полным HP. Набранный опыт остаётся — это твоё.';
+
+  @override
+  String battleXpLine(int xp) {
+    return 'Заработано за сессию: +$xp XP';
+  }
+
+  @override
+  String get battleBossStakes =>
+      'Кончится выносливость — он вернётся к полному HP.';
+
+  @override
+  String get battleTimerHint =>
+      'Та же сессия и тот же таймер — просто теперь у неё есть лицо.';
+
+  @override
+  String get onboardingModeTitle => 'Как будем работать?';
+
+  @override
+  String get onboardingModeBody =>
+      'Это можно переключить позже в настройках — ничего не фиксируется навсегда.';
+
+  @override
+  String get onboardingModePlain => 'Просто трекер';
+
+  @override
+  String get onboardingModePlainBody =>
+      'Сессии, привычки, статистика. И ничего сверху.';
+
+  @override
+  String get onboardingModeGame => 'С игрой';
+
+  @override
+  String get onboardingModeGameBody =>
+      'Тот же трекер плюс карта, по которой идёшь, противники, которых стачивают твои сессии, и персонаж, растущий вместе с ними.';
+
+  @override
+  String get photoSectionTitle => 'Фото';
+
+  @override
+  String get photoAdd => 'Добавить фото';
+
+  @override
+  String get photoHint =>
+      'То, над чем реально работаешь: тетрадь, экран, стол. Остаётся на этом устройстве.';
+
+  @override
+  String get photoReplace => 'Заменить';
+
+  @override
+  String get photoRemove => 'Убрать';
+
+  @override
+  String get photoFromCamera => 'Снять';
+
+  @override
+  String get photoFromGallery => 'Выбрать из галереи';
+
+  @override
+  String get photoSourceTitle => 'Откуда?';
+
+  @override
+  String get photoFailed => 'Не получилось приложить фото.';
+
+  @override
+  String get photoMissing => 'Файла на этом устройстве больше нет.';
+
+  @override
+  String get photoViewerTitle => 'Фото сессии';
+
+  @override
+  String get historyTitle => 'Последние сессии';
+
+  @override
+  String get historyEmpty => 'За этот период пока пусто.';
+
+  @override
+  String get historyDelete => 'Удалить';
+
+  @override
+  String get historyDeleteTitle => 'Удалить эту сессию?';
+
+  @override
+  String get historyDeleteBody =>
+      'Она уйдёт из истории и перестанет учитываться в статистике. Прикреплённое фото тоже будет удалено с устройства. Отменить нельзя.';
+
+  @override
+  String get historyDeleted => 'Сессия удалена.';
+
+  @override
+  String historyMinutes(int minutes) {
+    return '$minutes мин';
+  }
 }

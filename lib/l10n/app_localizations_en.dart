@@ -975,16 +975,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get characterTotalXp => 'XP earned';
 
   @override
-  String get characterStage1 => 'A spark';
+  String get characterStage1 => 'Just a core';
 
   @override
-  String get characterStage2 => 'A steady flame';
+  String get characterStage2 => 'A shaped flame';
 
   @override
-  String get characterStage3 => 'A flame with a halo';
+  String get characterStage3 => 'A halo of sparks';
 
   @override
-  String get characterStage4 => 'A crowned flame';
+  String get characterStage4 => 'A crown';
 
   @override
   String get drifterBuzz => 'Buzz';
@@ -1154,4 +1154,235 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recommendationScopeNone => 'no data yet';
+
+  @override
+  String get drifterTangle => 'Tangle';
+
+  @override
+  String get drifterTangleFlavor =>
+      'Two funnels meeting at a single thread. The longer you pull, the tighter it sits.';
+
+  @override
+  String get drifterMote => 'Motes';
+
+  @override
+  String get drifterMoteFlavor =>
+      'Not one thing but eight small ones around the edges. None of them weighs anything.';
+
+  @override
+  String get drifterHusk => 'Husk';
+
+  @override
+  String get drifterHuskFlavor =>
+      'A closed shell with nothing left inside. Someone emptied this task a while ago.';
+
+  @override
+  String get drifterSiphon => 'Siphon';
+
+  @override
+  String get drifterSiphonFlavor =>
+      'Wide at the top, a thin trickle at the bottom. Everything goes in, almost nothing comes out.';
+
+  @override
+  String get drifterKnot => 'Knot';
+
+  @override
+  String get drifterKnotFlavor =>
+      'A post with two crossbars. Not a creature — a thing standing in the way.';
+
+  @override
+  String get drifterVeil => 'Veil';
+
+  @override
+  String get drifterVeilFlavor =>
+      'A heavy drape sliding across at an angle. It does not hide the work, it dims it.';
+
+  @override
+  String get mapWorld1Name => 'The Still Room';
+
+  @override
+  String get mapWorld2Name => 'The Loud Field';
+
+  @override
+  String get mapWorld3Name => 'The Long Hall';
+
+  @override
+  String get characterStage5 => 'A full corona';
+
+  @override
+  String get characterStage6 => 'Almost a sun';
+
+  @override
+  String get characterRank1 => 'A spark';
+
+  @override
+  String get characterRank2 => 'A flicker';
+
+  @override
+  String get characterRank3 => 'An ember';
+
+  @override
+  String get characterRank4 => 'A steady flame';
+
+  @override
+  String get characterRank5 => 'A torch';
+
+  @override
+  String get characterRank6 => 'A beacon';
+
+  @override
+  String get characterRank7 => 'A furnace';
+
+  @override
+  String get characterRank8 => 'A small sun';
+
+  @override
+  String get characterStagesTitle => 'How it grows';
+
+  @override
+  String get characterStagesBody =>
+      'The shape changes on its own at these levels. Nothing here is hidden — this is the whole ladder.';
+
+  @override
+  String characterStageAtLevel(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get characterStageCurrent => 'You are here';
+
+  @override
+  String characterNextStage(int level) {
+    return 'Next change at level $level';
+  }
+
+  @override
+  String get characterFinalStage =>
+      'Final shape. Everything ahead is just more of it.';
+
+  @override
+  String get battleTitle => 'Encounter';
+
+  @override
+  String get battleEnemyHp => 'Its HP';
+
+  @override
+  String get battleProgressHint =>
+      'Its HP falls with your focus time. Finish the session and the damage sticks.';
+
+  @override
+  String get battleVictoryTitle => 'It\'s down.';
+
+  @override
+  String get battleVictoryBody =>
+      'You sat the session out to the end, and that was enough. Respect.';
+
+  @override
+  String get battleBossVictoryTitle => 'The way is open.';
+
+  @override
+  String get battleHeldTitle => 'It held its ground.';
+
+  @override
+  String get battleHeldBody =>
+      'You stopped early, so it stopped taking damage. It is still standing, and so are you. Come back to it.';
+
+  @override
+  String get battleBossResetTitle => 'It pulled itself back together.';
+
+  @override
+  String get battleBossResetBody =>
+      'Your stamina ran out, so the boss is back at full HP. The XP you earned stays — that part is yours.';
+
+  @override
+  String battleXpLine(int xp) {
+    return 'Earned this session: +$xp XP';
+  }
+
+  @override
+  String get battleBossStakes =>
+      'Run out of stamina and it goes back to full HP.';
+
+  @override
+  String get battleTimerHint =>
+      'Same session, same timer — it just has a face on it now.';
+
+  @override
+  String get onboardingModeTitle => 'How should it run?';
+
+  @override
+  String get onboardingModeBody =>
+      'You can switch this later in Settings — nothing is locked in.';
+
+  @override
+  String get onboardingModePlain => 'Just the tracker';
+
+  @override
+  String get onboardingModePlainBody =>
+      'Sessions, habits, statistics. Nothing on top of them.';
+
+  @override
+  String get onboardingModeGame => 'With the game';
+
+  @override
+  String get onboardingModeGameBody =>
+      'The same tracker, plus a map to move along, opponents your sessions wear down, and a character that grows with them.';
+
+  @override
+  String get photoSectionTitle => 'Photo';
+
+  @override
+  String get photoAdd => 'Add a photo';
+
+  @override
+  String get photoHint =>
+      'What you are actually working on — a notebook, a screen, a desk. Stays on this device.';
+
+  @override
+  String get photoReplace => 'Replace';
+
+  @override
+  String get photoRemove => 'Remove';
+
+  @override
+  String get photoFromCamera => 'Take one';
+
+  @override
+  String get photoFromGallery => 'Pick from gallery';
+
+  @override
+  String get photoSourceTitle => 'Where from?';
+
+  @override
+  String get photoFailed => 'Could not attach that photo.';
+
+  @override
+  String get photoMissing => 'The file is gone from this device.';
+
+  @override
+  String get photoViewerTitle => 'Session photo';
+
+  @override
+  String get historyTitle => 'Recent sessions';
+
+  @override
+  String get historyEmpty => 'Nothing in this range yet.';
+
+  @override
+  String get historyDelete => 'Delete';
+
+  @override
+  String get historyDeleteTitle => 'Delete this session?';
+
+  @override
+  String get historyDeleteBody =>
+      'It leaves history and stops counting toward statistics. The attached photo is deleted from the device too. There is no undo.';
+
+  @override
+  String get historyDeleted => 'Session deleted.';
+
+  @override
+  String historyMinutes(int minutes) {
+    return '$minutes min';
+  }
 }

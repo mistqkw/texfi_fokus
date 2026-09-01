@@ -91,6 +91,48 @@ void main() {
     await _drain(tester);
   });
 
+  testWidgets('First run ends on the tracker-or-game choice', (tester) async {
+    await _pumpApp(tester, onboardingDone: false);
+    await _finishBoot(tester);
+
+    // Шаг выбора режима — последняя страница онбординга. Долистываем до неё
+    // тем же способом, каким это делает человек, а не дёргая контроллер:
+    // проверять надо в том числе и то, что она вообще достижима.
+    expect(find.byType(PageView), findsOneWidget);
+
+    // Шесть нажатий «дальше» — ровно тот путь, которым идёт человек.
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+    }
+
+    // Дошли до конца: кнопка сменилась на завершающую.
+    expect(find.text("Let's go"), findsOneWidget);
+
+    // Оба варианта названы прямо: «просто трекер» — не отсутствие выбора, а
+    // такой же выбор, и он стоит первым.
+    expect(find.text('Just the tracker'), findsOneWidget);
+    expect(find.text('With the game'), findsOneWidget);
+
+    await _drain(tester);
+  });
+
+  testWidgets('An existing user is never shown the mode choice again',
+      (tester) async {
+    // Ровно тот случай, ради которого шаг живёт внутри онбординга, а не
+    // отдельным экраном: человек, обновившийся с прошлой версии, уже прошёл
+    // онбординг, и новый вопрос не должен всплыть у него задним числом.
+    // Переключатель ему остаётся в настройках.
+    await _pumpApp(tester, onboardingDone: true);
+    await _finishBoot(tester);
+
+    expect(find.byType(PageView), findsNothing);
+    expect(find.text('With the game'), findsNothing);
+    expect(find.byType(PixelNavBar), findsOneWidget);
+
+    await _drain(tester);
+  });
+
   testWidgets('The boot sequence plays, then hands off to the app',
       (tester) async {
     await _pumpApp(tester);

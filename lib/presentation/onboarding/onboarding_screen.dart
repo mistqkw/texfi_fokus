@@ -10,6 +10,7 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
+import '../game/game_sprites.dart';
 import '../settings/settings_providers.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
@@ -19,9 +20,17 @@ import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
 import 'onboarding_providers.dart';
 
-/// Первый запуск: объясняем идею, даём выбрать тему, заводим первую привычку
-/// и спрашиваем разрешение на уведомления. Порядок важен — разрешение
-/// запрашивается последним, когда уже понятно, зачем оно.
+/// Первый запуск: объясняем идею, даём выбрать тему, заводим первую привычку,
+/// спрашиваем разрешение на уведомления и в конце — как приложение вообще
+/// должно работать. Порядок важен: разрешение запрашивается тогда, когда уже
+/// понятно, зачем оно, а выбор режима стоит последним, когда человек успел
+/// увидеть, что такое обычный трекер, и ему есть с чем сравнивать.
+///
+/// Экран целиком показывается только тем, кто онбординг ещё не проходил:
+/// `onboardingDoneProvider` держит флаг в настройках, и у людей, обновившихся
+/// с прошлой версии, он давно выставлен. Новый шаг поэтому не всплывёт у них
+/// задним числом — переключатель режима им остаётся там же, где и был, в
+/// настройках.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -35,7 +44,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _punishmentController = TextEditingController();
 
   int _page = 0;
-  static const int _pageCount = 6;
+  static const int _pageCount = 7;
 
   @override
   void dispose() {
@@ -64,6 +73,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       punishment: _punishmentController.text,
     );
     await syncNotifications(ref, l10n);
+
+    // Игровой режим включается ровно так же, как из настроек, — тем же
+    // вызовом того же репозитория. Отдельного пути «включить на онбординге»
+    // нет: два способа завести партию неминуемо разошлись бы в деталях.
+    if (ref.read(onboardingGameModeProvider)) {
+      await ref.read(gameRepositoryProvider).setEnabled(true);
+    }
+
     await ref.read(onboardingDoneProvider.notifier).complete();
     Haptics.sessionComplete();
   }
@@ -108,6 +125,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       habitController: _habitController,
                       punishmentController: _punishmentController,
                     ),
+                    const _ModePage(),
                   ],
                 ),
               ),
@@ -247,6 +265,118 @@ class _ThemePage extends ConsumerWidget {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Выбор режима: обычный трекер или трекер с игрой.
+///
+/// Описание игрового варианта нарочно ориентирующее, а не завлекающее: карта,
+/// противники, рост персонажа — этого достаточно, чтобы понять, что
+/// включаешь. Имена существ, боссы и всё остальное человек встретит сам; в
+/// анонсе они были бы спойлером к единственному, что в этом слое есть, —
+/// к встрече с ними.
+class _ModePage extends ConsumerWidget {
+  const _ModePage();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final gameOn = ref.watch(onboardingGameModeProvider);
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.page,
+        vertical: AppSpacing.xl,
+      ),
+      children: [
+        Text(
+          l10n.onboardingModeTitle,
+          textAlign: TextAlign.center,
+          style: context.text.headline,
+        ),
+        AppSpacing.gapLg,
+        Text(
+          l10n.onboardingModeBody,
+          textAlign: TextAlign.center,
+          style: context.text.body,
+        ),
+        AppSpacing.gapXxl,
+        _ModeOption(
+          title: l10n.onboardingModePlain,
+          body: l10n.onboardingModePlainBody,
+          sprite: PixelSprites.hourglass,
+          selected: !gameOn,
+          onTap: () =>
+              ref.read(onboardingGameModeProvider.notifier).state = false,
+        ),
+        AppSpacing.gapMd,
+        _ModeOption(
+          title: l10n.onboardingModeGame,
+          body: l10n.onboardingModeGameBody,
+          sprite: GameSprites.avatarFlame,
+          selected: gameOn,
+          onTap: () =>
+              ref.read(onboardingGameModeProvider.notifier).state = true,
+        ),
+      ],
+    );
+  }
+}
+
+class _ModeOption extends StatelessWidget {
+  const _ModeOption({
+    required this.title,
+    required this.body,
+    required this.sprite,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String body;
+  final List<String> sprite;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return PixelCard(
+      accent: selected,
+      onTap: () {
+        Haptics.tap();
+        onTap();
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PixelRadioIndicator(selected: selected),
+          AppSpacing.wGapMd,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: context.text.title),
+                AppSpacing.gapXs,
+                Text(
+                  body,
+                  style: context.text.caption.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.wGapMd,
+          PixelSprite(
+            rows: sprite,
+            size: 28,
+            color: selected ? colors.accent : colors.textTertiary,
+          ),
         ],
       ),
     );

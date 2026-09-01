@@ -1809,25 +1809,25 @@ abstract class AppLocalizations {
   /// No description provided for @characterStage1.
   ///
   /// In en, this message translates to:
-  /// **'A spark'**
+  /// **'Just a core'**
   String get characterStage1;
 
   /// No description provided for @characterStage2.
   ///
   /// In en, this message translates to:
-  /// **'A steady flame'**
+  /// **'A shaped flame'**
   String get characterStage2;
 
   /// No description provided for @characterStage3.
   ///
   /// In en, this message translates to:
-  /// **'A flame with a halo'**
+  /// **'A halo of sparks'**
   String get characterStage3;
 
   /// No description provided for @characterStage4.
   ///
   /// In en, this message translates to:
-  /// **'A crowned flame'**
+  /// **'A crown'**
   String get characterStage4;
 
   /// No description provided for @drifterBuzz.
@@ -2123,6 +2123,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'no data yet'**
   String get recommendationScopeNone;
+
+  /// No description provided for @drifterTangle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tangle'**
+  String get drifterTangle;
+
+  /// No description provided for @drifterTangleFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Two funnels meeting at a single thread. The longer you pull, the tighter it sits.'**
+  String get drifterTangleFlavor;
+
+  /// No description provided for @drifterMote.
+  ///
+  /// In en, this message translates to:
+  /// **'Motes'**
+  String get drifterMote;
+
+  /// No description provided for @drifterMoteFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Not one thing but eight small ones around the edges. None of them weighs anything.'**
+  String get drifterMoteFlavor;
+
+  /// No description provided for @drifterHusk.
+  ///
+  /// In en, this message translates to:
+  /// **'Husk'**
+  String get drifterHusk;
+
+  /// No description provided for @drifterHuskFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A closed shell with nothing left inside. Someone emptied this task a while ago.'**
+  String get drifterHuskFlavor;
+
+  /// No description provided for @drifterSiphon.
+  ///
+  /// In en, this message translates to:
+  /// **'Siphon'**
+  String get drifterSiphon;
+
+  /// No description provided for @drifterSiphonFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Wide at the top, a thin trickle at the bottom. Everything goes in, almost nothing comes out.'**
+  String get drifterSiphonFlavor;
+
+  /// No description provided for @drifterKnot.
+  ///
+  /// In en, this message translates to:
+  /// **'Knot'**
+  String get drifterKnot;
+
+  /// No description provided for @drifterKnotFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A post with two crossbars. Not a creature — a thing standing in the way.'**
+  String get drifterKnotFlavor;
+
+  /// No description provided for @drifterVeil.
+  ///
+  /// In en, this message translates to:
+  /// **'Veil'**
+  String get drifterVeil;
+
+  /// No description provided for @drifterVeilFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A heavy drape sliding across at an angle. It does not hide the work, it dims it.'**
+  String get drifterVeilFlavor;
+
+  /// No description provided for @mapWorld1Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Still Room'**
+  String get mapWorld1Name;
+
+  /// No description provided for @mapWorld2Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Loud Field'**
+  String get mapWorld2Name;
+
+  /// No description provided for @mapWorld3Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Long Hall'**
+  String get mapWorld3Name;
+
+  /// No description provided for @characterStage5.
+  ///
+  /// In en, this message translates to:
+  /// **'A full corona'**
+  String get characterStage5;
+
+  /// No description provided for @characterStage6.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost a sun'**
+  String get characterStage6;
+
+  /// No description provided for @characterRank1.
+  ///
+  /// In en, this message translates to:
+  /// **'A spark'**
+  String get characterRank1;
+
+  /// No description provided for @characterRank2.
+  ///
+  /// In en, this message translates to:
+  /// **'A flicker'**
+  String get characterRank2;
+
+  /// No description provided for @characterRank3.
+  ///
+  /// In en, this message translates to:
+  /// **'An ember'**
+  String get characterRank3;
+
+  /// No description provided for @characterRank4.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady flame'**
+  String get characterRank4;
+
+  /// No description provided for @characterRank5.
+  ///
+  /// In en, this message translates to:
+  /// **'A torch'**
+  String get characterRank5;
+
+  /// No description provided for @characterRank6.
+  ///
+  /// In en, this message translates to:
+  /// **'A beacon'**
+  String get characterRank6;
+
+  /// No description provided for @characterRank7.
+  ///
+  /// In en, this message translates to:
+  /// **'A furnace'**
+  String get characterRank7;
+
+  /// No description provided for @characterRank8.
+  ///
+  /// In en, this message translates to:
+  /// **'A small sun'**
+  String get characterRank8;
+
+  /// No description provided for @characterStagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How it grows'**
+  String get characterStagesTitle;
+
+  /// No description provided for @characterStagesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The shape changes on its own at these levels. Nothing here is hidden — this is the whole ladder.'**
+  String get characterStagesBody;
+
+  /// No description provided for @characterStageAtLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String characterStageAtLevel(int level);
+
+  /// No description provided for @characterStageCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'You are here'**
+  String get characterStageCurrent;
+
+  /// No description provided for @characterNextStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next change at level {level}'**
+  String characterNextStage(int level);
+
+  /// No description provided for @characterFinalStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Final shape. Everything ahead is just more of it.'**
+  String get characterFinalStage;
+
+  /// No description provided for @battleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encounter'**
+  String get battleTitle;
+
+  /// No description provided for @battleEnemyHp.
+  ///
+  /// In en, this message translates to:
+  /// **'Its HP'**
+  String get battleEnemyHp;
+
+  /// No description provided for @battleProgressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Its HP falls with your focus time. Finish the session and the damage sticks.'**
+  String get battleProgressHint;
+
+  /// No description provided for @battleVictoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s down.'**
+  String get battleVictoryTitle;
+
+  /// No description provided for @battleVictoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You sat the session out to the end, and that was enough. Respect.'**
+  String get battleVictoryBody;
+
+  /// No description provided for @battleBossVictoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The way is open.'**
+  String get battleBossVictoryTitle;
+
+  /// No description provided for @battleHeldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It held its ground.'**
+  String get battleHeldTitle;
+
+  /// No description provided for @battleHeldBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You stopped early, so it stopped taking damage. It is still standing, and so are you. Come back to it.'**
+  String get battleHeldBody;
+
+  /// No description provided for @battleBossResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It pulled itself back together.'**
+  String get battleBossResetTitle;
+
+  /// No description provided for @battleBossResetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamina ran out, so the boss is back at full HP. The XP you earned stays — that part is yours.'**
+  String get battleBossResetBody;
+
+  /// No description provided for @battleXpLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned this session: +{xp} XP'**
+  String battleXpLine(int xp);
+
+  /// No description provided for @battleBossStakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Run out of stamina and it goes back to full HP.'**
+  String get battleBossStakes;
+
+  /// No description provided for @battleTimerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Same session, same timer — it just has a face on it now.'**
+  String get battleTimerHint;
+
+  /// No description provided for @onboardingModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How should it run?'**
+  String get onboardingModeTitle;
+
+  /// No description provided for @onboardingModeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can switch this later in Settings — nothing is locked in.'**
+  String get onboardingModeBody;
+
+  /// No description provided for @onboardingModePlain.
+  ///
+  /// In en, this message translates to:
+  /// **'Just the tracker'**
+  String get onboardingModePlain;
+
+  /// No description provided for @onboardingModePlainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions, habits, statistics. Nothing on top of them.'**
+  String get onboardingModePlainBody;
+
+  /// No description provided for @onboardingModeGame.
+  ///
+  /// In en, this message translates to:
+  /// **'With the game'**
+  String get onboardingModeGame;
+
+  /// No description provided for @onboardingModeGameBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The same tracker, plus a map to move along, opponents your sessions wear down, and a character that grows with them.'**
+  String get onboardingModeGameBody;
+
+  /// No description provided for @photoSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photoSectionTitle;
+
+  /// No description provided for @photoAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo'**
+  String get photoAdd;
+
+  /// No description provided for @photoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What you are actually working on — a notebook, a screen, a desk. Stays on this device.'**
+  String get photoHint;
+
+  /// No description provided for @photoReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get photoReplace;
+
+  /// No description provided for @photoRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get photoRemove;
+
+  /// No description provided for @photoFromCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take one'**
+  String get photoFromCamera;
+
+  /// No description provided for @photoFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from gallery'**
+  String get photoFromGallery;
+
+  /// No description provided for @photoSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where from?'**
+  String get photoSourceTitle;
+
+  /// No description provided for @photoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not attach that photo.'**
+  String get photoFailed;
+
+  /// No description provided for @photoMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is gone from this device.'**
+  String get photoMissing;
+
+  /// No description provided for @photoViewerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session photo'**
+  String get photoViewerTitle;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent sessions'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this range yet.'**
+  String get historyEmpty;
+
+  /// No description provided for @historyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get historyDelete;
+
+  /// No description provided for @historyDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this session?'**
+  String get historyDeleteTitle;
+
+  /// No description provided for @historyDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It leaves history and stops counting toward statistics. The attached photo is deleted from the device too. There is no undo.'**
+  String get historyDeleteBody;
+
+  /// No description provided for @historyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Session deleted.'**
+  String get historyDeleted;
+
+  /// No description provided for @historyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String historyMinutes(int minutes);
 }
 
 class _AppLocalizationsDelegate
