@@ -115,6 +115,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get homeStreakLabel => 'Seria';
 
   @override
+  String get homeStreakBasis => 'wg nawyków';
+
+  @override
   String homeStreakValue(int days) {
     return '$days d';
   }

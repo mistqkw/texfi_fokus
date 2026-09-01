@@ -36,6 +36,7 @@
 
   "homeTitle": "f0kus",
   "homeStreakLabel": "Стрік",
+  "homeStreakBasis": "за звичками",
   "homeStreakValue": "{days} д",
   "homeTodayHabits": "Сьогодні",
   "homeHabitsEmpty": "Звичок ще немає. Додай першу.",

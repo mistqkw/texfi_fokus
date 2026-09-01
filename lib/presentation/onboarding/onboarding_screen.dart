@@ -15,6 +15,8 @@ import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_radio.dart';
+import '../shared/pixel_sprite.dart';
 import 'onboarding_providers.dart';
 
 /// Первый запуск: объясняем идею, даём выбрать тему, заводим первую привычку
@@ -154,15 +156,10 @@ class _IntroPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 140,
-            child: CustomPaint(
-              painter: _SpritePainter(
-                rows: _spriteRows(sprite),
-                color: context.colors.accent,
-              ),
-              size: const Size(140, 140),
-            ),
+          PixelSprite(
+            rows: _spriteRows(sprite),
+            color: context.colors.accent,
+            size: 140,
           ).animate().fadeIn(duration: AppMotion.slow).scaleXY(
                 begin: 0.9,
                 end: 1,
@@ -187,72 +184,15 @@ class _IntroPage extends StatelessWidget {
   }
 }
 
+/// Спрайты онбординга берутся из общего каталога [PixelSprites] — того же,
+/// что питает нижнюю навигацию и кнопки. Своей копии сетки и своего
+/// painter'а у экрана больше нет.
 List<String> _spriteRows(_OnboardingSprite sprite) => switch (sprite) {
-      // Песочные часы — тот же мотив, что и в иконке приложения.
-      _OnboardingSprite.logo => const [
-          'xxxxxxxx',
-          '.x....x.',
-          '..x..x..',
-          '...xx...',
-          '...xx...',
-          '..x..x..',
-          '.x....x.',
-          'xxxxxxxx',
-        ],
-      _OnboardingSprite.mood => const [
-          '........',
-          '.xx..xx.',
-          '.xx..xx.',
-          '........',
-          '.x....x.',
-          '..xxxx..',
-          '........',
-          '........',
-        ],
-      _OnboardingSprite.chart => const [
-          '........',
-          '......xx',
-          '......xx',
-          '...xx.xx',
-          '...xx.xx',
-          'xx.xx.xx',
-          'xx.xx.xx',
-          'xxxxxxxx',
-        ],
-      _OnboardingSprite.check => const [
-          '........',
-          '.......x',
-          '......xx',
-          'x....xx.',
-          'xx..xx..',
-          '.xxxx...',
-          '..xx....',
-          '........',
-        ],
+      _OnboardingSprite.logo => PixelSprites.hourglass,
+      _OnboardingSprite.mood => PixelSprites.moodFace,
+      _OnboardingSprite.chart => PixelSprites.navStats,
+      _OnboardingSprite.check => PixelSprites.check,
     };
-
-class _SpritePainter extends CustomPainter {
-  const _SpritePainter({required this.rows, required this.color});
-
-  final List<String> rows;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cell = size.shortestSide / rows.length;
-    final paint = Paint()..color = color;
-    for (var y = 0; y < rows.length; y++) {
-      for (var x = 0; x < rows[y].length; x++) {
-        if (rows[y][x] != 'x') continue;
-        canvas.drawRect(Rect.fromLTWH(x * cell, y * cell, cell, cell), paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_SpritePainter oldDelegate) =>
-      oldDelegate.rows != rows || oldDelegate.color != color;
-}
 
 class _ThemePage extends ConsumerWidget {
   const _ThemePage();
@@ -289,13 +229,21 @@ class _ThemePage extends ConsumerWidget {
                   Haptics.tap();
                   ref.read(themeModeProvider.notifier).set(mode);
                 },
-                child: Text(
-                  switch (mode) {
-                    ThemeMode.system => l10n.settingsThemeSystem,
-                    ThemeMode.light => l10n.settingsThemeLight,
-                    ThemeMode.dark => l10n.settingsThemeDark,
-                  },
-                  style: context.text.title,
+                child: Row(
+                  children: [
+                    PixelRadioIndicator(selected: mode == selected),
+                    AppSpacing.wGapMd,
+                    Expanded(
+                      child: Text(
+                        switch (mode) {
+                          ThemeMode.system => l10n.settingsThemeSystem,
+                          ThemeMode.light => l10n.settingsThemeLight,
+                          ThemeMode.dark => l10n.settingsThemeDark,
+                        },
+                        style: context.text.title,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -362,7 +310,11 @@ class _FirstHabitPage extends ConsumerWidget {
         if (granted)
           Row(
             children: [
-              Icon(Icons.check, color: context.colors.success, size: 18),
+              PixelSprite(
+                rows: PixelSprites.check,
+                color: context.colors.success,
+                size: 18,
+              ),
               AppSpacing.wGapSm,
               Text(
                 l10n.onboardingAllowNotifications,
@@ -374,7 +326,7 @@ class _FirstHabitPage extends ConsumerWidget {
           PixelButton(
             label: l10n.onboardingAllowNotifications,
             primary: false,
-            icon: Icons.notifications_none,
+            sprite: PixelSprites.bell,
             onPressed: () async {
               Haptics.tap();
               final ok = await ref

@@ -7,6 +7,7 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/mood.dart';
+import 'pixel_sprite.dart';
 
 /// Переключатель настроения на четыре положения — центральный жест
 /// приложения.
@@ -166,7 +167,8 @@ class _PixelBlocks extends StatelessWidget {
 
 /// Пиксельная «рожица» состояния — 8×8 сетка, нарисованная блоками.
 /// Каждый уровень настроения имеет свою маску, поэтому переключатель
-/// выглядит как ретро-спрайт, а не как эмодзи.
+/// выглядит как ретро-спрайт, а не как эмодзи. Рисуется общим
+/// [PixelSprite] — тем же, что и иконки нижней навигации.
 class _MoodFace extends StatelessWidget {
   const _MoodFace({required this.mood, required this.color});
 
@@ -222,43 +224,8 @@ class _MoodFace extends StatelessWidget {
     return SizedBox(
       height: 96,
       child: Center(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: CustomPaint(
-            painter: _SpritePainter(
-              rows: _sprites[mood]!,
-              color: color,
-            ),
-          ),
-        ),
+        child: PixelSprite(rows: _sprites[mood]!, color: color, size: 96),
       ),
     );
   }
-}
-
-class _SpritePainter extends CustomPainter {
-  const _SpritePainter({required this.rows, required this.color});
-
-  final List<String> rows;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cell = size.width / rows.length;
-    final paint = Paint()..color = color;
-    for (var y = 0; y < rows.length; y++) {
-      final row = rows[y];
-      for (var x = 0; x < row.length; x++) {
-        if (row[x] != 'x') continue;
-        canvas.drawRect(
-          Rect.fromLTWH(x * cell, y * cell, cell, cell),
-          paint,
-        );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_SpritePainter oldDelegate) =>
-      oldDelegate.rows != rows || oldDelegate.color != color;
 }

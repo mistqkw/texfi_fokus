@@ -15,6 +15,7 @@ import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_sprite.dart';
 import 'manual_timer_screen.dart';
 import 'timer_providers.dart';
 import 'timer_screen.dart';
@@ -125,14 +126,14 @@ class _RecommendationBody extends ConsumerWidget {
         AppSpacing.gapXxl,
         PixelButton(
           label: l10n.recommendationStart,
-          icon: Icons.play_arrow_rounded,
+          sprite: PixelSprites.play,
           onPressed: onStart,
         ),
         AppSpacing.gapMd,
         PixelButton(
           label: l10n.recommendationManual,
           primary: false,
-          icon: Icons.tune_rounded,
+          sprite: PixelSprites.sliders,
           onPressed: () {
             Haptics.tap();
             Navigator.of(context).push(

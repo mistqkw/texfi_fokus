@@ -13,6 +13,8 @@ import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_radio.dart';
+import '../shared/pixel_sprite.dart';
 import 'timer_providers.dart';
 import 'timer_screen.dart';
 
@@ -114,25 +116,17 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
             PixelCard(
               child: Column(
                 children: [
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
+                  PixelSwitchTile(
                     value: _soundOnEnd,
-                    title: Text(
-                      l10n.recommendationSoundOnEnd,
-                      style: context.text.title,
-                    ),
+                    title: l10n.recommendationSoundOnEnd,
                     onChanged: (value) {
                       Haptics.tap();
                       setState(() => _soundOnEnd = value);
                     },
                   ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
+                  PixelSwitchTile(
                     value: _autoStartNext,
-                    title: Text(
-                      l10n.recommendationAutoStart,
-                      style: context.text.title,
-                    ),
+                    title: l10n.recommendationAutoStart,
                     onChanged: (value) {
                       Haptics.tap();
                       setState(() => _autoStartNext = value);
@@ -144,7 +138,7 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
             AppSpacing.gapXxl,
             PixelButton(
               label: l10n.commonStart,
-              icon: Icons.play_arrow_rounded,
+              sprite: PixelSprites.play,
               onPressed: _start,
             ),
           ],
@@ -198,7 +192,11 @@ class _TechniquePicker extends StatelessWidget {
                     ),
                   ),
                   if (technique == selected)
-                    Icon(Icons.check, color: colors.accent, size: 20),
+                    PixelSprite(
+                      rows: PixelSprites.check,
+                      size: 18,
+                      color: colors.accent,
+                    ),
                 ],
               ),
             ),
@@ -248,7 +246,11 @@ class _StepperRow extends StatelessWidget {
           Expanded(child: Text(label, style: context.text.title)),
           IconButton(
             onPressed: value > min ? () => _change(-step) : null,
-            icon: const Icon(Icons.remove),
+            icon: PixelSprite(
+              rows: PixelSprites.minus,
+              size: 16,
+              color: context.colors.textPrimary,
+            ),
           ),
           SizedBox(
             width: 56,
@@ -260,7 +262,11 @@ class _StepperRow extends StatelessWidget {
           ),
           IconButton(
             onPressed: value < max ? () => _change(step) : null,
-            icon: const Icon(Icons.add),
+            icon: PixelSprite(
+              rows: PixelSprites.plus,
+              size: 16,
+              color: context.colors.textPrimary,
+            ),
           ),
         ],
       ),

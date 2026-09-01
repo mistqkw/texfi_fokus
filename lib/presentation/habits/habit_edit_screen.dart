@@ -14,6 +14,7 @@ import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_shadow.dart';
 import 'habits_providers.dart';
 
 const _uuid = Uuid();
@@ -212,23 +213,30 @@ class _WeekdayToggle extends StatelessWidget {
     final colors = context.colors;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected
-              ? colors.accent.withValues(alpha: 0.2)
-              : colors.surfaceVariant,
-          border: Border.all(
-            color: selected ? colors.accent : colors.divider,
-            width: AppRadius.pixelBorder,
+      // Выбранный день утоплен в подложку, невыбранный стоит на тени —
+      // состояние читается и без цвета.
+      child: PixelShadowBox(
+        shadowColor: colors.divider,
+        borderRadius: AppRadius.controlNoneAll,
+        pressed: selected,
+        child: Container(
+          width: 38,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected
+                ? colors.accent.withValues(alpha: 0.2)
+                : colors.surfaceVariant,
+            border: Border.all(
+              color: selected ? colors.accent : colors.divider,
+              width: AppRadius.pixelBorder,
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: context.text.chartLabel.copyWith(
-            color: selected ? colors.accent : colors.textTertiary,
+          child: Text(
+            label,
+            style: context.text.chartLabel.copyWith(
+              color: selected ? colors.accent : colors.textTertiary,
+            ),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_page_transitions.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
@@ -12,6 +13,7 @@ import '../../domain/entities/habit_entity.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_sprite.dart';
 import 'habit_edit_screen.dart';
 import 'habits_providers.dart';
 
@@ -66,7 +68,14 @@ class HabitsScreen extends ConsumerWidget {
               pixelDissolveRoute<void>(const HabitEditScreen()),
             );
           },
-          child: const Icon(Icons.add),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.controlSmallAll,
+          ),
+          child: PixelSprite(
+            rows: PixelSprites.plus,
+            size: 20,
+            color: context.colors.onAccent,
+          ),
         ),
         body: habits.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -76,18 +85,23 @@ class HabitsScreen extends ConsumerWidget {
           ),
           data: (items) {
             if (items.isEmpty) {
-              return Padding(
+              // ListView, а не Padding: под жёсткими ограничениями экрана
+              // карточка растягивалась во всю высоту и висела пустой
+              // плашкой до самого таббара.
+              return ListView(
                 padding: AppSpacing.screen,
-                child: PixelCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.habitsEmpty, style: context.text.title),
-                      AppSpacing.gapSm,
-                      Text(l10n.habitsEmptyHint, style: context.text.body),
-                    ],
+                children: [
+                  PixelCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.habitsEmpty, style: context.text.title),
+                        AppSpacing.gapSm,
+                        Text(l10n.habitsEmptyHint, style: context.text.body),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               );
             }
 
@@ -156,13 +170,18 @@ class _HabitCard extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete_outline, color: colors.textTertiary),
                 onPressed: onDelete,
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),
           AppSpacing.gapSm,
           Row(
             children: [
-              Icon(Icons.repeat, size: 14, color: colors.textTertiary),
+              PixelSprite(
+                rows: PixelSprites.repeat,
+                size: 12,
+                color: colors.textTertiary,
+              ),
               AppSpacing.wGapXs,
               Expanded(
                 child: Text(
@@ -171,9 +190,9 @@ class _HabitCard extends StatelessWidget {
                 ),
               ),
               if (habit.reminderMinutes != null) ...[
-                Icon(
-                  Icons.notifications_none,
-                  size: 14,
+                PixelSprite(
+                  rows: PixelSprites.bell,
+                  size: 12,
                   color: colors.textTertiary,
                 ),
                 AppSpacing.wGapXs,
@@ -187,13 +206,17 @@ class _HabitCard extends StatelessWidget {
           AppSpacing.gapMd,
           // «Наказание» показываем прямо в карточке: договорённость с собой
           // работает, только пока она на виду.
+          // «Наказание» — вложенный блок, поэтому без собственной тени:
+          // объём даёт карточка снаружи. Рамка — сплошная в 2px, цветом
+          // предупреждения, а не одна полоска слева.
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(AppSpacing.sm + 2),
             decoration: BoxDecoration(
               color: colors.surfaceVariant,
-              border: Border(
-                left: BorderSide(color: colors.warning, width: 3),
+              border: Border.all(
+                color: colors.warning,
+                width: AppRadius.pixelBorder,
               ),
             ),
             child: Column(
@@ -201,10 +224,18 @@ class _HabitCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.habitPunishmentLabel,
-                  style: context.text.chartLabel,
+                  style: context.text.chartLabel.copyWith(
+                    color: colors.warning,
+                  ),
                 ),
                 AppSpacing.gapXs,
-                Text(habit.punishment, style: context.text.body),
+                // Договорённость с собой бывает длинной: она переносится
+                // целиком, а не обрезается многоточием.
+                Text(
+                  habit.punishment,
+                  style: context.text.body,
+                  softWrap: true,
+                ),
               ],
             ),
           ),

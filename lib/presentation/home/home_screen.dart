@@ -7,7 +7,6 @@ import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_page_transitions.dart';
-import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
@@ -18,6 +17,8 @@ import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_radio.dart';
+import '../shared/pixel_sprite.dart';
 import 'home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -43,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
             AppSpacing.gapXl,
             PixelButton(
               label: l10n.homeStartFocus,
-              icon: Icons.play_arrow_rounded,
+              sprite: PixelSprites.play,
               onPressed: () {
                 Navigator.of(context)
                     .push(pixelDissolveRoute<void>(const MoodCheckinScreen()));
@@ -100,6 +101,11 @@ class _StreakAndFocusRow extends ConsumerWidget {
                       color: colors.accent,
                     ),
                   ),
+                  AppSpacing.gapXs,
+                  // Стрик считается по привычкам, а не по сессиям: без этой
+                  // подписи «Стрик: 1 д» рядом с «В фокусе: 0m» читается
+                  // как расхождение в данных.
+                  Text(l10n.homeStreakBasis, style: context.text.caption),
                 ],
               ),
             ),
@@ -178,9 +184,9 @@ class _InsightCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.insights_rounded,
-                  size: 16,
+                PixelSprite(
+                  rows: PixelSprites.insight,
+                  size: 14,
                   color: colors.accent,
                 ),
                 AppSpacing.wGapSm,
@@ -274,9 +280,9 @@ class _HabitTile extends ConsumerWidget {
       },
       child: Row(
         children: [
-          // Квадратный пиксельный чекбокс вместо материального: у него
-          // нет скруглений и анимации «чернил».
-          _PixelCheckbox(checked: item.doneToday),
+          // Квадратный пиксельный чекбокс вместо материального: ни
+          // скруглений, ни анимации «чернил», а галочка — спрайт.
+          PixelCheckIndicator(checked: item.doneToday),
           AppSpacing.wGapMd,
           Expanded(
             child: Column(
@@ -305,32 +311,6 @@ class _HabitTile extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _PixelCheckbox extends StatelessWidget {
-  const _PixelCheckbox({required this.checked});
-
-  final bool checked;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return AnimatedContainer(
-      duration: AppMotion.fast,
-      width: 26,
-      height: 26,
-      decoration: BoxDecoration(
-        color: checked ? colors.success : Colors.transparent,
-        border: Border.all(
-          color: checked ? colors.success : colors.divider,
-          width: AppRadius.pixelBorder,
-        ),
-      ),
-      child: checked
-          ? Icon(Icons.check, size: 18, color: colors.onAccent)
-          : null,
     );
   }
 }
