@@ -25,12 +25,24 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
+  /// Миграции только добавляют — существующие данные тестировщиков и первых
+  /// пользователей переживают обновление. Пересоздание таблиц здесь
+  /// недопустимо: история сессий и стрики восстановлению не подлежат.
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {
           await m.createAll();
+        },
+        onUpgrade: (m, from, to) async {
+          // v2: более богатый сигнал о сессии — причина прерывания, заметка
+          // и признак «пользователь переопределил рекомендацию вручную».
+          if (from < 2) {
+            await m.addColumn(sessions, sessions.wasManualOverride);
+            await m.addColumn(sessions, sessions.interruptionReason);
+            await m.addColumn(sessions, sessions.sessionNote);
+          }
         },
       );
 

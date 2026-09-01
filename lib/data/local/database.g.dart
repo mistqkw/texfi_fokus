@@ -1512,6 +1512,43 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _wasManualOverrideMeta = const VerificationMeta(
+    'wasManualOverride',
+  );
+  @override
+  late final GeneratedColumn<bool> wasManualOverride = GeneratedColumn<bool>(
+    'was_manual_override',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("was_manual_override" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _interruptionReasonMeta =
+      const VerificationMeta('interruptionReason');
+  @override
+  late final GeneratedColumn<String> interruptionReason =
+      GeneratedColumn<String>(
+        'interruption_reason',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sessionNoteMeta = const VerificationMeta(
+    'sessionNote',
+  );
+  @override
+  late final GeneratedColumn<String> sessionNote = GeneratedColumn<String>(
+    'session_note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1531,6 +1568,9 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     endedAt,
     contextKey,
     wasRecommended,
+    wasManualOverride,
+    interruptionReason,
+    sessionNote,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1686,6 +1726,33 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         ),
       );
     }
+    if (data.containsKey('was_manual_override')) {
+      context.handle(
+        _wasManualOverrideMeta,
+        wasManualOverride.isAcceptableOrUnknown(
+          data['was_manual_override']!,
+          _wasManualOverrideMeta,
+        ),
+      );
+    }
+    if (data.containsKey('interruption_reason')) {
+      context.handle(
+        _interruptionReasonMeta,
+        interruptionReason.isAcceptableOrUnknown(
+          data['interruption_reason']!,
+          _interruptionReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('session_note')) {
+      context.handle(
+        _sessionNoteMeta,
+        sessionNote.isAcceptableOrUnknown(
+          data['session_note']!,
+          _sessionNoteMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1763,6 +1830,18 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.bool,
         data['${effectivePrefix}was_recommended'],
       )!,
+      wasManualOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}was_manual_override'],
+      )!,
+      interruptionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}interruption_reason'],
+      ),
+      sessionNote: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_note'],
+      ),
     );
   }
 
@@ -1811,6 +1890,18 @@ class Session extends DataClass implements Insertable<Session> {
   /// Полный ключ контекста на момент старта.
   final String contextKey;
   final bool wasRecommended;
+
+  /// Пользователь открыл «настроить вручную» и выбрал технику, отличную от
+  /// предложенной. Это не то же самое, что [wasRecommended]: там про «сессия
+  /// шла не по совету», здесь — про явное несогласие с советом.
+  final bool wasManualOverride;
+
+  /// Ключ `InterruptionReason`; null — сессия не прервана либо причину
+  /// не назвали.
+  final String? interruptionReason;
+
+  /// Короткая заметка «как прошло». null — пропустили.
+  final String? sessionNote;
   const Session({
     required this.id,
     this.taskId,
@@ -1829,6 +1920,9 @@ class Session extends DataClass implements Insertable<Session> {
     required this.endedAt,
     required this.contextKey,
     required this.wasRecommended,
+    required this.wasManualOverride,
+    this.interruptionReason,
+    this.sessionNote,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1854,6 +1948,13 @@ class Session extends DataClass implements Insertable<Session> {
     map['ended_at'] = Variable<DateTime>(endedAt);
     map['context_key'] = Variable<String>(contextKey);
     map['was_recommended'] = Variable<bool>(wasRecommended);
+    map['was_manual_override'] = Variable<bool>(wasManualOverride);
+    if (!nullToAbsent || interruptionReason != null) {
+      map['interruption_reason'] = Variable<String>(interruptionReason);
+    }
+    if (!nullToAbsent || sessionNote != null) {
+      map['session_note'] = Variable<String>(sessionNote);
+    }
     return map;
   }
 
@@ -1880,6 +1981,13 @@ class Session extends DataClass implements Insertable<Session> {
       endedAt: Value(endedAt),
       contextKey: Value(contextKey),
       wasRecommended: Value(wasRecommended),
+      wasManualOverride: Value(wasManualOverride),
+      interruptionReason: interruptionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interruptionReason),
+      sessionNote: sessionNote == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sessionNote),
     );
   }
 
@@ -1910,6 +2018,11 @@ class Session extends DataClass implements Insertable<Session> {
       endedAt: serializer.fromJson<DateTime>(json['endedAt']),
       contextKey: serializer.fromJson<String>(json['contextKey']),
       wasRecommended: serializer.fromJson<bool>(json['wasRecommended']),
+      wasManualOverride: serializer.fromJson<bool>(json['wasManualOverride']),
+      interruptionReason: serializer.fromJson<String?>(
+        json['interruptionReason'],
+      ),
+      sessionNote: serializer.fromJson<String?>(json['sessionNote']),
     );
   }
   @override
@@ -1933,6 +2046,9 @@ class Session extends DataClass implements Insertable<Session> {
       'endedAt': serializer.toJson<DateTime>(endedAt),
       'contextKey': serializer.toJson<String>(contextKey),
       'wasRecommended': serializer.toJson<bool>(wasRecommended),
+      'wasManualOverride': serializer.toJson<bool>(wasManualOverride),
+      'interruptionReason': serializer.toJson<String?>(interruptionReason),
+      'sessionNote': serializer.toJson<String?>(sessionNote),
     };
   }
 
@@ -1954,6 +2070,9 @@ class Session extends DataClass implements Insertable<Session> {
     DateTime? endedAt,
     String? contextKey,
     bool? wasRecommended,
+    bool? wasManualOverride,
+    Value<String?> interruptionReason = const Value.absent(),
+    Value<String?> sessionNote = const Value.absent(),
   }) => Session(
     id: id ?? this.id,
     taskId: taskId.present ? taskId.value : this.taskId,
@@ -1972,6 +2091,11 @@ class Session extends DataClass implements Insertable<Session> {
     endedAt: endedAt ?? this.endedAt,
     contextKey: contextKey ?? this.contextKey,
     wasRecommended: wasRecommended ?? this.wasRecommended,
+    wasManualOverride: wasManualOverride ?? this.wasManualOverride,
+    interruptionReason: interruptionReason.present
+        ? interruptionReason.value
+        : this.interruptionReason,
+    sessionNote: sessionNote.present ? sessionNote.value : this.sessionNote,
   );
   Session copyWithCompanion(SessionsCompanion data) {
     return Session(
@@ -2006,6 +2130,15 @@ class Session extends DataClass implements Insertable<Session> {
       wasRecommended: data.wasRecommended.present
           ? data.wasRecommended.value
           : this.wasRecommended,
+      wasManualOverride: data.wasManualOverride.present
+          ? data.wasManualOverride.value
+          : this.wasManualOverride,
+      interruptionReason: data.interruptionReason.present
+          ? data.interruptionReason.value
+          : this.interruptionReason,
+      sessionNote: data.sessionNote.present
+          ? data.sessionNote.value
+          : this.sessionNote,
     );
   }
 
@@ -2028,7 +2161,10 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt, ')
           ..write('contextKey: $contextKey, ')
-          ..write('wasRecommended: $wasRecommended')
+          ..write('wasRecommended: $wasRecommended, ')
+          ..write('wasManualOverride: $wasManualOverride, ')
+          ..write('interruptionReason: $interruptionReason, ')
+          ..write('sessionNote: $sessionNote')
           ..write(')'))
         .toString();
   }
@@ -2052,6 +2188,9 @@ class Session extends DataClass implements Insertable<Session> {
     endedAt,
     contextKey,
     wasRecommended,
+    wasManualOverride,
+    interruptionReason,
+    sessionNote,
   );
   @override
   bool operator ==(Object other) =>
@@ -2073,7 +2212,10 @@ class Session extends DataClass implements Insertable<Session> {
           other.startedAt == this.startedAt &&
           other.endedAt == this.endedAt &&
           other.contextKey == this.contextKey &&
-          other.wasRecommended == this.wasRecommended);
+          other.wasRecommended == this.wasRecommended &&
+          other.wasManualOverride == this.wasManualOverride &&
+          other.interruptionReason == this.interruptionReason &&
+          other.sessionNote == this.sessionNote);
 }
 
 class SessionsCompanion extends UpdateCompanion<Session> {
@@ -2094,6 +2236,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<DateTime> endedAt;
   final Value<String> contextKey;
   final Value<bool> wasRecommended;
+  final Value<bool> wasManualOverride;
+  final Value<String?> interruptionReason;
+  final Value<String?> sessionNote;
   final Value<int> rowid;
   const SessionsCompanion({
     this.id = const Value.absent(),
@@ -2113,6 +2258,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.endedAt = const Value.absent(),
     this.contextKey = const Value.absent(),
     this.wasRecommended = const Value.absent(),
+    this.wasManualOverride = const Value.absent(),
+    this.interruptionReason = const Value.absent(),
+    this.sessionNote = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SessionsCompanion.insert({
@@ -2133,6 +2281,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     required DateTime endedAt,
     required String contextKey,
     this.wasRecommended = const Value.absent(),
+    this.wasManualOverride = const Value.absent(),
+    this.interruptionReason = const Value.absent(),
+    this.sessionNote = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        taskTitle = Value(taskTitle),
@@ -2166,6 +2317,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<DateTime>? endedAt,
     Expression<String>? contextKey,
     Expression<bool>? wasRecommended,
+    Expression<bool>? wasManualOverride,
+    Expression<String>? interruptionReason,
+    Expression<String>? sessionNote,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2189,6 +2343,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (endedAt != null) 'ended_at': endedAt,
       if (contextKey != null) 'context_key': contextKey,
       if (wasRecommended != null) 'was_recommended': wasRecommended,
+      if (wasManualOverride != null) 'was_manual_override': wasManualOverride,
+      if (interruptionReason != null) 'interruption_reason': interruptionReason,
+      if (sessionNote != null) 'session_note': sessionNote,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2211,6 +2368,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<DateTime>? endedAt,
     Value<String>? contextKey,
     Value<bool>? wasRecommended,
+    Value<bool>? wasManualOverride,
+    Value<String?>? interruptionReason,
+    Value<String?>? sessionNote,
     Value<int>? rowid,
   }) {
     return SessionsCompanion(
@@ -2231,6 +2391,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       endedAt: endedAt ?? this.endedAt,
       contextKey: contextKey ?? this.contextKey,
       wasRecommended: wasRecommended ?? this.wasRecommended,
+      wasManualOverride: wasManualOverride ?? this.wasManualOverride,
+      interruptionReason: interruptionReason ?? this.interruptionReason,
+      sessionNote: sessionNote ?? this.sessionNote,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2289,6 +2452,15 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (wasRecommended.present) {
       map['was_recommended'] = Variable<bool>(wasRecommended.value);
     }
+    if (wasManualOverride.present) {
+      map['was_manual_override'] = Variable<bool>(wasManualOverride.value);
+    }
+    if (interruptionReason.present) {
+      map['interruption_reason'] = Variable<String>(interruptionReason.value);
+    }
+    if (sessionNote.present) {
+      map['session_note'] = Variable<String>(sessionNote.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2315,6 +2487,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('endedAt: $endedAt, ')
           ..write('contextKey: $contextKey, ')
           ..write('wasRecommended: $wasRecommended, ')
+          ..write('wasManualOverride: $wasManualOverride, ')
+          ..write('interruptionReason: $interruptionReason, ')
+          ..write('sessionNote: $sessionNote, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3731,6 +3906,9 @@ typedef $$SessionsTableCreateCompanionBuilder =
       required DateTime endedAt,
       required String contextKey,
       Value<bool> wasRecommended,
+      Value<bool> wasManualOverride,
+      Value<String?> interruptionReason,
+      Value<String?> sessionNote,
       Value<int> rowid,
     });
 typedef $$SessionsTableUpdateCompanionBuilder =
@@ -3752,6 +3930,9 @@ typedef $$SessionsTableUpdateCompanionBuilder =
       Value<DateTime> endedAt,
       Value<String> contextKey,
       Value<bool> wasRecommended,
+      Value<bool> wasManualOverride,
+      Value<String?> interruptionReason,
+      Value<String?> sessionNote,
       Value<int> rowid,
     });
 
@@ -3846,6 +4027,21 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<bool> get wasRecommended => $composableBuilder(
     column: $table.wasRecommended,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get wasManualOverride => $composableBuilder(
+    column: $table.wasManualOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get interruptionReason => $composableBuilder(
+    column: $table.interruptionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionNote => $composableBuilder(
+    column: $table.sessionNote,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3943,6 +4139,21 @@ class $$SessionsTableOrderingComposer
     column: $table.wasRecommended,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get wasManualOverride => $composableBuilder(
+    column: $table.wasManualOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get interruptionReason => $composableBuilder(
+    column: $table.interruptionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionNote => $composableBuilder(
+    column: $table.sessionNote,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SessionsTableAnnotationComposer
@@ -4018,6 +4229,21 @@ class $$SessionsTableAnnotationComposer
     column: $table.wasRecommended,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get wasManualOverride => $composableBuilder(
+    column: $table.wasManualOverride,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get interruptionReason => $composableBuilder(
+    column: $table.interruptionReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sessionNote => $composableBuilder(
+    column: $table.sessionNote,
+    builder: (column) => column,
+  );
 }
 
 class $$SessionsTableTableManager
@@ -4065,6 +4291,9 @@ class $$SessionsTableTableManager
                 Value<DateTime> endedAt = const Value.absent(),
                 Value<String> contextKey = const Value.absent(),
                 Value<bool> wasRecommended = const Value.absent(),
+                Value<bool> wasManualOverride = const Value.absent(),
+                Value<String?> interruptionReason = const Value.absent(),
+                Value<String?> sessionNote = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion(
                 id: id,
@@ -4084,6 +4313,9 @@ class $$SessionsTableTableManager
                 endedAt: endedAt,
                 contextKey: contextKey,
                 wasRecommended: wasRecommended,
+                wasManualOverride: wasManualOverride,
+                interruptionReason: interruptionReason,
+                sessionNote: sessionNote,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4105,6 +4337,9 @@ class $$SessionsTableTableManager
                 required DateTime endedAt,
                 required String contextKey,
                 Value<bool> wasRecommended = const Value.absent(),
+                Value<bool> wasManualOverride = const Value.absent(),
+                Value<String?> interruptionReason = const Value.absent(),
+                Value<String?> sessionNote = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion.insert(
                 id: id,
@@ -4124,6 +4359,9 @@ class $$SessionsTableTableManager
                 endedAt: endedAt,
                 contextKey: contextKey,
                 wasRecommended: wasRecommended,
+                wasManualOverride: wasManualOverride,
+                interruptionReason: interruptionReason,
+                sessionNote: sessionNote,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

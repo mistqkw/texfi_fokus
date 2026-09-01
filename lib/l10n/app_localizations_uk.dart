@@ -628,4 +628,29 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get notificationChannelHabitsDesc =>
       'Нагадування про невиконані денні цілі';
+
+  @override
+  String get interruptionQuestion => 'Що збило?';
+
+  @override
+  String get interruptionOptional =>
+      'Необов\'язково — допомагає застосунку зрозуміти твої закономірності.';
+
+  @override
+  String get interruptionDistracted => 'Відволікся';
+
+  @override
+  String get interruptionWrongTask => 'Завдання виявилось не те';
+
+  @override
+  String get interruptionTired => 'Втомився';
+
+  @override
+  String get interruptionNoComment => 'Не хочу казати';
+
+  @override
+  String get sessionNoteQuestion => 'Як пройшло?';
+
+  @override
+  String get sessionNoteHint => 'Кілька слів або стікер';
 }

@@ -12,6 +12,7 @@ import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/timer_dial.dart';
+import 'session_wrap_up_sheet.dart';
 import 'timer_providers.dart';
 
 /// Экран таймера. Центральный элемент — крутилка: она и показывает прогресс,
@@ -52,25 +53,32 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     ref.read(timerControllerProvider.notifier).stop();
   }
 
-  /// Сессия закончилась — спрашиваем оценку и сохраняем. Оценка
-  /// необязательна: если пользователь просто закроет лист, сигналом для
-  /// обучения останется сам факт «дошёл / не дошёл».
+  /// Сессия закончилась — собираем всё, что пользователь готов рассказать, и
+  /// сохраняем. Ни один из вопросов не обязателен: если лист просто закрыть,
+  /// сигналом для обучения останется сам факт «дошёл / не дошёл».
   Future<void> _handleFinish(TimerState state) async {
     if (_finishHandled) return;
     _finishHandled = true;
 
     final l10n = context.l10n;
-    final rating = await showModalBottomSheet<int>(
+    final wrapUp = await showModalBottomSheet<SessionWrapUp>(
       context: context,
       isDismissible: true,
-      builder: (context) => _RatingSheet(
+      isScrollControlled: true,
+      builder: (context) => SessionWrapUpSheet(
         title: state.completedFully
             ? l10n.timerDoneTitle
             : l10n.timerAbortedTitle,
+        askInterruptionReason: !state.completedFully,
       ),
     );
 
-    await ref.read(saveSessionProvider)(state: state, rating: rating);
+    await ref.read(saveSessionProvider)(
+      state: state,
+      rating: wrapUp?.rating,
+      interruptionReason: wrapUp?.reason,
+      note: wrapUp?.note,
+    );
     if (!mounted) return;
     ref.read(sessionDraftProvider.notifier).reset();
     Navigator.of(context).pop();
@@ -208,70 +216,6 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Оценка продуктивности 1–5 — второй, более честный сигнал для обучения:
-/// «досидел» и «поработал» это не одно и то же.
-class _RatingSheet extends StatelessWidget {
-  const _RatingSheet({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final colors = context.colors;
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.page),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(title, style: context.text.headline),
-            AppSpacing.gapMd,
-            Text(l10n.timerRateQuestion, style: context.text.body),
-            AppSpacing.gapLg,
-            Row(
-              children: [
-                for (var rating = 1; rating <= 5; rating++)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.sm),
-                      child: GestureDetector(
-                        onTap: () {
-                          Haptics.success();
-                          Navigator.of(context).pop(rating);
-                        },
-                        child: Container(
-                          height: 56,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: colors.surfaceVariant,
-                            border: Border.all(color: colors.divider, width: 2),
-                          ),
-                          child: Text(
-                            '$rating',
-                            style: context.text.counterMedium,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            AppSpacing.gapLg,
-            PixelButton(
-              label: l10n.commonSkip,
-              primary: false,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
         ),
       ),
     );

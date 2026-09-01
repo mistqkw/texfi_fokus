@@ -1217,6 +1217,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reminders about unfinished daily goals'**
   String get notificationChannelHabitsDesc;
+
+  /// No description provided for @interruptionQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What pulled you out?'**
+  String get interruptionQuestion;
+
+  /// No description provided for @interruptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — it helps the app read your patterns.'**
+  String get interruptionOptional;
+
+  /// No description provided for @interruptionDistracted.
+  ///
+  /// In en, this message translates to:
+  /// **'Got distracted'**
+  String get interruptionDistracted;
+
+  /// No description provided for @interruptionWrongTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong task'**
+  String get interruptionWrongTask;
+
+  /// No description provided for @interruptionTired.
+  ///
+  /// In en, this message translates to:
+  /// **'Too tired'**
+  String get interruptionTired;
+
+  /// No description provided for @interruptionNoComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Rather not say'**
+  String get interruptionNoComment;
+
+  /// No description provided for @sessionNoteQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How did it go?'**
+  String get sessionNoteQuestion;
+
+  /// No description provided for @sessionNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A few words or a sticker'**
+  String get sessionNoteHint;
 }
 
 class _AppLocalizationsDelegate

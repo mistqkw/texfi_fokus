@@ -47,6 +47,10 @@ dev_dependencies:
   drift_dev: ^2.23.1
   build_runner: ^2.4.15
 
+  # Только для теста миграций: он готовит файл БД в старой схеме напрямую,
+  # до того как его откроет drift.
+  sqlite3: ^2.4.0
+
   flutter_launcher_icons: ^0.14.3
 
 flutter:

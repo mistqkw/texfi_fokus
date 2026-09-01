@@ -628,4 +628,29 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notificationChannelHabitsDesc =>
       'Напоминания о невыполненных дневных целях';
+
+  @override
+  String get interruptionQuestion => 'Что выбило?';
+
+  @override
+  String get interruptionOptional =>
+      'Необязательно — помогает приложению понять твои закономерности.';
+
+  @override
+  String get interruptionDistracted => 'Отвлёкся';
+
+  @override
+  String get interruptionWrongTask => 'Задача оказалась не та';
+
+  @override
+  String get interruptionTired => 'Устал';
+
+  @override
+  String get interruptionNoComment => 'Не хочу говорить';
+
+  @override
+  String get sessionNoteQuestion => 'Как прошло?';
+
+  @override
+  String get sessionNoteHint => 'Пара слов или стикер';
 }

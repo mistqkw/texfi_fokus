@@ -33,6 +33,10 @@ class SessionRepositoryImpl implements SessionRepository {
       endedAt: row.endedAt,
       contextKey: row.contextKey,
       wasRecommended: row.wasRecommended,
+      wasManualOverride: row.wasManualOverride,
+      interruptionReason:
+          InterruptionReason.fromKey(row.interruptionReason),
+      sessionNote: row.sessionNote,
     );
   }
 
@@ -57,6 +61,9 @@ class SessionRepositoryImpl implements SessionRepository {
             endedAt: Value(session.endedAt),
             contextKey: Value(session.contextKey),
             wasRecommended: Value(session.wasRecommended),
+            wasManualOverride: Value(session.wasManualOverride),
+            interruptionReason: Value(session.interruptionReason?.key),
+            sessionNote: Value(session.sessionNote),
           ),
           mode: InsertMode.insertOrReplace,
         );
