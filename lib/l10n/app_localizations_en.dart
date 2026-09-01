@@ -146,6 +146,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get insightTitle => 'Pattern spotted';
+
+  @override
+  String insightBestMood(String mood, int percent) {
+    return 'Sessions you start in “$mood” finish $percent% of the time — your strongest state.';
+  }
+
+  @override
+  String insightBestWeekday(String day, int minutes) {
+    return '$day is your deepest focus day — $minutes min on average.';
+  }
+
+  @override
+  String insightBestTime(String time, int percent) {
+    return '$time is when you follow through: $percent% of those sessions land.';
+  }
+
+  @override
+  String insightBestTechnique(String technique, int percent) {
+    return '$technique works for you more than anything else — $percent% of those sessions land.';
+  }
+
+  @override
+  String insightBasis(int count) {
+    return 'From $count sessions over the last 30 days.';
+  }
+
+  @override
+  String get timeOfDayMorning => 'Morning';
+
+  @override
+  String get timeOfDayAfternoon => 'Afternoon';
+
+  @override
+  String get timeOfDayEvening => 'Evening';
+
+  @override
+  String get timeOfDayNight => 'Night';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -232,12 +272,45 @@ class AppLocalizationsEn extends AppLocalizations {
       'A safe default for this mood — the app has not seen enough of your sessions yet.';
 
   @override
-  String get recommendationLearned =>
-      'Based on your past sessions with a similar mood and task.';
+  String recommendationColdStartProgress(int count) {
+    return '$count more sessions and the picks become yours.';
+  }
 
   @override
-  String recommendationConfidence(int percent) {
-    return 'Confidence: $percent%';
+  String get recommendationWhyTitle => 'Why this';
+
+  @override
+  String get recommendationBadgePersonal => 'PERSONAL';
+
+  @override
+  String get recommendationBadgeDefault => 'DEFAULT';
+
+  @override
+  String recommendationEvidenceExact(int count, int percent) {
+    return 'In this exact setup you ran $count sessions with it — $percent% of them worked out.';
+  }
+
+  @override
+  String recommendationEvidenceSimilar(int count, int percent) {
+    return 'With a similar mood and task you ran $count sessions with it — $percent% of them worked out.';
+  }
+
+  @override
+  String recommendationEvidenceBroad(int count, int percent) {
+    return 'In this mood you ran $count sessions with it — $percent% of them worked out.';
+  }
+
+  @override
+  String get recommendationEvidenceNone =>
+      'No history for this one yet — the app is checking whether it fits you.';
+
+  @override
+  String get recommendationExploring =>
+      'A deliberate try-out, not your best known option. However it goes, it sharpens the next pick.';
+
+  @override
+  String recommendationHistorySize(int count) {
+    return 'Learned from $count sessions in total.';
   }
 
   @override

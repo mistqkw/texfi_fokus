@@ -146,6 +146,46 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get insightTitle => 'Замечено';
+
+  @override
+  String insightBestMood(String mood, int percent) {
+    return 'Сессии, начатые в состоянии «$mood», доходят до конца в $percent% случаев — это твоё сильное состояние.';
+  }
+
+  @override
+  String insightBestWeekday(String day, int minutes) {
+    return '$day — твой самый глубокий день: в среднем $minutes мин в фокусе.';
+  }
+
+  @override
+  String insightBestTime(String time, int percent) {
+    return '$time — время, когда ты доводишь до конца: $percent% таких сессий закрываются.';
+  }
+
+  @override
+  String insightBestTechnique(String technique, int percent) {
+    return '«$technique» работает у тебя лучше остального — $percent% таких сессий закрываются.';
+  }
+
+  @override
+  String insightBasis(int count) {
+    return 'По $count сессиям за последние 30 дней.';
+  }
+
+  @override
+  String get timeOfDayMorning => 'Утро';
+
+  @override
+  String get timeOfDayAfternoon => 'День';
+
+  @override
+  String get timeOfDayEvening => 'Вечер';
+
+  @override
+  String get timeOfDayNight => 'Ночь';
+
+  @override
   String get navHome => 'Главная';
 
   @override
@@ -232,12 +272,45 @@ class AppLocalizationsRu extends AppLocalizations {
       'Безопасный вариант под это настроение — приложение ещё мало знает о твоих сессиях.';
 
   @override
-  String get recommendationLearned =>
-      'На основе твоих прошлых сессий с похожим настроением и задачей.';
+  String recommendationColdStartProgress(int count) {
+    return 'Ещё $count сессий — и подсказки станут твоими.';
+  }
 
   @override
-  String recommendationConfidence(int percent) {
-    return 'Уверенность: $percent%';
+  String get recommendationWhyTitle => 'Почему это';
+
+  @override
+  String get recommendationBadgePersonal => 'ЛИЧНОЕ';
+
+  @override
+  String get recommendationBadgeDefault => 'ДЕФОЛТ';
+
+  @override
+  String recommendationEvidenceExact(int count, int percent) {
+    return 'Ровно в таком контексте ты провёл с ней $count сессий — $percent% из них удались.';
+  }
+
+  @override
+  String recommendationEvidenceSimilar(int count, int percent) {
+    return 'На похожем настроении и задаче ты провёл с ней $count сессий — $percent% из них удались.';
+  }
+
+  @override
+  String recommendationEvidenceBroad(int count, int percent) {
+    return 'На этом настроении ты провёл с ней $count сессий — $percent% из них удались.';
+  }
+
+  @override
+  String get recommendationEvidenceNone =>
+      'По ней истории пока нет — приложение проверяет, подходит ли она тебе.';
+
+  @override
+  String get recommendationExploring =>
+      'Это осознанная проверка, а не лучший известный вариант. Чем бы ни кончилось, следующий выбор станет точнее.';
+
+  @override
+  String recommendationHistorySize(int count) {
+    return 'Всего в обучении $count сессий.';
   }
 
   @override

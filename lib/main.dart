@@ -9,6 +9,7 @@ import 'core/theme/app_motion.dart';
 import 'core/theme/app_theme.dart';
 import 'data/providers/data_providers.dart';
 import 'l10n/app_localizations.dart';
+import 'presentation/boot/boot_gate.dart';
 import 'presentation/settings/settings_providers.dart';
 import 'presentation/shared/app_entry.dart';
 
@@ -39,15 +40,12 @@ class TexFiFokusApp extends ConsumerStatefulWidget {
 }
 
 class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
-  @override
-  void initState() {
-    super.initState();
-    // Инициализация уведомлений — после первого кадра: она трогает
-    // платформенные каналы и не должна задерживать запуск.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  /// Инициализация уведомлений идёт под загрузочной заставкой: она трогает
+  /// платформенные каналы и раньше просто откладывалась на первый кадр.
+  /// Теперь заставка её прикрывает — и ждёт, если та окажется дольше
+  /// анимации.
+  Future<void> _initServices() =>
       ref.read(notificationServiceProvider).init();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +64,10 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
       locale: ref.watch(localeProvider),
       supportedLocales: supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: const AppEntry(),
+      home: BootGate(
+        onReady: _initServices,
+        child: const AppEntry(),
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'focus_technique.dart';
 import 'mood.dart';
 import 'task_category.dart';
@@ -47,6 +49,36 @@ class RecommendationContext {
     );
   }
 
+  /// Восстанавливает контекст из сохранённого в сессии полного ключа.
+  /// Возвращает null, если формат не тот, — вызывающий сам решит, что
+  /// делать с такой записью.
+  static RecommendationContext? tryParse(String contextKey) {
+    final parts = contextKey.split('|');
+    if (parts.length < 5) return null;
+    final mood = Mood.values.where((m) => m.name == parts[0]).firstOrNull;
+    final category =
+        TaskCategory.values.where((c) => c.name == parts[1]).firstOrNull;
+    final difficulty =
+        TaskDifficulty.values.where((d) => d.name == parts[2]).firstOrNull;
+    final time =
+        TimeOfDayBucket.values.where((t) => t.name == parts[3]).firstOrNull;
+    final weekday = int.tryParse(parts[4]);
+    if (mood == null ||
+        category == null ||
+        difficulty == null ||
+        time == null ||
+        weekday == null) {
+      return null;
+    }
+    return RecommendationContext(
+      mood: mood,
+      category: category,
+      difficulty: difficulty,
+      timeOfDay: time,
+      weekday: weekday,
+    );
+  }
+
   final Mood mood;
   final TaskCategory category;
   final TaskDifficulty difficulty;
@@ -59,10 +91,24 @@ class RecommendationContext {
   String get key =>
       '${mood.name}|${category.name}|${difficulty.name}|${timeOfDay.name}|$weekday';
 
-  /// Огрублённый ключ: только настроение и категория задачи. Нужен потому,
-  /// что полный ключ слишком узкий — пока по нему нет данных, движок
-  /// подмешивает статистику с этого уровня.
+  /// Настроение × категория × сложность. Средний уровень: снимает с ключа
+  /// самое разреженное — время суток и день недели, — но сохраняет всё, что
+  /// описывает саму работу.
+  String get taskKey => '${mood.name}|${category.name}|${difficulty.name}';
+
+  /// Огрублённый ключ: только настроение и категория задачи.
   String get coarseKey => '${mood.name}|${category.name}';
+
+  /// Настроение × сложность. Для части людей «тяжело/легко» предсказывает
+  /// нужную длину сессии лучше, чем тема задачи: с трудной задачей на плохом
+  /// настроении короткий спринт спасает независимо от того, учёба это или
+  /// работа. Префикс `d:` держит эти ключи в своём пространстве имён, чтобы
+  /// они никогда не столкнулись с `mood|category`.
+  String get difficultyKey => '${mood.name}|d:${difficulty.name}';
+
+  /// Настроение × время суток. Ловит «совиность»: вечером человек тянет
+  /// длинную сессию, утром — нет.
+  String get timeKey => '${mood.name}|t:${timeOfDay.name}';
 
   /// Самый широкий ключ — только настроение. Последний уровень отката,
   /// прежде чем остаться совсем без данных.
@@ -70,7 +116,8 @@ class RecommendationContext {
 
   /// Ключи от самого узкого к самому широкому — движок идёт по ним,
   /// набирая статистику с убывающим весом.
-  List<String> get keyHierarchy => [key, coarseKey, moodKey];
+  List<String> get keyHierarchy =>
+      [key, taskKey, coarseKey, difficultyKey, timeKey, moodKey];
 }
 
 /// Причина, по которой предложена именно эта техника. UI показывает по ней
@@ -87,6 +134,64 @@ enum RecommendationReason {
   exploration,
 }
 
+/// Насколько узко совпал контекст, на котором держится рекомендация.
+/// Порядок — от самого точного совпадения к его отсутствию; UI по нему
+/// выбирает формулировку и «шкалу доказательности».
+enum EvidenceScope {
+  /// Ровно этот контекст: то же настроение, категория, сложность, время
+  /// суток и день недели.
+  exact,
+
+  /// Похожая работа: настроение + категория (+ сложность).
+  similar,
+
+  /// Только настроение или время суток — самый широкий откат.
+  broad,
+
+  /// Собственных наблюдений по этой технике нет вовсе.
+  none,
+}
+
+/// Что именно стоит за рекомендацией. Отдельный объект, потому что экрану
+/// нужно не «доверие 63%», а конкретика: сколько сессий, насколько похожих,
+/// и сколько ещё осталось до персонализации.
+class RecommendationEvidence {
+  const RecommendationEvidence({
+    required this.scope,
+    required this.matchedSessions,
+    required this.successRate,
+    required this.totalSessions,
+    required this.sessionsUntilPersonalized,
+  });
+
+  static const RecommendationEvidence empty = RecommendationEvidence(
+    scope: EvidenceScope.none,
+    matchedSessions: 0,
+    successRate: 0.5,
+    totalSessions: 0,
+    sessionsUntilPersonalized: 0,
+  );
+
+  /// Самый узкий уровень контекста, на котором нашлись наблюдения.
+  final EvidenceScope scope;
+
+  /// Сколько сессий стоит за оценкой на этом уровне. Дробные веса уровней
+  /// уже округлены — пользователю честнее целое число.
+  final int matchedSessions;
+
+  /// Доля успехов у выбранной техники на этом уровне, 0..1.
+  final double successRate;
+
+  /// Сколько сессий записано всего — общий объём истории.
+  final int totalSessions;
+
+  /// Сколько сессий осталось до выхода из холодного старта. 0 — уже вышли.
+  final int sessionsUntilPersonalized;
+
+  /// Есть ли вообще на что опираться.
+  bool get hasData => matchedSessions > 0 && scope != EvidenceScope.none;
+}
+
 /// Готовое предложение: техника плюс конкретные параметры таймера.
 class Recommendation {
   const Recommendation({
@@ -97,14 +202,16 @@ class Recommendation {
     required this.reason,
     required this.confidence,
     required this.sampleSize,
+    this.evidence = RecommendationEvidence.empty,
   });
 
-  /// Предложение «как в техник по умолчанию», без правок длительностей.
+  /// Предложение «как в технике по умолчанию», без правок длительностей.
   factory Recommendation.ofTechnique(
     FocusTechnique technique, {
     required RecommendationReason reason,
     double confidence = 0.5,
     int sampleSize = 0,
+    RecommendationEvidence evidence = RecommendationEvidence.empty,
   }) {
     return Recommendation(
       technique: technique,
@@ -114,6 +221,7 @@ class Recommendation {
       reason: reason,
       confidence: confidence,
       sampleSize: sampleSize,
+      evidence: evidence,
     );
   }
 
@@ -130,6 +238,9 @@ class Recommendation {
   /// когда сессий мало.
   final int sampleSize;
 
+  /// Подробная выкладка «почему именно это» для экрана рекомендации.
+  final RecommendationEvidence evidence;
+
   Recommendation copyWith({
     int? focusMinutes,
     int? breakMinutes,
@@ -143,6 +254,7 @@ class Recommendation {
       reason: reason,
       confidence: confidence,
       sampleSize: sampleSize,
+      evidence: evidence,
     );
   }
 }

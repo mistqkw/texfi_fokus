@@ -12,7 +12,9 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
 import '../../domain/entities/habit_entity.dart';
+import '../../domain/entities/insight.dart';
 import '../mood_checkin/mood_checkin_screen.dart';
+import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
@@ -37,6 +39,7 @@ class HomeScreen extends ConsumerWidget {
           padding: AppSpacing.screen,
           children: [
             const _StreakAndFocusRow(),
+            const _InsightCard(),
             AppSpacing.gapXl,
             PixelButton(
               label: l10n.homeStartFocus,
@@ -126,6 +129,81 @@ class _StreakAndFocusRow extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// Одно наблюдение о том, как человек работает, — на основе его же истории.
+///
+/// Это видимая отдача от всего, что движок насчитал внутри: без неё
+/// «адаптивность» остаётся словом из описания в сторе. Карточки нет, пока
+/// данных не хватает на честное утверждение, — приветственная заглушка
+/// вроде «скоро тут что-то появится» занимала бы место и не сообщала ничего.
+class _InsightCard extends ConsumerWidget {
+  const _InsightCard();
+
+  String _text(BuildContext context, Insight insight) {
+    final l10n = context.l10n;
+    return switch (insight.kind) {
+      InsightKind.bestMood => l10n.insightBestMood(
+          insight.mood!.label(l10n),
+          insight.percent,
+        ),
+      InsightKind.bestWeekday => l10n.insightBestWeekday(
+          weekdayShortLabel(l10n, insight.weekday!),
+          insight.minutes,
+        ),
+      InsightKind.bestTimeOfDay => l10n.insightBestTime(
+          insight.timeOfDay!.label(l10n),
+          insight.percent,
+        ),
+      InsightKind.bestTechnique => l10n.insightBestTechnique(
+          insight.technique!.label(l10n),
+          insight.percent,
+        ),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final insight = ref.watch(homeInsightProvider).valueOrNull;
+    if (insight == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: PixelCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.insights_rounded,
+                  size: 16,
+                  color: colors.accent,
+                ),
+                AppSpacing.wGapSm,
+                Text(
+                  l10n.insightTitle,
+                  style: context.text.chartLabel.copyWith(color: colors.accent),
+                ),
+              ],
+            ),
+            AppSpacing.gapSm,
+            Text(_text(context, insight), style: context.text.body),
+            AppSpacing.gapXs,
+            Text(
+              l10n.insightBasis(insight.sampleSize),
+              style: context.text.caption,
+            ),
+          ],
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(duration: AppMotion.normal)
+        .slideY(begin: 0.06, end: 0, duration: AppMotion.normal);
   }
 }
 
