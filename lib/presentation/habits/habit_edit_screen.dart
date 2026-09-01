@@ -14,7 +14,9 @@ import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_radio.dart';
 import '../shared/pixel_shadow.dart';
+import '../shared/pixel_sprite.dart';
 import 'habits_providers.dart';
 
 const _uuid = Uuid();
@@ -40,13 +42,23 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
   late final TextEditingController _punishmentController =
       TextEditingController(text: widget.habit?.punishment ?? '');
 
+  late final TextEditingController _rewardController =
+      TextEditingController(text: widget.habit?.reward ?? '');
+
+  late HabitFrequencyType _frequency =
+      widget.habit?.frequency ?? HabitFrequencyType.weekdays;
   late int _weekdayMask = widget.habit?.weekdayMask ?? HabitEntity.everyDayMask;
+  late int _timesPerWeek = widget.habit?.timesPerWeek ?? 3;
+  late int _rewardStreakDays = widget.habit?.rewardStreakDays ?? 7;
+  late bool _freezeEnabled =
+      widget.habit?.freezeEnabled ?? true;
   late int? _reminderMinutes = widget.habit?.reminderMinutes;
 
   @override
   void dispose() {
     _nameController.dispose();
     _punishmentController.dispose();
+    _rewardController.dispose();
     super.dispose();
   }
 
@@ -81,11 +93,18 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
 
     final l10n = context.l10n;
     final existing = widget.habit;
+    final reward = _rewardController.text.trim();
     final habit = HabitEntity(
       id: existing?.id ?? _uuid.v4(),
       name: _nameController.text.trim(),
       punishment: _punishmentController.text.trim(),
+      frequency: _frequency,
       weekdayMask: _weekdayMask,
+      timesPerWeek: _timesPerWeek,
+      reward: reward.isEmpty ? null : reward,
+      rewardStreakDays: _rewardStreakDays,
+      freezeIntervalDays:
+          _freezeEnabled ? HabitEntity.defaultFreezeIntervalDays : 0,
       reminderMinutes: _reminderMinutes,
       createdAt: existing?.createdAt ?? DateTime.now(),
       sortOrder: existing?.sortOrder ?? 0,
@@ -128,19 +147,49 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
               ),
               AppSpacing.gapXl,
               PixelSectionHeader(title: l10n.habitFrequency),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (var weekday = 1; weekday <= 7; weekday++)
-                    _WeekdayToggle(
-                      label: weekdayLabels.length >= weekday
-                          ? weekdayLabels[weekday - 1]
-                          : '$weekday',
-                      selected: _weekdayMask & (1 << (weekday - 1)) != 0,
-                      onTap: () => _toggleWeekday(weekday),
-                    ),
-                ],
+              PixelCard(
+                child: Column(
+                  children: [
+                    for (final type in HabitFrequencyType.values)
+                      PixelRadioTile<HabitFrequencyType>(
+                        value: type,
+                        groupValue: _frequency,
+                        title: switch (type) {
+                          HabitFrequencyType.weekdays => l10n.habitByWeekdays,
+                          HabitFrequencyType.timesPerWeek =>
+                            l10n.habitTimesPerWeek,
+                        },
+                        onChanged: (value) {
+                          Haptics.tap();
+                          setState(() => _frequency = value);
+                        },
+                      ),
+                  ],
+                ),
               ),
+              AppSpacing.gapMd,
+              if (_frequency == HabitFrequencyType.weekdays)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (var weekday = 1; weekday <= 7; weekday++)
+                      _WeekdayToggle(
+                        label: weekdayLabels.length >= weekday
+                            ? weekdayLabels[weekday - 1]
+                            : '$weekday',
+                        selected: _weekdayMask & (1 << (weekday - 1)) != 0,
+                        onTap: () => _toggleWeekday(weekday),
+                      ),
+                  ],
+                )
+              else
+                _CountRow(
+                  label: l10n.habitTimesPerWeekLabel,
+                  value: _timesPerWeek,
+                  min: 1,
+                  max: 7,
+                  onChanged: (value) => setState(() => _timesPerWeek = value),
+                ),
               AppSpacing.gapXl,
               PixelSectionHeader(title: l10n.habitPunishmentLabel),
               TextFormField(
@@ -155,6 +204,38 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
               ),
               AppSpacing.gapSm,
               Text(l10n.habitPunishmentExplainer, style: context.text.caption),
+              AppSpacing.gapXl,
+              PixelSectionHeader(title: l10n.habitRewardLabel),
+              TextFormField(
+                controller: _rewardController,
+                maxLines: 2,
+                decoration: InputDecoration(hintText: l10n.habitRewardHint),
+              ),
+              AppSpacing.gapSm,
+              Text(l10n.habitRewardExplainer, style: context.text.caption),
+              AppSpacing.gapMd,
+              _CountRow(
+                label: l10n.habitRewardStreakDays,
+                value: _rewardStreakDays,
+                min: 2,
+                max: 60,
+                onChanged: (value) =>
+                    setState(() => _rewardStreakDays = value),
+              ),
+              AppSpacing.gapXl,
+              PixelCard(
+                child: PixelSwitchTile(
+                  value: _freezeEnabled,
+                  title: l10n.habitFreezeAllow,
+                  subtitle: l10n.habitFreezeAllowSubtitle(
+                    HabitEntity.defaultFreezeIntervalDays,
+                  ),
+                  onChanged: (value) {
+                    Haptics.tap();
+                    setState(() => _freezeEnabled = value);
+                  },
+                ),
+              ),
               AppSpacing.gapXl,
               PixelCard(
                 padding: const EdgeInsets.symmetric(
@@ -239,6 +320,73 @@ class _WeekdayToggle extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Небольшой счётчик «минус — число — плюс». Тот же элемент, что и в ручной
+/// настройке таймера, но привычкам нужен свой: там он завязан на минуты.
+class _CountRow extends StatelessWidget {
+  const _CountRow({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final int min;
+  final int max;
+  final ValueChanged<int> onChanged;
+
+  void _change(int delta) {
+    final next = (value + delta).clamp(min, max);
+    if (next == value) {
+      Haptics.warning();
+      return;
+    }
+    Haptics.dialTick();
+    onChanged(next);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PixelCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Expanded(child: Text(label, style: context.text.title)),
+          IconButton(
+            onPressed: value > min ? () => _change(-1) : null,
+            icon: PixelSprite(
+              rows: PixelSprites.minus,
+              size: 16,
+              color: context.colors.textPrimary,
+            ),
+          ),
+          SizedBox(
+            width: 48,
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              style: context.text.counterMedium,
+            ),
+          ),
+          IconButton(
+            onPressed: value < max ? () => _change(1) : null,
+            icon: PixelSprite(
+              rows: PixelSprites.plus,
+              size: 16,
+              color: context.colors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

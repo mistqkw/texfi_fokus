@@ -69,3 +69,22 @@ final statsHabitSuccessProvider =
         ref.watch(todayProvider),
       );
 });
+
+/// Сколько раз за период сработало «наказание». Пересчитывается вместе с
+/// отметками привычек: блок обязан меняться сразу после закрытия цели.
+final statsPunishmentProvider =
+    FutureProvider<List<HabitPunishmentStat>>((ref) async {
+  ref.watch(todayHabitsProvider);
+  return ref.watch(habitRepositoryProvider).punishmentStats(
+        ref.watch(statsFromProvider),
+        ref.watch(todayProvider),
+      );
+});
+
+final statsInterruptionProvider =
+    StreamProvider<List<InterruptionReasonStat>>((ref) {
+  return ref.watch(sessionRepositoryProvider).watchInterruptionStats(
+        ref.watch(statsFromProvider),
+        ref.watch(todayProvider),
+      );
+});

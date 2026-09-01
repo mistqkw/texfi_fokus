@@ -165,8 +165,21 @@ void main() {
     expect(session.sessionNote, isNull);
 
     // Соседние таблицы миграцию тоже переживают.
-    expect(await db.select(db.habits).get(), hasLength(1));
     expect(await db.select(db.habitCompletions).get(), hasLength(1));
+
+    // v3: у старой привычки появляются новые поля с разумными значениями —
+    // никакой «частоты 0 раз в неделю» и никакого потерянного наказания.
+    final habit = await db.select(db.habits).getSingle();
+    expect(habit.name, 'Зарядка');
+    expect(habit.punishment, 'Без сериала вечером');
+    expect(habit.frequencyType, 0);
+    expect(habit.weekdayMask, 127);
+    expect(habit.timesPerWeek, 3);
+    expect(habit.reward, isNull);
+    expect(habit.freezeIntervalDays, 7);
+
+    // Новая таблица заморозок создана и пуста.
+    expect(await db.select(db.habitFreezes).get(), isEmpty);
 
     final version = await db
         .customSelect('PRAGMA user_version')
@@ -200,5 +213,14 @@ void main() {
 
     final stored = await db.select(db.sessions).getSingle();
     expect(stored.sessionNote, '🔥 пошло');
+
+    await db.into(db.habitFreezes).insert(
+          HabitFreezesCompanion.insert(
+            id: 'f1',
+            habitId: 'h1',
+            day: DateTime(2026, 2, 1),
+          ),
+        );
+    expect(await db.select(db.habitFreezes).get(), hasLength(1));
   });
 }

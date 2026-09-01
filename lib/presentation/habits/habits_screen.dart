@@ -142,6 +142,9 @@ class _HabitCard extends StatelessWidget {
 
   String _frequencyLabel(BuildContext context) {
     final l10n = context.l10n;
+    if (habit.frequency == HabitFrequencyType.timesPerWeek) {
+      return l10n.habitTimesPerWeekValue(habit.timesPerWeek);
+    }
     if (habit.isDaily) return l10n.habitDaily;
     final labels = l10n.habitDaysShort.split(' ');
     final days = <String>[
@@ -239,6 +242,36 @@ class _HabitCard extends StatelessWidget {
               ],
             ),
           ),
+          // Награда — та же договорённость с собой, только с другой стороны.
+          // Показываем её рядом с наказанием и тем же блоком: иначе кнут
+          // выглядел бы единственным содержанием привычки.
+          if (habit.hasReward) ...[
+            AppSpacing.gapSm,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.sm + 2),
+              decoration: BoxDecoration(
+                color: colors.surfaceVariant,
+                border: Border.all(
+                  color: colors.success,
+                  width: AppRadius.pixelBorder,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.habitRewardAfter(habit.rewardStreakDays),
+                    style: context.text.chartLabel.copyWith(
+                      color: colors.success,
+                    ),
+                  ),
+                  AppSpacing.gapXs,
+                  Text(habit.reward!, style: context.text.body, softWrap: true),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

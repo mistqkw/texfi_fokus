@@ -201,4 +201,35 @@ class SessionRepositoryImpl implements SessionRepository {
       return stats;
     });
   }
+
+  @override
+  Stream<List<InterruptionReasonStat>> watchInterruptionStats(
+    DateTime from,
+    DateTime to,
+  ) {
+    return _inRange(from, to).watch().map((rows) {
+      final aborted = rows.where(
+        (r) => SessionOutcome.fromIndex(r.outcome) == SessionOutcome.aborted,
+      );
+      final counts = <InterruptionReason?, int>{};
+      for (final row in aborted) {
+        final reason = InterruptionReason.fromKey(row.interruptionReason);
+        counts[reason] = (counts[reason] ?? 0) + 1;
+      }
+
+      // Порядок фиксированный, по перечислению: иначе блок статистики
+      // перетасовывался бы при каждом обновлении данных.
+      final stats = [
+        for (final reason in InterruptionReason.values)
+          if ((counts[reason] ?? 0) > 0)
+            InterruptionReasonStat(reason: reason, count: counts[reason]!),
+      ];
+      // «Не сказал» — в конце: это отсутствие ответа, а не ответ.
+      final unnamed = counts[null] ?? 0;
+      if (unnamed > 0) {
+        stats.add(InterruptionReasonStat(reason: null, count: unnamed));
+      }
+      return stats;
+    });
+  }
 }

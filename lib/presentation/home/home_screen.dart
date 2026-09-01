@@ -7,6 +7,7 @@ import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_page_transitions.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
@@ -253,62 +254,204 @@ class _HabitsList extends ConsumerWidget {
   }
 }
 
-class _HabitTile extends ConsumerWidget {
+class _HabitTile extends ConsumerStatefulWidget {
   const _HabitTile({required this.item});
 
   final HabitWithStatus item;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_HabitTile> createState() => _HabitTileState();
+}
+
+class _HabitTileState extends ConsumerState<_HabitTile> {
+  /// Заморозка прячется за долгим нажатием и раскрывается по тапу на
+  /// подпись: это редкое действие, и постоянная кнопка рядом с чекбоксом
+  /// приглашала бы ею пользоваться.
+  bool _showFreeze = false;
+
+  Future<void> _toggleFreeze() async {
+    final item = widget.item;
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+
+    final ok = await ref.read(toggleFreezeProvider)(
+      item.habit.id,
+      !item.frozenToday,
+    );
+    if (!mounted) return;
+
+    if (!ok && !item.frozenToday) {
+      Haptics.warning();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.habitFreezeUnavailable)),
+      );
+      return;
+    }
+    Haptics.success();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = context.l10n;
+    final item = widget.item;
     final toggle = ref.watch(toggleHabitProvider);
+    final habit = item.habit;
+
+    final borderColor = item.frozenToday
+        ? colors.warning
+        : (item.doneToday ? colors.success : colors.divider);
 
     return PixelCard(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.md,
       ),
-      borderColor: item.doneToday ? colors.success : colors.divider,
+      borderColor: borderColor,
       onTap: () {
+        if (item.frozenToday) {
+          // Замороженный день не отмечают — сначала снимают заморозку.
+          Haptics.warning();
+          setState(() => _showFreeze = true);
+          return;
+        }
         if (!item.doneToday) {
           Haptics.success();
         } else {
           Haptics.tap();
         }
-        toggle(item.habit.id, !item.doneToday);
+        toggle(habit.id, !item.doneToday);
       },
-      child: Row(
+      onLongPress: habit.freezeEnabled
+          ? () {
+              Haptics.tap();
+              setState(() => _showFreeze = !_showFreeze);
+            }
+          : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Квадратный пиксельный чекбокс вместо материального: ни
-          // скруглений, ни анимации «чернил», а галочка — спрайт.
-          PixelCheckIndicator(checked: item.doneToday),
-          AppSpacing.wGapMd,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.habit.name,
-                  style: context.text.title.copyWith(
-                    decoration: item.doneToday
-                        ? TextDecoration.lineThrough
-                        : null,
-                    color: item.doneToday
-                        ? colors.textSecondary
-                        : colors.textPrimary,
-                  ),
+          Row(
+            children: [
+              // Квадратный пиксельный чекбокс вместо материального: ни
+              // скруглений, ни анимации «чернил», а галочка — спрайт.
+              PixelCheckIndicator(
+                checked: item.doneToday,
+                color: item.frozenToday ? colors.warning : null,
+              ),
+              AppSpacing.wGapMd,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      habit.name,
+                      style: context.text.title.copyWith(
+                        decoration: item.doneToday
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color: item.doneToday
+                            ? colors.textSecondary
+                            : colors.textPrimary,
+                      ),
+                    ),
+                    if (item.streak > 0) ...[
+                      AppSpacing.gapXs,
+                      Text(
+                        habit.frequency == HabitFrequencyType.timesPerWeek
+                            ? l10n.habitStreakWeeks(item.streak)
+                            : l10n.habitStreakLabel(item.streak),
+                        style: context.text.caption,
+                      ),
+                    ],
+                    if (habit.frequency ==
+                        HabitFrequencyType.timesPerWeek) ...[
+                      AppSpacing.gapXs,
+                      Text(
+                        l10n.habitWeekProgress(
+                          item.doneThisWeek,
+                          habit.timesPerWeek,
+                        ),
+                        style: context.text.caption.copyWith(
+                          color: item.weeklyQuotaMet
+                              ? colors.success
+                              : colors.textTertiary,
+                        ),
+                      ),
+                    ],
+                    if (item.frozenToday) ...[
+                      AppSpacing.gapXs,
+                      Text(
+                        l10n.habitFrozenToday,
+                        style: context.text.caption.copyWith(
+                          color: colors.warning,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                if (item.streak > 0) ...[
-                  AppSpacing.gapXs,
+              ),
+            ],
+          ),
+
+          // Награда показывается ровно тогда, когда заслужена: висящая
+          // всё время, она превратилась бы в обещание, а не в событие.
+          if (item.rewardEarned) ...[
+            AppSpacing.gapMd,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.sm + 2),
+              decoration: BoxDecoration(
+                color: colors.surfaceVariant,
+                border: Border.all(
+                  color: colors.success,
+                  width: AppRadius.pixelBorder,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    l10n.habitStreakLabel(item.streak),
+                    l10n.habitRewardEarned(item.streak),
+                    style: context.text.chartLabel.copyWith(
+                      color: colors.success,
+                    ),
+                  ),
+                  AppSpacing.gapXs,
+                  Text(habit.reward!, style: context.text.body),
+                ],
+              ),
+            ),
+          ],
+
+          if (_showFreeze && habit.freezeEnabled) ...[
+            AppSpacing.gapMd,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.frozenToday
+                        ? l10n.habitFreezeUndoHint
+                        : (item.freezeAvailable
+                            ? l10n.habitFreezeHint
+                            : l10n.habitFreezeUnavailable),
                     style: context.text.caption,
                   ),
-                ],
+                ),
+                AppSpacing.wGapMd,
+                PixelButton(
+                  label: item.frozenToday
+                      ? l10n.habitFreezeUndo
+                      : l10n.habitFreezeToday,
+                  primary: false,
+                  expand: false,
+                  onPressed: item.frozenToday || item.freezeAvailable
+                      ? _toggleFreeze
+                      : null,
+                ),
               ],
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -13,6 +13,7 @@ part 'database.g.dart';
   tables: [
     Habits,
     HabitCompletions,
+    HabitFreezes,
     Tasks,
     Sessions,
     MoodEntries,
@@ -25,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -42,6 +43,16 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(sessions, sessions.wasManualOverride);
             await m.addColumn(sessions, sessions.interruptionReason);
             await m.addColumn(sessions, sessions.sessionNote);
+          }
+
+          // v3: гибкая частота привычек, награда за стрик и заморозки.
+          if (from < 3) {
+            await m.addColumn(habits, habits.frequencyType);
+            await m.addColumn(habits, habits.timesPerWeek);
+            await m.addColumn(habits, habits.reward);
+            await m.addColumn(habits, habits.rewardStreakDays);
+            await m.addColumn(habits, habits.freezeIntervalDays);
+            await m.createTable(habitFreezes);
           }
         },
       );

@@ -341,5 +341,87 @@
   "settingsShortBreakOff": "Off",
   "settingsNightCap": "Night soft cap",
   "settingsNightCapSubtitle": "Suggest nothing longer than 25/5 late at night",
-  "settingsNightCapHour": "Night starts at"
+  "settingsNightCapHour": "Night starts at",
+
+  "habitByWeekdays": "On chosen weekdays",
+  "habitTimesPerWeek": "N times a week",
+  "habitTimesPerWeekLabel": "Times a week",
+  "habitTimesPerWeekValue": "{count}× a week",
+  "@habitTimesPerWeekValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardLabel": "If you keep it up",
+  "habitRewardHint": "A long bath, that game, a day off",
+  "habitRewardExplainer": "Optional, and just as much your own deal as the penalty — the app only remembers it and shows it when you get there.",
+  "habitRewardStreakDays": "Streak needed",
+  "habitRewardAfter": "Reward after {count} days",
+  "@habitRewardAfter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardEarned": "Earned — {count} days in a row",
+  "@habitRewardEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitStreakWeeks": "{count} weeks in a row",
+  "@habitStreakWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitWeekProgress": "{done} of {target} this week",
+  "@habitWeekProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeAllow": "Allow streak freeze",
+  "habitFreezeAllowSubtitle": "One skipped day every {days} days keeps the streak",
+  "@habitFreezeAllowSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeToday": "Freeze",
+  "habitFreezeUndo": "Unfreeze",
+  "habitFreezeHint": "Skip today without losing the streak",
+  "habitFreezeUndoHint": "Today is frozen — the streak holds",
+  "habitFreezeUnavailable": "No freeze left yet",
+  "habitFrozenToday": "Frozen",
+  "statsPunishment": "When the penalty bit",
+  "statsPunishmentCount": "{missed} of {scheduled} days missed",
+  "@statsPunishmentCount": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      }
+    }
+  },
+  "statsPunishmentEmpty": "Nothing missed in this period.",
+  "statsInterruptions": "Why sessions broke off",
+  "statsInterruptionsEmpty": "No interrupted sessions in this period.",
+  "statsInterruptionUnnamed": "No reason given"
 }

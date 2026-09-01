@@ -1355,6 +1355,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Night starts at'**
   String get settingsNightCapHour;
+
+  /// No description provided for @habitByWeekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'On chosen weekdays'**
+  String get habitByWeekdays;
+
+  /// No description provided for @habitTimesPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'N times a week'**
+  String get habitTimesPerWeek;
+
+  /// No description provided for @habitTimesPerWeekLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Times a week'**
+  String get habitTimesPerWeekLabel;
+
+  /// No description provided for @habitTimesPerWeekValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× a week'**
+  String habitTimesPerWeekValue(int count);
+
+  /// No description provided for @habitRewardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'If you keep it up'**
+  String get habitRewardLabel;
+
+  /// No description provided for @habitRewardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A long bath, that game, a day off'**
+  String get habitRewardHint;
+
+  /// No description provided for @habitRewardExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional, and just as much your own deal as the penalty — the app only remembers it and shows it when you get there.'**
+  String get habitRewardExplainer;
+
+  /// No description provided for @habitRewardStreakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak needed'**
+  String get habitRewardStreakDays;
+
+  /// No description provided for @habitRewardAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward after {count} days'**
+  String habitRewardAfter(int count);
+
+  /// No description provided for @habitRewardEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned — {count} days in a row'**
+  String habitRewardEarned(int count);
+
+  /// No description provided for @habitStreakWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weeks in a row'**
+  String habitStreakWeeks(int count);
+
+  /// No description provided for @habitWeekProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {target} this week'**
+  String habitWeekProgress(int done, int target);
+
+  /// No description provided for @habitFreezeAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow streak freeze'**
+  String get habitFreezeAllow;
+
+  /// No description provided for @habitFreezeAllowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One skipped day every {days} days keeps the streak'**
+  String habitFreezeAllowSubtitle(int days);
+
+  /// No description provided for @habitFreezeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze'**
+  String get habitFreezeToday;
+
+  /// No description provided for @habitFreezeUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfreeze'**
+  String get habitFreezeUndo;
+
+  /// No description provided for @habitFreezeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip today without losing the streak'**
+  String get habitFreezeHint;
+
+  /// No description provided for @habitFreezeUndoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Today is frozen — the streak holds'**
+  String get habitFreezeUndoHint;
+
+  /// No description provided for @habitFreezeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No freeze left yet'**
+  String get habitFreezeUnavailable;
+
+  /// No description provided for @habitFrozenToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen'**
+  String get habitFrozenToday;
+
+  /// No description provided for @statsPunishment.
+  ///
+  /// In en, this message translates to:
+  /// **'When the penalty bit'**
+  String get statsPunishment;
+
+  /// No description provided for @statsPunishmentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{missed} of {scheduled} days missed'**
+  String statsPunishmentCount(int missed, int scheduled);
+
+  /// No description provided for @statsPunishmentEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing missed in this period.'**
+  String get statsPunishmentEmpty;
+
+  /// No description provided for @statsInterruptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Why sessions broke off'**
+  String get statsInterruptions;
+
+  /// No description provided for @statsInterruptionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No interrupted sessions in this period.'**
+  String get statsInterruptionsEmpty;
+
+  /// No description provided for @statsInterruptionUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'No reason given'**
+  String get statsInterruptionUnnamed;
 }
 
 class _AppLocalizationsDelegate

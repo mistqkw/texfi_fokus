@@ -25,4 +25,10 @@ abstract class SessionRepository {
   Stream<List<MoodOutcomeStat>> watchMoodStats(DateTime from, DateTime to);
 
   Stream<List<CategoryFocusStat>> watchCategoryStats(DateTime from, DateTime to);
+
+  /// Почему сессии обрывались — разбивка по названным причинам.
+  Stream<List<InterruptionReasonStat>> watchInterruptionStats(
+    DateTime from,
+    DateTime to,
+  );
 }

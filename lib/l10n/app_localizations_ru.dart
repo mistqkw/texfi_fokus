@@ -703,4 +703,97 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsNightCapHour => 'Ночь начинается в';
+
+  @override
+  String get habitByWeekdays => 'По выбранным дням';
+
+  @override
+  String get habitTimesPerWeek => 'N раз в неделю';
+
+  @override
+  String get habitTimesPerWeekLabel => 'Раз в неделю';
+
+  @override
+  String habitTimesPerWeekValue(int count) {
+    return '$count× в неделю';
+  }
+
+  @override
+  String get habitRewardLabel => 'Если выдержишь';
+
+  @override
+  String get habitRewardHint => 'Долгая ванна, та самая игра, выходной';
+
+  @override
+  String get habitRewardExplainer =>
+      'Необязательно и ровно так же твоя договорённость с собой, как и наказание, — приложение только запомнит и покажет, когда дойдёшь.';
+
+  @override
+  String get habitRewardStreakDays => 'Нужен стрик';
+
+  @override
+  String habitRewardAfter(int count) {
+    return 'Награда за $count дней';
+  }
+
+  @override
+  String habitRewardEarned(int count) {
+    return 'Заслужено — $count дней подряд';
+  }
+
+  @override
+  String habitStreakWeeks(int count) {
+    return '$count недель подряд';
+  }
+
+  @override
+  String habitWeekProgress(int done, int target) {
+    return '$done из $target на неделе';
+  }
+
+  @override
+  String get habitFreezeAllow => 'Разрешить заморозку стрика';
+
+  @override
+  String habitFreezeAllowSubtitle(int days) {
+    return 'Один пропуск раз в $days дней сохраняет стрик';
+  }
+
+  @override
+  String get habitFreezeToday => 'Заморозить';
+
+  @override
+  String get habitFreezeUndo => 'Разморозить';
+
+  @override
+  String get habitFreezeHint => 'Пропустить сегодня, не теряя стрик';
+
+  @override
+  String get habitFreezeUndoHint => 'Сегодня заморожено — стрик держится';
+
+  @override
+  String get habitFreezeUnavailable => 'Заморозка пока недоступна';
+
+  @override
+  String get habitFrozenToday => 'Заморожено';
+
+  @override
+  String get statsPunishment => 'Когда наказание сработало';
+
+  @override
+  String statsPunishmentCount(int missed, int scheduled) {
+    return '$missed из $scheduled дней пропущено';
+  }
+
+  @override
+  String get statsPunishmentEmpty => 'За период ничего не пропущено.';
+
+  @override
+  String get statsInterruptions => 'Почему сессии обрывались';
+
+  @override
+  String get statsInterruptionsEmpty => 'За период прерванных сессий не было.';
+
+  @override
+  String get statsInterruptionUnnamed => 'Причина не названа';
 }

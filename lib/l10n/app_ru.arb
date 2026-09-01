@@ -232,5 +232,87 @@
   "settingsShortBreakOff": "Выключено",
   "settingsNightCap": "Ночной софт-кап",
   "settingsNightCapSubtitle": "Ночью не предлагать длиннее 25/5",
-  "settingsNightCapHour": "Ночь начинается в"
+  "settingsNightCapHour": "Ночь начинается в",
+
+  "habitByWeekdays": "По выбранным дням",
+  "habitTimesPerWeek": "N раз в неделю",
+  "habitTimesPerWeekLabel": "Раз в неделю",
+  "habitTimesPerWeekValue": "{count}× в неделю",
+  "@habitTimesPerWeekValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardLabel": "Если выдержишь",
+  "habitRewardHint": "Долгая ванна, та самая игра, выходной",
+  "habitRewardExplainer": "Необязательно и ровно так же твоя договорённость с собой, как и наказание, — приложение только запомнит и покажет, когда дойдёшь.",
+  "habitRewardStreakDays": "Нужен стрик",
+  "habitRewardAfter": "Награда за {count} дней",
+  "@habitRewardAfter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardEarned": "Заслужено — {count} дней подряд",
+  "@habitRewardEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitStreakWeeks": "{count} недель подряд",
+  "@habitStreakWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitWeekProgress": "{done} из {target} на неделе",
+  "@habitWeekProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeAllow": "Разрешить заморозку стрика",
+  "habitFreezeAllowSubtitle": "Один пропуск раз в {days} дней сохраняет стрик",
+  "@habitFreezeAllowSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeToday": "Заморозить",
+  "habitFreezeUndo": "Разморозить",
+  "habitFreezeHint": "Пропустить сегодня, не теряя стрик",
+  "habitFreezeUndoHint": "Сегодня заморожено — стрик держится",
+  "habitFreezeUnavailable": "Заморозка пока недоступна",
+  "habitFrozenToday": "Заморожено",
+  "statsPunishment": "Когда наказание сработало",
+  "statsPunishmentCount": "{missed} из {scheduled} дней пропущено",
+  "@statsPunishmentCount": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      }
+    }
+  },
+  "statsPunishmentEmpty": "За период ничего не пропущено.",
+  "statsInterruptions": "Почему сессии обрывались",
+  "statsInterruptionsEmpty": "За период прерванных сессий не было.",
+  "statsInterruptionUnnamed": "Причина не названа"
 }

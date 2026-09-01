@@ -232,5 +232,87 @@
   "settingsShortBreakOff": "Вимкнено",
   "settingsNightCap": "Нічний софт-кеп",
   "settingsNightCapSubtitle": "Уночі не пропонувати довше за 25/5",
-  "settingsNightCapHour": "Ніч починається о"
+  "settingsNightCapHour": "Ніч починається о",
+
+  "habitByWeekdays": "У вибрані дні",
+  "habitTimesPerWeek": "N разів на тиждень",
+  "habitTimesPerWeekLabel": "Разів на тиждень",
+  "habitTimesPerWeekValue": "{count}× на тиждень",
+  "@habitTimesPerWeekValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardLabel": "Якщо витримаєш",
+  "habitRewardHint": "Довга ванна, та сама гра, вихідний",
+  "habitRewardExplainer": "Необов'язково і так само твоя домовленість із собою, як і покарання, — застосунок лише запам'ятає й покаже, коли дійдеш.",
+  "habitRewardStreakDays": "Потрібна серія",
+  "habitRewardAfter": "Нагорода за {count} днів",
+  "@habitRewardAfter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitRewardEarned": "Заслужено — {count} днів поспіль",
+  "@habitRewardEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitStreakWeeks": "{count} тижнів поспіль",
+  "@habitStreakWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "habitWeekProgress": "{done} із {target} цього тижня",
+  "@habitWeekProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeAllow": "Дозволити заморозку серії",
+  "habitFreezeAllowSubtitle": "Один пропуск раз на {days} днів зберігає серію",
+  "@habitFreezeAllowSubtitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "habitFreezeToday": "Заморозити",
+  "habitFreezeUndo": "Розморозити",
+  "habitFreezeHint": "Пропустити сьогодні, не втрачаючи серію",
+  "habitFreezeUndoHint": "Сьогодні заморожено — серія тримається",
+  "habitFreezeUnavailable": "Заморозка поки недоступна",
+  "habitFrozenToday": "Заморожено",
+  "statsPunishment": "Коли покарання спрацювало",
+  "statsPunishmentCount": "{missed} із {scheduled} днів пропущено",
+  "@statsPunishmentCount": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      }
+    }
+  },
+  "statsPunishmentEmpty": "За період нічого не пропущено.",
+  "statsInterruptions": "Чому сесії обривались",
+  "statsInterruptionsEmpty": "За період перерваних сесій не було.",
+  "statsInterruptionUnnamed": "Причину не названо"
 }

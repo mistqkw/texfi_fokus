@@ -48,6 +48,10 @@ class StatisticsScreen extends ConsumerWidget {
             _CategorySection(),
             AppSpacing.gapXl,
             _HabitSuccessSection(),
+            AppSpacing.gapXl,
+            _PunishmentSection(),
+            AppSpacing.gapXl,
+            _InterruptionSection(),
           ],
         ),
       ),
@@ -528,6 +532,132 @@ class _HabitSuccessSection extends ConsumerWidget {
                       ),
                       AppSpacing.gapXs,
                       _PixelBar(value: stat.rate, color: colors.success),
+                      AppSpacing.gapMd,
+                    ],
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Сколько раз назначенное себе наказание реально сработало.
+///
+/// Блок неприятный по замыслу: договорённость с собой имеет смысл, только
+/// если видно, сколько раз она нарушена. Поэтому здесь не проценты успеха,
+/// а прямой счёт пропущенных дней и сам текст наказания рядом.
+class _PunishmentSection extends ConsumerWidget {
+  const _PunishmentSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final stats = ref.watch(statsPunishmentProvider).valueOrNull ?? const [];
+    final withMisses = stats.where((s) => s.missedDays > 0).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PixelSectionHeader(title: l10n.statsPunishment),
+        PixelCard(
+          child: withMisses.isEmpty
+              ? Text(l10n.statsPunishmentEmpty, style: context.text.body)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final stat in withMisses) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              stat.habitName,
+                              style: context.text.label,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            '${stat.missedDays}',
+                            style: context.text.counterMedium.copyWith(
+                              color: colors.warning,
+                            ),
+                          ),
+                        ],
+                      ),
+                      AppSpacing.gapXs,
+                      Text(
+                        l10n.statsPunishmentCount(
+                          stat.missedDays,
+                          stat.scheduledDays,
+                        ),
+                        style: context.text.caption,
+                      ),
+                      AppSpacing.gapXs,
+                      _PixelBar(value: stat.missRate, color: colors.warning),
+                      AppSpacing.gapXs,
+                      Text(
+                        stat.punishment,
+                        style: context.text.caption.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                      AppSpacing.gapMd,
+                    ],
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Причины прерванных сессий. Само по себе «сорвалось 6 раз» ничего не
+/// меняет; «пять из шести — отвлёкся» уже подсказывает, что чинить.
+class _InterruptionSection extends ConsumerWidget {
+  const _InterruptionSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final stats = ref.watch(statsInterruptionProvider).valueOrNull ?? const [];
+    final total = stats.fold<int>(0, (sum, s) => sum + s.count);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PixelSectionHeader(title: l10n.statsInterruptions),
+        PixelCard(
+          child: stats.isEmpty
+              ? Text(l10n.statsInterruptionsEmpty, style: context.text.body)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final stat in stats) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              stat.reason?.label(l10n) ??
+                                  l10n.statsInterruptionUnnamed,
+                              style: context.text.label,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            '${stat.count}',
+                            style: context.text.chartLabel,
+                          ),
+                        ],
+                      ),
+                      AppSpacing.gapXs,
+                      _PixelBar(
+                        value: total == 0 ? 0 : stat.count / total,
+                        color: stat.reason == null
+                            ? colors.textTertiary
+                            : colors.accent,
+                      ),
                       AppSpacing.gapMd,
                     ],
                   ],
