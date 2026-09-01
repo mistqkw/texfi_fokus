@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/notifications/notification_service.dart';
+import '../../core/screen/focus_screen_mode.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
@@ -20,6 +21,7 @@ import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
+import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
 import '../timer/session_finish_flow.dart';
 import '../timer/timer_alarm_sync.dart';
@@ -61,6 +63,13 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   /// переключается на разбор.
   SessionFinishOutcome? _outcome;
 
+  /// Тихий режим: монохромный вид и приглушённая яркость.
+  bool _quiet = false;
+
+  /// Экран не гаснет, пока идёт бой; он же ведёт тихий режим. Поле, а не
+  /// провайдер: снятие обязано отработать в `dispose()`.
+  final FocusScreenMode _screen = FocusScreenMode();
+
   /// Сервис уведомлений держим полем: в `dispose()` читать провайдеры уже
   /// поздно, а снять будильники надо при любом исходе.
   late final NotificationService _notifications =
@@ -73,12 +82,23 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
       if (!mounted) return;
       _syncAlarms(ref.read(timerControllerProvider));
     });
+    // На бой смотрят — гасить экран посреди сессии незачем.
+    _screen.enter();
   }
 
   @override
   void dispose() {
     _notifications.cancelTimerAlarms();
+    // Единственный путь снятия: отрабатывает при любом способе ухода с
+    // экрана — жестом, кнопкой, программно после конца боя.
+    _screen.release();
     super.dispose();
+  }
+
+  Future<void> _setQuiet(bool value) async {
+    Haptics.tap();
+    await _screen.setQuiet(value);
+    if (mounted) setState(() => _quiet = value);
   }
 
   Future<void> _syncAlarms(TimerState state) => syncTimerAlarms(
@@ -161,6 +181,22 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
 
     final outcome = _outcome;
 
+    // Тихий режим доступен только пока идёт бой: на разборе итогов смотреть
+    // на голые цифры таймера нечего.
+    if (_quiet && outcome == null) {
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _setQuiet(false);
+        },
+        child: QuietTimerView(
+          remaining: state.remaining,
+          hint: l10n.timerQuietModeHint,
+          onExit: () => _setQuiet(false),
+        ),
+      );
+    }
+
     return PopScope(
       // Уход назад посреди сессии — это тоже прерывание, и оно должно
       // попасть в статистику, а не потеряться.
@@ -180,6 +216,14 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                   )
                 : null,
             title: Text(l10n.battleTitle, style: context.text.sectionTitle),
+            actions: [
+              if (outcome == null)
+                IconButton(
+                  tooltip: l10n.timerQuietMode,
+                  icon: const Icon(Icons.nightlight_round),
+                  onPressed: () => _setQuiet(true),
+                ),
+            ],
           ),
           body: SafeArea(
             child: outcome == null
