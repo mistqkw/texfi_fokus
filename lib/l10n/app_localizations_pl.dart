@@ -861,6 +861,36 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dziś wszystko zamknięte. Dobra robota.';
 
   @override
+  String get notificationChannelTimer => 'Minutnik';
+
+  @override
+  String get notificationChannelTimerDesc =>
+      'Koniec bloku skupienia, przerwy albo całej sesji';
+
+  @override
+  String get notificationTimerFocusDoneTitle => 'Blok skupienia skończony';
+
+  @override
+  String notificationTimerFocusDoneBody(int cycle, int total) {
+    return 'Cykl $cycle z $total za tobą. Czas na przerwę.';
+  }
+
+  @override
+  String get notificationTimerBreakDoneTitle => 'Przerwa się skończyła';
+
+  @override
+  String get notificationTimerBreakDoneBody =>
+      'Wróć do skupienia, gdy będziesz gotów.';
+
+  @override
+  String get notificationTimerSessionDoneTitle => 'Sesja zakończona';
+
+  @override
+  String notificationTimerSessionDoneBody(int minutes) {
+    return '$minutes min skupienia w planie. Dobra robota.';
+  }
+
+  @override
   String get settingsAccent => 'Kolor akcentu';
 
   @override

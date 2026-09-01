@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/haptics/haptics.dart';
+import '../../core/notifications/notification_service.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
@@ -35,6 +36,50 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   bool _fullscreen = false;
 
   bool _finishHandled = false;
+
+  /// Сервис уведомлений держим полем: в `dispose()` читать провайдеры уже
+  /// поздно, а снять будильники надо при любом исходе — включая уход с
+  /// экрана системным жестом «назад».
+  late final NotificationService _notifications =
+      ref.read(notificationServiceProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    // Первый график ставится сразу после первого кадра: с этого момента конец
+    // сессии знает система, а не только живой Dart-таймер. Приложение можно
+    // сворачивать, выгружать из памяти и блокировать экран.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _syncAlarms(ref.read(timerControllerProvider));
+    });
+  }
+
+  @override
+  void dispose() {
+    // Экран закрыт — будильников быть не должно ни при каком исходе.
+    _notifications.cancelTimerAlarms();
+    super.dispose();
+  }
+
+  /// Приводит системную очередь уведомлений в соответствие с состоянием
+  /// таймера. Пустой график (пауза, завершение) означает «снять всё».
+  Future<void> _syncAlarms(TimerState state) async {
+    final l10n = context.l10n;
+    final alarms = state.alarms;
+
+    if (alarms.isEmpty) {
+      await _notifications.cancelTimerAlarms();
+      return;
+    }
+
+    await _notifications.scheduleTimerAlarms(
+      alarms: alarms,
+      totalCycles: state.plan.cycles,
+      focusMinutes: state.plan.focusMinutes * state.plan.cycles,
+      copy: timerNotificationCopyFrom(l10n),
+    );
+  }
 
   Future<void> _confirmStop() async {
     final l10n = context.l10n;
@@ -114,6 +159,12 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     final controller = ref.read(timerControllerProvider.notifier);
 
     ref.listen<TimerState>(timerControllerProvider, (previous, next) {
+      // Сравниваем именно epoch, а не всё состояние: тик секунды меняет
+      // `remaining`, но не сдвигает расчётный конец фазы — переставлять из-за
+      // него системные будильники было бы расточительно.
+      if (previous == null || previous.scheduleEpoch != next.scheduleEpoch) {
+        _syncAlarms(next);
+      }
       if (next.finished && !(previous?.finished ?? false)) {
         _handleFinish(next);
       }

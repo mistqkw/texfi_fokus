@@ -23,6 +23,20 @@ NotificationCopy notificationCopyFrom(AppLocalizations l10n) {
   );
 }
 
+/// Тексты уведомлений таймера — по тому же принципу: сервис не знает про l10n.
+TimerNotificationCopy timerNotificationCopyFrom(AppLocalizations l10n) {
+  return TimerNotificationCopy(
+    channelName: l10n.notificationChannelTimer,
+    channelDescription: l10n.notificationChannelTimerDesc,
+    focusDoneTitle: l10n.notificationTimerFocusDoneTitle,
+    focusDoneBody: l10n.notificationTimerFocusDoneBody,
+    breakDoneTitle: l10n.notificationTimerBreakDoneTitle,
+    breakDoneBody: l10n.notificationTimerBreakDoneBody,
+    sessionDoneTitle: l10n.notificationTimerSessionDoneTitle,
+    sessionDoneBody: l10n.notificationTimerSessionDoneBody,
+  );
+}
+
 /// Пересобирает расписание уведомлений под текущее состояние привычек и
 /// настроек. Вызывается после любых изменений, которые на него влияют:
 /// создание/правка/удаление привычки, переключатели в настройках, старт

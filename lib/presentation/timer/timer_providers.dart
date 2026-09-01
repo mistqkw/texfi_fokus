@@ -9,11 +9,16 @@ import '../../data/providers/data_providers.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/timer_alarm.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 
-const _uuid = Uuid();
+// `TimerPhase` переехала в домен: от неё зависит расчёт будильников, а он
+// должен собираться и тестироваться без Flutter. Реэкспорт оставлен, чтобы
+// экраны продолжали брать её отсюда — импорт фазы из «провайдеров таймера»
+// читается лучше, чем из сущностей.
+export '../../domain/entities/timer_alarm.dart' show TimerAlarm, TimerPhase;
 
-enum TimerPhase { focus, rest }
+const _uuid = Uuid();
 
 /// Параметры запускаемой сессии — либо взятые из рекомендации, либо
 /// собранные пользователем вручную.
@@ -85,6 +90,7 @@ class TimerState {
     required this.focusSeconds,
     required this.startedAt,
     this.completedFully = false,
+    this.scheduleEpoch = 0,
   });
 
   final TimerPlan plan;
@@ -108,6 +114,15 @@ class TimerState {
 
   final DateTime startedAt;
 
+  /// Счётчик событий, меняющих график будильников.
+  ///
+  /// Обычный тик секунды его не трогает: пересобирать системные уведомления
+  /// раз в секунду — верный способ и батарею посадить, и упереться в лимиты
+  /// планировщика. Растёт только там, где расчётный конец фазы действительно
+  /// сдвинулся: пауза, снятие с паузы, пропуск, подкрутка диском, смена фазы,
+  /// завершение.
+  final int scheduleEpoch;
+
   /// Доля пройденного времени текущей фазы, 0..1.
   double get progress {
     if (phaseTotal.inSeconds == 0) return 0;
@@ -124,6 +139,7 @@ class TimerState {
     bool? finished,
     bool? completedFully,
     int? focusSeconds,
+    bool bumpSchedule = false,
   }) {
     return TimerState(
       plan: plan,
@@ -136,6 +152,23 @@ class TimerState {
       completedFully: completedFully ?? this.completedFully,
       focusSeconds: focusSeconds ?? this.focusSeconds,
       startedAt: startedAt,
+      scheduleEpoch: bumpSchedule ? scheduleEpoch + 1 : scheduleEpoch,
+    );
+  }
+
+  /// График будильников для текущего состояния — то, что нужно отдать
+  /// системе прямо сейчас. Пустой список означает «снять всё».
+  List<TimerAlarm> get alarms {
+    if (finished) return const [];
+    return TimerAlarmPlanner.upcoming(
+      phase: phase,
+      cycleIndex: cycleIndex,
+      totalCycles: plan.cycles,
+      remaining: remaining,
+      focusDuration: Duration(minutes: plan.focusMinutes),
+      breakDuration: Duration(minutes: plan.breakMinutes),
+      autoStartNext: plan.autoStartNext,
+      running: running,
     );
   }
 }
@@ -195,7 +228,10 @@ class TimerController extends StateNotifier<TimerState> {
     if (state.phase == TimerPhase.focus) {
       final isLastCycle = state.cycleIndex >= plan.cycles - 1;
       if (isLastCycle) {
-        Haptics.sessionComplete();
+        // Вибрация здесь — не украшение к звуку, а самостоятельный сигнал:
+        // при выключенном звуке она остаётся единственным, что человек
+        // почувствует, не глядя на экран.
+        Haptics.timerAlarm();
         if (plan.soundOnEnd) SystemSound.play(SystemSoundType.alert);
         _finish(completedFully: true);
         return;
@@ -208,6 +244,7 @@ class TimerController extends StateNotifier<TimerState> {
         remaining: Duration(minutes: plan.breakMinutes),
         phaseTotal: Duration(minutes: plan.breakMinutes),
         running: plan.autoStartNext,
+        bumpSchedule: true,
       );
       return;
     }
@@ -220,17 +257,18 @@ class TimerController extends StateNotifier<TimerState> {
       remaining: Duration(minutes: plan.focusMinutes),
       phaseTotal: Duration(minutes: plan.focusMinutes),
       running: plan.autoStartNext,
+      bumpSchedule: true,
     );
   }
 
   void pause() {
     if (state.finished) return;
-    state = state.copyWith(running: false);
+    state = state.copyWith(running: false, bumpSchedule: true);
   }
 
   void resume() {
     if (state.finished) return;
-    state = state.copyWith(running: true);
+    state = state.copyWith(running: true, bumpSchedule: true);
   }
 
   void toggle() => state.running ? pause() : resume();
@@ -252,6 +290,9 @@ class TimerController extends StateNotifier<TimerState> {
     state = state.copyWith(
       remaining: clamped,
       phaseTotal: clamped > state.phaseTotal ? clamped : state.phaseTotal,
+      // Диск двигает конец фазы — значит, и запланированное уведомление
+      // должно переехать вместе с ним.
+      bumpSchedule: true,
     );
   }
 
@@ -266,6 +307,7 @@ class TimerController extends StateNotifier<TimerState> {
       finished: true,
       completedFully: completedFully,
       remaining: Duration.zero,
+      bumpSchedule: true,
     );
   }
 

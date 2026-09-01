@@ -473,6 +473,31 @@
     }
   },
   "notificationDailyAllDone": "Everything is closed today. Well done.",
+  "notificationChannelTimer": "Timer",
+  "notificationChannelTimerDesc": "End of a focus block, a break or a whole session",
+  "notificationTimerFocusDoneTitle": "Focus block done",
+  "notificationTimerFocusDoneBody": "Cycle {cycle} of {total} is over. Break time.",
+  "@notificationTimerFocusDoneBody": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationTimerBreakDoneTitle": "Break is over",
+  "notificationTimerBreakDoneBody": "Back to focus when you are ready.",
+  "notificationTimerSessionDoneTitle": "Session complete",
+  "notificationTimerSessionDoneBody": "{minutes} min planned in focus. Well held.",
+  "@notificationTimerSessionDoneBody": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
 
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",

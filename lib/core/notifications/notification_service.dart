@@ -6,6 +6,7 @@ import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../domain/entities/habit_entity.dart';
+import '../../domain/entities/timer_alarm.dart';
 
 /// Тексты уведомлений приходят из слоя локализации: сервис ничего не
 /// переводит сам, иначе строки пришлось бы дублировать вне ARB.
@@ -41,6 +42,38 @@ class NotificationCopy {
 
   /// Все цели закрыты и сессий не было — говорить «осталось 0» глупо.
   final String dailyAllDoneBody;
+}
+
+/// Тексты уведомлений таймера. Отдельно от [NotificationCopy] — у них свой
+/// канал, своя важность и своя судьба: их снимают и переставляют десятки раз
+/// за сессию, а напоминания о привычках живут сутками.
+class TimerNotificationCopy {
+  const TimerNotificationCopy({
+    required this.channelName,
+    required this.channelDescription,
+    required this.focusDoneTitle,
+    required this.focusDoneBody,
+    required this.breakDoneTitle,
+    required this.breakDoneBody,
+    required this.sessionDoneTitle,
+    required this.sessionDoneBody,
+  });
+
+  final String channelName;
+  final String channelDescription;
+
+  final String focusDoneTitle;
+
+  /// `(номер цикла, всего циклов) -> тело`.
+  final String Function(int cycle, int total) focusDoneBody;
+
+  final String breakDoneTitle;
+  final String breakDoneBody;
+
+  final String sessionDoneTitle;
+
+  /// `(минуты в фокусе) -> тело`.
+  final String Function(int minutes) sessionDoneBody;
 }
 
 /// Итог дня для вечернего уведомления. Собирается на стороне приложения:
@@ -82,12 +115,25 @@ class NotificationService {
 
   bool _initialized = false;
 
+  /// Согласие на точные будильники запрашивается не чаще раза за запуск.
+  bool _exactAlarmChecked = false;
+
   static const String _channelId = 'texfi_fokus_habits';
+
+  /// У таймера свой канал: важность и поведение у него другие, а на Android
+  /// параметры канала после создания не меняются — подмешивать конец сессии
+  /// в канал напоминаний означало бы навсегда связать их настройки.
+  static const String _timerChannelId = 'texfi_fokus_timer';
 
   /// Идентификаторы уведомлений: у итога дня свой фиксированный, у привычек —
   /// производные от хеша id, смещённые, чтобы не столкнуться с ним.
   static const int _dailySummaryId = 1;
+  static const int _timerIdOffset = 500;
   static const int _habitIdOffset = 1000;
+
+  /// Диапазон, отведённый под будильники таймера.
+  static bool _isTimerId(int id) =>
+      id >= _timerIdOffset && id < _timerIdOffset + TimerAlarmPlanner.maxAlarms;
 
   /// Планирование доступно только там, где плагин умеет `zonedSchedule`.
   bool get _canSchedule =>
@@ -167,6 +213,30 @@ class NotificationService {
       return true;
     } catch (error) {
       debugPrint('requestPermission failed: $error');
+      return false;
+    }
+  }
+
+  /// Точные будильники на Android 12+ (API 31) требуют отдельного согласия
+  /// пользователя. Без него система имеет право отложить срабатывание до
+  /// следующего окна Doze — на практике это единицы, а иногда и десятки
+  /// минут: для конца фокус-сессии такая точность бессмысленна.
+  ///
+  /// Возвращает `true`, если точное планирование доступно (в том числе там,
+  /// где разрешение не требуется вовсе).
+  Future<bool> ensureExactAlarmPermission() async {
+    if (!_canSchedule || !Platform.isAndroid) return _canSchedule;
+    await init();
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return false;
+      final already = await android.canScheduleExactNotifications();
+      if (already ?? false) return true;
+      final granted = await android.requestExactAlarmsPermission();
+      return granted ?? false;
+    } catch (error) {
+      debugPrint('ensureExactAlarmPermission failed: $error');
       return false;
     }
   }
@@ -311,6 +381,130 @@ class NotificationService {
     }
   }
 
+  // --- Таймер ---
+
+  NotificationDetails _timerDetails(TimerNotificationCopy copy) {
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        _timerChannelId,
+        copy.channelName,
+        channelDescription: copy.channelDescription,
+        importance: Importance.max,
+        priority: Priority.max,
+        category: AndroidNotificationCategory.alarm,
+        // Уведомление должно дождаться пользователя. `autoCancel` снимает его
+        // при нажатии — это и есть «открыл»; `timeoutAfter` намеренно не
+        // задан, иначе система сама убрала бы его через N миллисекунд, и от
+        // конца сессии в шторке не осталось бы следа.
+        autoCancel: true,
+        timeoutAfter: null,
+        ongoing: false,
+        // Конец сессии виден на заблокированном экране целиком: прятать его
+        // за «содержимое скрыто» здесь нечего.
+        visibility: NotificationVisibility.public,
+      ),
+      iOS: const DarwinNotificationDetails(
+        // Пробивает Focus Mode: сессия закончилась именно сейчас, и через час
+        // это сообщение уже не нужно.
+        interruptionLevel: InterruptionLevel.timeSensitive,
+      ),
+      macOS: const DarwinNotificationDetails(
+        interruptionLevel: InterruptionLevel.timeSensitive,
+      ),
+      linux: const LinuxNotificationDetails(),
+    );
+  }
+
+  ({String title, String body}) _timerText(
+    TimerAlarm alarm,
+    int totalCycles,
+    int focusMinutes,
+    TimerNotificationCopy copy,
+  ) {
+    if (alarm.isFinal) {
+      return (
+        title: copy.sessionDoneTitle,
+        body: copy.sessionDoneBody(focusMinutes),
+      );
+    }
+    if (alarm.endingPhase == TimerPhase.focus) {
+      return (
+        title: copy.focusDoneTitle,
+        body: copy.focusDoneBody(alarm.cycleNumber, totalCycles),
+      );
+    }
+    return (title: copy.breakDoneTitle, body: copy.breakDoneBody);
+  }
+
+  /// Ставит весь график конца фаз в системную очередь.
+  ///
+  /// Ключевое отличие от прежнего поведения: момент окончания больше не ждёт
+  /// живого Dart-таймера. Приложение можно свернуть, выгрузить из памяти или
+  /// заблокировать экран — уведомление всё равно придёт, потому что о нём
+  /// знает система, а не наш процесс.
+  ///
+  /// Вызывать при каждом изменении графика: старт, пауза, снятие с паузы,
+  /// пропуск фазы, подкрутка диском. Предыдущие будильники снимаются здесь же.
+  Future<void> scheduleTimerAlarms({
+    required List<TimerAlarm> alarms,
+    required int totalCycles,
+    required int focusMinutes,
+    required TimerNotificationCopy copy,
+  }) async {
+    if (!_canSchedule) return;
+    await init();
+    if (!_initialized) return;
+
+    // Согласие на точные будильники спрашивается один раз за запуск и именно
+    // здесь, а не на старте приложения: системный диалог посреди загрузочной
+    // заставки выглядит как требование неизвестно чего, а перед первой
+    // сессией он хотя бы объясним контекстом.
+    if (!_exactAlarmChecked) {
+      _exactAlarmChecked = true;
+      await ensureExactAlarmPermission();
+    }
+
+    await cancelTimerAlarms();
+
+    final now = tz.TZDateTime.now(tz.local);
+    for (var i = 0; i < alarms.length; i++) {
+      final alarm = alarms[i];
+      if (alarm.after <= Duration.zero) continue;
+      final text = _timerText(alarm, totalCycles, focusMinutes, copy);
+      try {
+        await _plugin.zonedSchedule(
+          _timerIdOffset + i,
+          text.title,
+          text.body,
+          now.add(alarm.after),
+          _timerDetails(copy),
+          // Единственный режим, который переживает Doze без сдвига на
+          // несколько минут. Разрешение спрашивается отдельно, а если его не
+          // дали — плагин сам мягко откатится на неточное планирование.
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          payload: alarm.isFinal ? 'timer:done' : 'timer:phase',
+        );
+      } catch (error) {
+        debugPrint('scheduleTimerAlarms failed: $error');
+      }
+    }
+  }
+
+  /// Снимает все будильники таймера — сессия прервана, поставлена на паузу
+  /// или закончилась раньше запланированного.
+  Future<void> cancelTimerAlarms() async {
+    if (!_canNotify) return;
+    for (var i = 0; i < TimerAlarmPlanner.maxAlarms; i++) {
+      try {
+        await _plugin.cancel(_timerIdOffset + i);
+      } catch (error) {
+        debugPrint('cancelTimerAlarms failed: $error');
+      }
+    }
+  }
+
   /// Пересобирает все запланированные напоминания: вызывается после любых
   /// изменений в привычках и настройках уведомлений.
   Future<void> rescheduleAll({
@@ -322,7 +516,7 @@ class NotificationService {
   }) async {
     if (!_canNotify) return;
     await init();
-    await cancelAll();
+    await _cancelReminders();
     if (!enabled) return;
 
     for (final habit in habits) {
@@ -334,6 +528,25 @@ class NotificationService {
       digest: digest,
       copy: copy,
     );
+  }
+
+  /// Снимает напоминания о привычках и итог дня, но не трогает будильники
+  /// идущей сессии.
+  ///
+  /// Раньше здесь стоял `cancelAll()`, и любая пересинхронизация расписания
+  /// (а она случается после каждой сессии и каждого чиха в настройках) молча
+  /// убивала бы запланированный конец таймера.
+  Future<void> _cancelReminders() async {
+    if (!_canNotify) return;
+    try {
+      final pending = await _plugin.pendingNotificationRequests();
+      for (final request in pending) {
+        if (_isTimerId(request.id)) continue;
+        await _plugin.cancel(request.id);
+      }
+    } catch (error) {
+      debugPrint('_cancelReminders failed: $error');
+    }
   }
 
   Future<void> cancelAll() async {
