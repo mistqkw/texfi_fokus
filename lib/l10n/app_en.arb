@@ -423,5 +423,54 @@
   "statsPunishmentEmpty": "Nothing missed in this period.",
   "statsInterruptions": "Why sessions broke off",
   "statsInterruptionsEmpty": "No interrupted sessions in this period.",
-  "statsInterruptionUnnamed": "No reason given"
+  "statsInterruptionUnnamed": "No reason given",
+
+  "homePlanDay": "Plan the day",
+  "planTitle": "Today's plan",
+  "planIntro": "Two or three tasks, roughly in order. Optional — it just saves you from inventing a task when you already sat down to work.",
+  "planAddHint": "What are you doing today?",
+  "planEnough": "Three is usually enough for one day.",
+  "planToday": "In the plan",
+  "planEmpty": "Nothing planned yet.",
+  "planFromTasks": "From your tasks",
+  "planDone": "Mark done",
+  "planUndone": "Undo",
+  "planSubtasks": "Checklist",
+  "planSubtaskHint": "One step",
+  "planSubtaskCount": "{done} of {total} steps",
+  "@planSubtaskCount": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "planSubtasksEmpty": "No steps yet — a session shows them as a checklist.",
+  "planSubtasksFull": "{count} steps is the limit for one session.",
+  "@planSubtasksFull": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moodFromPlan": "From today's plan",
+  "notificationDailyProductive": "Today: {sessions} sessions, {minutes} min in focus, mostly {mood}.",
+  "@notificationDailyProductive": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationDailyAllDone": "Everything is closed today. Well done."
 }

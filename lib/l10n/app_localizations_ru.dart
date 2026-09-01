@@ -796,4 +796,66 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get statsInterruptionUnnamed => 'Причина не названа';
+
+  @override
+  String get homePlanDay => 'Спланировать день';
+
+  @override
+  String get planTitle => 'План на сегодня';
+
+  @override
+  String get planIntro =>
+      'Две-три задачи, примерно по порядку. Необязательно — просто чтобы не придумывать задачу в момент, когда уже сел работать.';
+
+  @override
+  String get planAddHint => 'Чем займёшься сегодня?';
+
+  @override
+  String get planEnough => 'Трёх на день обычно достаточно.';
+
+  @override
+  String get planToday => 'В плане';
+
+  @override
+  String get planEmpty => 'Пока ничего не запланировано.';
+
+  @override
+  String get planFromTasks => 'Из твоих задач';
+
+  @override
+  String get planDone => 'Отметить';
+
+  @override
+  String get planUndone => 'Снять отметку';
+
+  @override
+  String get planSubtasks => 'Чеклист';
+
+  @override
+  String get planSubtaskHint => 'Один шаг';
+
+  @override
+  String planSubtaskCount(int done, int total) {
+    return '$done из $total шагов';
+  }
+
+  @override
+  String get planSubtasksEmpty =>
+      'Шагов пока нет — в сессии они показываются чеклистом.';
+
+  @override
+  String planSubtasksFull(int count) {
+    return '$count шагов — предел для одной сессии.';
+  }
+
+  @override
+  String get moodFromPlan => 'Из плана на сегодня';
+
+  @override
+  String notificationDailyProductive(int sessions, int minutes, String mood) {
+    return 'Сегодня: $sessions сессии, $minutes мин в фокусе, чаще всего — $mood.';
+  }
+
+  @override
+  String get notificationDailyAllDone => 'Сегодня всё закрыто. Хорошо.';
 }

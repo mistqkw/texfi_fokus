@@ -1902,6 +1902,770 @@ class TasksCompanion extends UpdateCompanion<Task> {
   }
 }
 
+class $DayPlanEntriesTable extends DayPlanEntries
+    with TableInfo<$DayPlanEntriesTable, DayPlanEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DayPlanEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<DateTime> day = GeneratedColumn<DateTime>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _doneMeta = const VerificationMeta('done');
+  @override
+  late final GeneratedColumn<bool> done = GeneratedColumn<bool>(
+    'done',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("done" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    day,
+    taskId,
+    sortOrder,
+    done,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'day_plan_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DayPlanEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('done')) {
+      context.handle(
+        _doneMeta,
+        done.isAcceptableOrUnknown(data['done']!, _doneMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DayPlanEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DayPlanEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}day'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      done: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}done'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DayPlanEntriesTable createAlias(String alias) {
+    return $DayPlanEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class DayPlanEntry extends DataClass implements Insertable<DayPlanEntry> {
+  final String id;
+
+  /// День плана, нормализованный к локальной полуночи.
+  final DateTime day;
+
+  /// Ссылается на `Tasks.id`. Всегда заполнена: в план попадают только
+  /// сохранённые задачи — иначе из плана нельзя было бы стартовать сессию
+  /// с той же категорией и сложностью.
+  final String taskId;
+
+  /// Порядок в плане — «примерный порядок» из спецификации.
+  final int sortOrder;
+
+  /// Пользователь отметил пункт плана выполненным.
+  final bool done;
+  final DateTime createdAt;
+  const DayPlanEntry({
+    required this.id,
+    required this.day,
+    required this.taskId,
+    required this.sortOrder,
+    required this.done,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['day'] = Variable<DateTime>(day);
+    map['task_id'] = Variable<String>(taskId);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['done'] = Variable<bool>(done);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  DayPlanEntriesCompanion toCompanion(bool nullToAbsent) {
+    return DayPlanEntriesCompanion(
+      id: Value(id),
+      day: Value(day),
+      taskId: Value(taskId),
+      sortOrder: Value(sortOrder),
+      done: Value(done),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DayPlanEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DayPlanEntry(
+      id: serializer.fromJson<String>(json['id']),
+      day: serializer.fromJson<DateTime>(json['day']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      done: serializer.fromJson<bool>(json['done']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'day': serializer.toJson<DateTime>(day),
+      'taskId': serializer.toJson<String>(taskId),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'done': serializer.toJson<bool>(done),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  DayPlanEntry copyWith({
+    String? id,
+    DateTime? day,
+    String? taskId,
+    int? sortOrder,
+    bool? done,
+    DateTime? createdAt,
+  }) => DayPlanEntry(
+    id: id ?? this.id,
+    day: day ?? this.day,
+    taskId: taskId ?? this.taskId,
+    sortOrder: sortOrder ?? this.sortOrder,
+    done: done ?? this.done,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DayPlanEntry copyWithCompanion(DayPlanEntriesCompanion data) {
+    return DayPlanEntry(
+      id: data.id.present ? data.id.value : this.id,
+      day: data.day.present ? data.day.value : this.day,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      done: data.done.present ? data.done.value : this.done,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DayPlanEntry(')
+          ..write('id: $id, ')
+          ..write('day: $day, ')
+          ..write('taskId: $taskId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('done: $done, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, day, taskId, sortOrder, done, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DayPlanEntry &&
+          other.id == this.id &&
+          other.day == this.day &&
+          other.taskId == this.taskId &&
+          other.sortOrder == this.sortOrder &&
+          other.done == this.done &&
+          other.createdAt == this.createdAt);
+}
+
+class DayPlanEntriesCompanion extends UpdateCompanion<DayPlanEntry> {
+  final Value<String> id;
+  final Value<DateTime> day;
+  final Value<String> taskId;
+  final Value<int> sortOrder;
+  final Value<bool> done;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const DayPlanEntriesCompanion({
+    this.id = const Value.absent(),
+    this.day = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.done = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DayPlanEntriesCompanion.insert({
+    required String id,
+    required DateTime day,
+    required String taskId,
+    this.sortOrder = const Value.absent(),
+    this.done = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       day = Value(day),
+       taskId = Value(taskId);
+  static Insertable<DayPlanEntry> custom({
+    Expression<String>? id,
+    Expression<DateTime>? day,
+    Expression<String>? taskId,
+    Expression<int>? sortOrder,
+    Expression<bool>? done,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (day != null) 'day': day,
+      if (taskId != null) 'task_id': taskId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (done != null) 'done': done,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DayPlanEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? day,
+    Value<String>? taskId,
+    Value<int>? sortOrder,
+    Value<bool>? done,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return DayPlanEntriesCompanion(
+      id: id ?? this.id,
+      day: day ?? this.day,
+      taskId: taskId ?? this.taskId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      done: done ?? this.done,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<DateTime>(day.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (done.present) {
+      map['done'] = Variable<bool>(done.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DayPlanEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('day: $day, ')
+          ..write('taskId: $taskId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('done: $done, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SubtasksTable extends Subtasks with TableInfo<$SubtasksTable, Subtask> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SubtasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 120,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _doneMeta = const VerificationMeta('done');
+  @override
+  late final GeneratedColumn<bool> done = GeneratedColumn<bool>(
+    'done',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("done" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, taskId, title, sortOrder, done];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'subtasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Subtask> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('done')) {
+      context.handle(
+        _doneMeta,
+        done.isAcceptableOrUnknown(data['done']!, _doneMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Subtask map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Subtask(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      done: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}done'],
+      )!,
+    );
+  }
+
+  @override
+  $SubtasksTable createAlias(String alias) {
+    return $SubtasksTable(attachedDatabase, alias);
+  }
+}
+
+class Subtask extends DataClass implements Insertable<Subtask> {
+  final String id;
+
+  /// Ссылается на `Tasks.id`.
+  final String taskId;
+  final String title;
+  final int sortOrder;
+  final bool done;
+  const Subtask({
+    required this.id,
+    required this.taskId,
+    required this.title,
+    required this.sortOrder,
+    required this.done,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['task_id'] = Variable<String>(taskId);
+    map['title'] = Variable<String>(title);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['done'] = Variable<bool>(done);
+    return map;
+  }
+
+  SubtasksCompanion toCompanion(bool nullToAbsent) {
+    return SubtasksCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      title: Value(title),
+      sortOrder: Value(sortOrder),
+      done: Value(done),
+    );
+  }
+
+  factory Subtask.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Subtask(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      title: serializer.fromJson<String>(json['title']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      done: serializer.fromJson<bool>(json['done']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'title': serializer.toJson<String>(title),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'done': serializer.toJson<bool>(done),
+    };
+  }
+
+  Subtask copyWith({
+    String? id,
+    String? taskId,
+    String? title,
+    int? sortOrder,
+    bool? done,
+  }) => Subtask(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    title: title ?? this.title,
+    sortOrder: sortOrder ?? this.sortOrder,
+    done: done ?? this.done,
+  );
+  Subtask copyWithCompanion(SubtasksCompanion data) {
+    return Subtask(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      title: data.title.present ? data.title.value : this.title,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      done: data.done.present ? data.done.value : this.done,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Subtask(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('title: $title, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('done: $done')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, taskId, title, sortOrder, done);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Subtask &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.title == this.title &&
+          other.sortOrder == this.sortOrder &&
+          other.done == this.done);
+}
+
+class SubtasksCompanion extends UpdateCompanion<Subtask> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> title;
+  final Value<int> sortOrder;
+  final Value<bool> done;
+  final Value<int> rowid;
+  const SubtasksCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.done = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SubtasksCompanion.insert({
+    required String id,
+    required String taskId,
+    required String title,
+    this.sortOrder = const Value.absent(),
+    this.done = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taskId = Value(taskId),
+       title = Value(title);
+  static Insertable<Subtask> custom({
+    Expression<String>? id,
+    Expression<String>? taskId,
+    Expression<String>? title,
+    Expression<int>? sortOrder,
+    Expression<bool>? done,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (title != null) 'title': title,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (done != null) 'done': done,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SubtasksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taskId,
+    Value<String>? title,
+    Value<int>? sortOrder,
+    Value<bool>? done,
+    Value<int>? rowid,
+  }) {
+    return SubtasksCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      title: title ?? this.title,
+      sortOrder: sortOrder ?? this.sortOrder,
+      done: done ?? this.done,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (done.present) {
+      map['done'] = Variable<bool>(done.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubtasksCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('title: $title, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('done: $done, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -3764,6 +4528,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $HabitFreezesTable habitFreezes = $HabitFreezesTable(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $DayPlanEntriesTable dayPlanEntries = $DayPlanEntriesTable(this);
+  late final $SubtasksTable subtasks = $SubtasksTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $MoodEntriesTable moodEntries = $MoodEntriesTable(this);
   late final $RecommendationWeightsTable recommendationWeights =
@@ -3777,6 +4543,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     habitCompletions,
     habitFreezes,
     tasks,
+    dayPlanEntries,
+    subtasks,
     sessions,
     moodEntries,
     recommendationWeights,
@@ -4748,6 +5516,421 @@ typedef $$TasksTableProcessedTableManager =
       Task,
       PrefetchHooks Function()
     >;
+typedef $$DayPlanEntriesTableCreateCompanionBuilder =
+    DayPlanEntriesCompanion Function({
+      required String id,
+      required DateTime day,
+      required String taskId,
+      Value<int> sortOrder,
+      Value<bool> done,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$DayPlanEntriesTableUpdateCompanionBuilder =
+    DayPlanEntriesCompanion Function({
+      Value<String> id,
+      Value<DateTime> day,
+      Value<String> taskId,
+      Value<int> sortOrder,
+      Value<bool> done,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$DayPlanEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DayPlanEntriesTable> {
+  $$DayPlanEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DayPlanEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DayPlanEntriesTable> {
+  $$DayPlanEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DayPlanEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DayPlanEntriesTable> {
+  $$DayPlanEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<String> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<bool> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$DayPlanEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DayPlanEntriesTable,
+          DayPlanEntry,
+          $$DayPlanEntriesTableFilterComposer,
+          $$DayPlanEntriesTableOrderingComposer,
+          $$DayPlanEntriesTableAnnotationComposer,
+          $$DayPlanEntriesTableCreateCompanionBuilder,
+          $$DayPlanEntriesTableUpdateCompanionBuilder,
+          (
+            DayPlanEntry,
+            BaseReferences<_$AppDatabase, $DayPlanEntriesTable, DayPlanEntry>,
+          ),
+          DayPlanEntry,
+          PrefetchHooks Function()
+        > {
+  $$DayPlanEntriesTableTableManager(
+    _$AppDatabase db,
+    $DayPlanEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DayPlanEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DayPlanEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DayPlanEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> day = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DayPlanEntriesCompanion(
+                id: id,
+                day: day,
+                taskId: taskId,
+                sortOrder: sortOrder,
+                done: done,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime day,
+                required String taskId,
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DayPlanEntriesCompanion.insert(
+                id: id,
+                day: day,
+                taskId: taskId,
+                sortOrder: sortOrder,
+                done: done,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DayPlanEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DayPlanEntriesTable,
+      DayPlanEntry,
+      $$DayPlanEntriesTableFilterComposer,
+      $$DayPlanEntriesTableOrderingComposer,
+      $$DayPlanEntriesTableAnnotationComposer,
+      $$DayPlanEntriesTableCreateCompanionBuilder,
+      $$DayPlanEntriesTableUpdateCompanionBuilder,
+      (
+        DayPlanEntry,
+        BaseReferences<_$AppDatabase, $DayPlanEntriesTable, DayPlanEntry>,
+      ),
+      DayPlanEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$SubtasksTableCreateCompanionBuilder =
+    SubtasksCompanion Function({
+      required String id,
+      required String taskId,
+      required String title,
+      Value<int> sortOrder,
+      Value<bool> done,
+      Value<int> rowid,
+    });
+typedef $$SubtasksTableUpdateCompanionBuilder =
+    SubtasksCompanion Function({
+      Value<String> id,
+      Value<String> taskId,
+      Value<String> title,
+      Value<int> sortOrder,
+      Value<bool> done,
+      Value<int> rowid,
+    });
+
+class $$SubtasksTableFilterComposer
+    extends Composer<_$AppDatabase, $SubtasksTable> {
+  $$SubtasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SubtasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $SubtasksTable> {
+  $$SubtasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get done => $composableBuilder(
+    column: $table.done,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SubtasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SubtasksTable> {
+  $$SubtasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<bool> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => column);
+}
+
+class $$SubtasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SubtasksTable,
+          Subtask,
+          $$SubtasksTableFilterComposer,
+          $$SubtasksTableOrderingComposer,
+          $$SubtasksTableAnnotationComposer,
+          $$SubtasksTableCreateCompanionBuilder,
+          $$SubtasksTableUpdateCompanionBuilder,
+          (Subtask, BaseReferences<_$AppDatabase, $SubtasksTable, Subtask>),
+          Subtask,
+          PrefetchHooks Function()
+        > {
+  $$SubtasksTableTableManager(_$AppDatabase db, $SubtasksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SubtasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SubtasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SubtasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SubtasksCompanion(
+                id: id,
+                taskId: taskId,
+                title: title,
+                sortOrder: sortOrder,
+                done: done,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taskId,
+                required String title,
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SubtasksCompanion.insert(
+                id: id,
+                taskId: taskId,
+                title: title,
+                sortOrder: sortOrder,
+                done: done,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SubtasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SubtasksTable,
+      Subtask,
+      $$SubtasksTableFilterComposer,
+      $$SubtasksTableOrderingComposer,
+      $$SubtasksTableAnnotationComposer,
+      $$SubtasksTableCreateCompanionBuilder,
+      $$SubtasksTableUpdateCompanionBuilder,
+      (Subtask, BaseReferences<_$AppDatabase, $SubtasksTable, Subtask>),
+      Subtask,
+      PrefetchHooks Function()
+    >;
 typedef $$SessionsTableCreateCompanionBuilder =
     SessionsCompanion Function({
       required String id,
@@ -5662,6 +6845,10 @@ class $AppDatabaseManager {
       $$HabitFreezesTableTableManager(_db, _db.habitFreezes);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
+  $$DayPlanEntriesTableTableManager get dayPlanEntries =>
+      $$DayPlanEntriesTableTableManager(_db, _db.dayPlanEntries);
+  $$SubtasksTableTableManager get subtasks =>
+      $$SubtasksTableTableManager(_db, _db.subtasks);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db, _db.sessions);
   $$MoodEntriesTableTableManager get moodEntries =>

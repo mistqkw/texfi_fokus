@@ -314,5 +314,54 @@
   "statsPunishmentEmpty": "За період нічого не пропущено.",
   "statsInterruptions": "Чому сесії обривались",
   "statsInterruptionsEmpty": "За період перерваних сесій не було.",
-  "statsInterruptionUnnamed": "Причину не названо"
+  "statsInterruptionUnnamed": "Причину не названо",
+
+  "homePlanDay": "Спланувати день",
+  "planTitle": "План на сьогодні",
+  "planIntro": "Дві-три задачі, приблизно по порядку. Необов'язково — просто щоб не вигадувати задачу тоді, коли вже сів працювати.",
+  "planAddHint": "Чим займешся сьогодні?",
+  "planEnough": "Трьох на день зазвичай досить.",
+  "planToday": "У плані",
+  "planEmpty": "Поки нічого не заплановано.",
+  "planFromTasks": "З твоїх задач",
+  "planDone": "Відмітити",
+  "planUndone": "Зняти відмітку",
+  "planSubtasks": "Чекліст",
+  "planSubtaskHint": "Один крок",
+  "planSubtaskCount": "{done} із {total} кроків",
+  "@planSubtaskCount": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "planSubtasksEmpty": "Кроків поки немає — у сесії вони показуються чеклістом.",
+  "planSubtasksFull": "{count} кроків — межа для однієї сесії.",
+  "@planSubtasksFull": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moodFromPlan": "Із плану на сьогодні",
+  "notificationDailyProductive": "Сьогодні: {sessions} сесії, {minutes} хв у фокусі, найчастіше — {mood}.",
+  "@notificationDailyProductive": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationDailyAllDone": "Сьогодні все закрито. Добре."
 }

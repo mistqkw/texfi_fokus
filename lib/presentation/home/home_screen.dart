@@ -14,6 +14,7 @@ import '../../core/utils/duration_format.dart';
 import '../../domain/entities/habit_entity.dart';
 import '../../domain/entities/insight.dart';
 import '../mood_checkin/mood_checkin_screen.dart';
+import '../planner/day_plan_screen.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
@@ -49,6 +50,17 @@ class HomeScreen extends ConsumerWidget {
               onPressed: () {
                 Navigator.of(context)
                     .push(pixelDissolveRoute<void>(const MoodCheckinScreen()));
+              },
+            ),
+            AppSpacing.gapMd,
+            PixelButton(
+              label: l10n.homePlanDay,
+              primary: false,
+              sprite: PixelSprites.sliders,
+              onPressed: () {
+                Haptics.tap();
+                Navigator.of(context)
+                    .push(pixelDissolveRoute<void>(const DayPlanScreen()));
               },
             ),
             AppSpacing.gapXl,

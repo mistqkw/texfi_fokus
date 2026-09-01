@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import 'tables/habits_table.dart';
 import 'tables/mood_entries_table.dart';
+import 'tables/planner_tables.dart';
 import 'tables/recommendation_weights_table.dart';
 import 'tables/sessions_table.dart';
 import 'tables/tasks_table.dart';
@@ -15,6 +16,8 @@ part 'database.g.dart';
     HabitCompletions,
     HabitFreezes,
     Tasks,
+    DayPlanEntries,
+    Subtasks,
     Sessions,
     MoodEntries,
     RecommendationWeights,
@@ -26,7 +29,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -53,6 +56,12 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(habits, habits.rewardStreakDays);
             await m.addColumn(habits, habits.freezeIntervalDays);
             await m.createTable(habitFreezes);
+          }
+
+          // v4: план на день и чеклист внутри задачи.
+          if (from < 4) {
+            await m.createTable(dayPlanEntries);
+            await m.createTable(subtasks);
           }
         },
       );

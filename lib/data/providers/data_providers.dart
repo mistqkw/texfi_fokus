@@ -5,6 +5,7 @@ import '../../core/notifications/notification_service.dart';
 import '../../domain/entities/recommendation_engine.dart';
 import '../../domain/repositories/habit_repository.dart';
 import '../../domain/repositories/mood_repository.dart';
+import '../../domain/repositories/planner_repository.dart';
 import '../../domain/repositories/recommendation_weight_repository.dart';
 import '../../domain/repositories/session_repository.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -13,6 +14,7 @@ import '../local/export_service.dart';
 import '../recommendation/bandit_recommendation_engine.dart';
 import '../repositories/habit_repository_impl.dart';
 import '../repositories/mood_repository_impl.dart';
+import '../repositories/planner_repository_impl.dart';
 import '../repositories/recommendation_weight_repository_impl.dart';
 import '../repositories/session_repository_impl.dart';
 import '../repositories/task_repository_impl.dart';
@@ -35,6 +37,10 @@ final habitRepositoryProvider = Provider<HabitRepository>((ref) {
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
   return TaskRepositoryImpl(ref.watch(databaseProvider));
+});
+
+final plannerRepositoryProvider = Provider<PlannerRepository>((ref) {
+  return PlannerRepositoryImpl(ref.watch(databaseProvider));
 });
 
 final sessionRepositoryProvider = Provider<SessionRepository>((ref) {
