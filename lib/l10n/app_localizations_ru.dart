@@ -1452,4 +1452,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get timerQuietModeHint => 'Коснитесь экрана, чтобы вернуться';
+
+  @override
+  String get mapWorldIntroLabel => 'Новый мир';
+
+  @override
+  String get mapWorld1Epigraph =>
+      'Здесь ничего не шумит. В этом вся сложность.';
+
+  @override
+  String get mapWorld2Epigraph =>
+      'Здесь всё просит очереди. И ничего из этого — не твоё.';
+
+  @override
+  String get mapWorld3Epigraph => 'Дальнего конца не видно. Всё равно идёшь.';
 }

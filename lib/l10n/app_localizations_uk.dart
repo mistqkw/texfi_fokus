@@ -1454,4 +1454,17 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get timerQuietModeHint => 'Торкніться екрана, щоб повернутися';
+
+  @override
+  String get mapWorldIntroLabel => 'Новий світ';
+
+  @override
+  String get mapWorld1Epigraph => 'Тут ніщо не шумить. У цьому вся складність.';
+
+  @override
+  String get mapWorld2Epigraph =>
+      'Тут усе просить черги. І ніщо з цього — не твоє.';
+
+  @override
+  String get mapWorld3Epigraph => 'Дальнього кінця не видно. Однаково йдеш.';
 }

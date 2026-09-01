@@ -2657,6 +2657,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap anywhere to return'**
   String get timerQuietModeHint;
+
+  /// No description provided for @mapWorldIntroLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New world'**
+  String get mapWorldIntroLabel;
+
+  /// No description provided for @mapWorld1Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here is loud. That is the whole difficulty.'**
+  String get mapWorld1Epigraph;
+
+  /// No description provided for @mapWorld2Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything here wants a turn. None of it is yours.'**
+  String get mapWorld2Epigraph;
+
+  /// No description provided for @mapWorld3Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'The far end is out of sight. You walk it anyway.'**
+  String get mapWorld3Epigraph;
 }
 
 class _AppLocalizationsDelegate

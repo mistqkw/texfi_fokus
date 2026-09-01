@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
@@ -19,6 +20,7 @@ import 'game_labels.dart';
 import 'game_providers.dart';
 import 'game_sprites.dart';
 import 'game_widgets.dart';
+import 'world_intro_overlay.dart';
 
 /// Карта продвижения: путь из миров, в конце каждого — босс.
 ///
@@ -26,14 +28,45 @@ import 'game_widgets.dart';
 /// такой пакет притащил бы собственный визуальный язык, и карта перестала бы
 /// выглядеть частью этого приложения — ровно та же причина, по которой
 /// иконки здесь свои, а не Material.
-class MapScreen extends ConsumerWidget {
+class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends ConsumerState<MapScreen> {
+  /// Показывает заставку мира, если в этот мир человек попал впервые.
+  ///
+  /// Проверка живёт на карте, а не в конце боя: в новый мир попадают именно
+  /// возвращением на карту, и заставка должна встретить там, где видно, что
+  /// изменилось. Показ идёт после кадра — открывать маршрут прямо из
+  /// `build` нельзя.
+  void _maybeIntroduceWorld() {
+    final node = ref.read(currentNodeProvider);
+    if (node == null) return;
+
+    // Первый мир не представляем: он не «открылся», в нём начали.
+    if (node.world <= 1) return;
+
+    if (!ref.read(worldIntroProvider.notifier).markSeen(node.world)) return;
+    WorldIntroOverlay.show(context, node.world);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final worlds = ref.watch(worldsProvider);
     final progress = ref.watch(playerProgressProvider).valueOrNull;
+
+    // Мир мог смениться, пока экран был закрыт боем: слушаем текущий узел,
+    // а не сравниваем в build.
+    ref.listen(currentNodeProvider, (previous, next) {
+      if (previous?.world == next?.world) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _maybeIntroduceWorld();
+      });
+    });
 
     return PixelBackground(
       child: Scaffold(
@@ -204,16 +237,32 @@ class _WorldSection extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: CustomPaint(
-                        painter: _TrailPainter(
-                          points: points,
-                          // Тропа гаснет за последним пройденным узлом:
-                          // дорога впереди ещё не протоптана.
-                          clearedUpTo: nodes
-                              .where((n) => n.status == MapNodeStatus.completed)
-                              .length,
-                          activeColor: colors.accent,
-                          idleColor: colors.divider,
+                      // Тропа гаснет за последним пройденным узлом: дорога
+                      // впереди ещё не протоптана. Прирост дорисовывается
+                      // постепенно — новый отрезок появляется клетка за
+                      // клеткой, а не возникает целиком, пока экран был
+                      // закрыт боем. Это единственное, что связывает
+                      // «победил» с «на карте стало на шаг больше».
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween<double>(
+                          end: nodes
+                              .where(
+                                (n) => n.status == MapNodeStatus.completed,
+                              )
+                              .length
+                              .toDouble(),
+                        ),
+                        // Задержка отдана узлу: сначала с него спадает
+                        // замок, и только потом от него идёт дорога.
+                        duration: AppMotion.slow,
+                        curve: AppMotion.standard,
+                        builder: (context, cleared, _) => CustomPaint(
+                          painter: _TrailPainter(
+                            points: points,
+                            clearedUpTo: cleared,
+                            activeColor: colors.accent,
+                            idleColor: colors.divider,
+                          ),
                         ),
                       ),
                     ),
@@ -250,7 +299,10 @@ class _TrailPainter extends CustomPainter {
   final List<Offset> points;
 
   /// Сколько узлов уже пройдено — до них тропа горит акцентом.
-  final int clearedUpTo;
+  ///
+  /// Дробное: `2.4` значит «два отрезка пройдены целиком, третий прорисован
+  /// на 40%». Дробь существует только на время анимации прироста.
+  final double clearedUpTo;
 
   final Color activeColor;
   final Color idleColor;
@@ -263,8 +315,9 @@ class _TrailPainter extends CustomPainter {
     for (var i = 0; i < points.length - 1; i++) {
       final from = points[i];
       final to = points[i + 1];
-      final walked = i < clearedUpTo;
-      final paint = Paint()..color = walked ? activeColor : idleColor;
+
+      // Доля отрезка, уже «протоптанная» акцентом: 1 — целиком, 0 — нет.
+      final walkedFraction = (clearedUpTo - i).clamp(0.0, 1.0);
 
       final delta = to - from;
       final length = delta.distance;
@@ -273,6 +326,8 @@ class _TrailPainter extends CustomPainter {
 
       for (var s = 0; s <= stepCount; s++) {
         final t = s / stepCount;
+        final paint = Paint()
+          ..color = t <= walkedFraction ? activeColor : idleColor;
         final p = from + delta * t;
         // Клетки кладутся по целым координатам: пунктир на дробных
         // координатах размывается и перестаёт быть пиксельным.
@@ -297,24 +352,64 @@ class _TrailPainter extends CustomPainter {
 }
 
 /// Узел на тропе.
-class _MapNodeTile extends ConsumerWidget {
+class _MapNodeTile extends ConsumerStatefulWidget {
   const _MapNodeTile({required this.node});
 
   final MapNodeEntity node;
+
+  @override
+  ConsumerState<_MapNodeTile> createState() => _MapNodeTileState();
+}
+
+class _MapNodeTileState extends ConsumerState<_MapNodeTile>
+    with SingleTickerProviderStateMixin {
+  /// Снятие замка: 0 — узел ещё закрыт, 1 — открыт и горит.
+  ///
+  /// Замок, исчезнувший за то время, пока экран был закрыт боем, не
+  /// показывает, что он вообще был. Здесь узел открывается на глазах:
+  /// значок замка гаснет, рамка и спрайт разгораются из приглушённого
+  /// цвета в активный, и только после этого от узла уходит тропа
+  /// (см. задержку в [_TrailPainter]).
+  late final AnimationController _unlock = AnimationController(
+    vsync: this,
+    duration: AppMotion.slow,
+    // Узел, уже открытый к моменту первой отрисовки, никакой анимации не
+    // играет: карта при открытии обязана быть просто картой.
+    value: widget.node.status == MapNodeStatus.locked ? 0 : 1,
+  );
+
+  @override
+  void didUpdateWidget(_MapNodeTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final was = oldWidget.node.status == MapNodeStatus.locked;
+    final now = widget.node.status == MapNodeStatus.locked;
+    if (was && !now) {
+      _unlock.forward(from: 0);
+    } else if (!was && now) {
+      _unlock.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _unlock.dispose();
+    super.dispose();
+  }
 
   void _open(BuildContext context) {
     Haptics.tap();
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _NodeSheet(node: node),
+      builder: (_) => _NodeSheet(node: widget.node),
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
+    final node = widget.node;
 
     final locked = node.status == MapNodeStatus.locked;
     final cleared = node.status == MapNodeStatus.completed;
@@ -340,40 +435,53 @@ class _MapNodeTile extends ConsumerWidget {
     return GestureDetector(
       onTap: locked ? null : () => _open(context),
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              border: Border.all(
-                color: tone,
-                width: node.status == MapNodeStatus.current
-                    ? AppRadius.pixelBorder * 2
-                    : AppRadius.pixelBorder,
+      child: AnimatedBuilder(
+        animation: _unlock,
+        builder: (context, _) {
+          final t = _unlock.value;
+
+          // Пока идёт снятие замка, узел показывает ещё замок, но уже
+          // разгорается: сначала цвет, потом смена значка. Порядок обратный
+          // выглядел бы как подмена картинки, а не как открытие.
+          final showLock = locked || t < 0.5;
+          final lit = Color.lerp(colors.divider, tone, t) ?? tone;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  border: Border.all(
+                    color: lit,
+                    width: node.status == MapNodeStatus.current
+                        ? AppRadius.pixelBorder * 2
+                        : AppRadius.pixelBorder,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: PixelCreature(
+                  rows: showLock ? GameSprites.nodeLocked : sprite,
+                  color: lit,
+                  size: showLock ? 28 : 52,
+                  // Дёргаться должен только текущий противник: два десятка
+                  // мерцающих узлов превратили бы карту в рябь.
+                  animate: node.status == MapNodeStatus.current,
+                ),
               ),
-            ),
-            alignment: Alignment.center,
-            child: PixelCreature(
-              rows: sprite,
-              color: tone,
-              size: locked ? 28 : 52,
-              // Дёргаться должен только текущий противник: два десятка
-              // мерцающих узлов превратили бы карту в рябь.
-              animate: node.status == MapNodeStatus.current,
-            ),
-          ),
-          AppSpacing.gapXs,
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: context.text.chartLabel.copyWith(color: tone),
-          ),
-        ],
+              AppSpacing.gapXs,
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: context.text.chartLabel.copyWith(color: lit),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

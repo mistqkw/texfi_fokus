@@ -1454,4 +1454,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timerQuietModeHint => 'Tap anywhere to return';
+
+  @override
+  String get mapWorldIntroLabel => 'New world';
+
+  @override
+  String get mapWorld1Epigraph =>
+      'Nothing here is loud. That is the whole difficulty.';
+
+  @override
+  String get mapWorld2Epigraph =>
+      'Everything here wants a turn. None of it is yours.';
+
+  @override
+  String get mapWorld3Epigraph =>
+      'The far end is out of sight. You walk it anyway.';
 }

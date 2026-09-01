@@ -842,5 +842,9 @@
   "updateFailed": "Could not download the update. Try again later.",
   "updateNoApk": "This release has no package to install yet.",
   "timerQuietMode": "Quiet mode",
-  "timerQuietModeHint": "Tap anywhere to return"
+  "timerQuietModeHint": "Tap anywhere to return",
+  "mapWorldIntroLabel": "New world",
+  "mapWorld1Epigraph": "Nothing here is loud. That is the whole difficulty.",
+  "mapWorld2Epigraph": "Everything here wants a turn. None of it is yours.",
+  "mapWorld3Epigraph": "The far end is out of sight. You walk it anyway."
 }
