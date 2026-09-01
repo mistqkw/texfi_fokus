@@ -137,6 +137,11 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
+                // Схема ограничивает имя 120 символами. Без maxLength форма
+                // позволяла набрать больше, и сохранение падало исключением
+                // Drift уже после нажатия «Сохранить» — то есть ошибка
+                // всплывала там, где исправить её было уже нечем.
+                maxLength: HabitLimits.nameMaxLength,
                 decoration: InputDecoration(
                   labelText: l10n.habitNameLabel,
                   hintText: l10n.habitNameHint,
@@ -195,6 +200,7 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
               TextFormField(
                 controller: _punishmentController,
                 maxLines: 2,
+                maxLength: HabitLimits.punishmentMaxLength,
                 decoration: InputDecoration(
                   hintText: l10n.habitPunishmentHint,
                 ),
@@ -209,6 +215,7 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
               TextFormField(
                 controller: _rewardController,
                 maxLines: 2,
+                maxLength: HabitLimits.rewardMaxLength,
                 decoration: InputDecoration(hintText: l10n.habitRewardHint),
               ),
               AppSpacing.gapSm,
