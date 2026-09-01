@@ -230,9 +230,26 @@ class _StatsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
+    // Три нуля выглядели одинаково и у того, кто только включил режим, и у
+    // того, кто давно играет, но ни одной сессии не досиживает. Второму
+    // молчать особенно вредно: именно ему нужно сказать, что победа — это
+    // доведённая до конца сессия, а не начатая.
+    final noWins = progress.drifterKills == 0 && progress.bossKills == 0;
+    final everPlayed = progress.totalXp > 0;
+
     return PixelCard(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (noWins) ...[
+            Text(
+              everPlayed
+                  ? l10n.characterStatsNoWins
+                  : l10n.characterStatsEmptyNew,
+              style: context.text.body,
+            ),
+            const PixelDivider(gap: AppSpacing.md),
+          ],
           _StatLine(
             sprite: GameSprites.drifterCreep,
             label: l10n.characterDriftersDefeated,

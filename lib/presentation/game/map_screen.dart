@@ -13,6 +13,7 @@ import '../../domain/entities/game_entities.dart';
 import '../../domain/entities/game_rules.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
 import 'character_screen.dart';
 import 'encounter_card.dart';
@@ -93,13 +94,36 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
           ],
         ),
+        // Первый экран после включения игрового режима: узлы ещё не
+        // разложены. Раньше здесь крутился бесконечный Material-спиннер, и
+        // ровно в этот момент — самый первый взгляд на карту — режим
+        // выглядел сломанным.
         body: worlds.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: PixelSpinner(label: l10n.mapPreparing))
             : ListView(
                 padding: AppSpacing.screen,
                 children: [
                   if (progress != null) _LevelStrip(progress: progress),
                   AppSpacing.gapLg,
+                  // Что вообще такое эта карта, объяснялось только на экране
+                  // персонажа за иконкой в шапке. Пока пройденных узлов нет,
+                  // объяснение нужно именно здесь.
+                  if (progress == null || progress.totalXp == 0) ...[
+                    PixelCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.mapIntroTitle,
+                            style: context.text.sectionTitle,
+                          ),
+                          AppSpacing.gapSm,
+                          Text(l10n.mapIntroBody, style: context.text.body),
+                        ],
+                      ),
+                    ),
+                    AppSpacing.gapLg,
+                  ],
                   for (final world in worlds) _WorldSection(nodes: world),
                   if (ref.watch(currentNodeProvider) == null) ...[
                     AppSpacing.gapLg,
