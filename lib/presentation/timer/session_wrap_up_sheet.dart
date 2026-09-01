@@ -10,15 +10,24 @@ import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/session_entity.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_button.dart';
+import '../shared/pixel_sprite.dart';
 
 /// То, что пользователь рассказал о закончившейся сессии. Все поля
 /// необязательные — лист можно закрыть, не ответив ни на один вопрос.
 class SessionWrapUp {
-  const SessionWrapUp({this.rating, this.reason, this.note});
+  const SessionWrapUp({
+    this.rating,
+    this.reason,
+    this.note,
+    this.restart = false,
+  });
 
   final int? rating;
   final InterruptionReason? reason;
   final String? note;
+
+  /// Пользователь просит сразу такую же сессию — без повторного check-in.
+  final bool restart;
 }
 
 /// Итог сессии: оценка, причина прерывания и короткая заметка.
@@ -73,13 +82,14 @@ class _SessionWrapUpSheetState extends State<SessionWrapUpSheet> {
         TextSelection.collapsed(offset: _noteController.text.length);
   }
 
-  void _submit() {
+  void _submit({bool restart = false}) {
     Haptics.success();
     Navigator.of(context).pop(
       SessionWrapUp(
         rating: _rating,
         reason: _reason,
         note: _noteController.text,
+        restart: restart,
       ),
     );
   }
@@ -165,7 +175,17 @@ class _SessionWrapUpSheetState extends State<SessionWrapUpSheet> {
                 ],
               ),
               AppSpacing.gapXl,
-              PixelButton(label: l10n.commonSave, onPressed: _submit),
+              PixelButton(label: l10n.commonSave, onPressed: () => _submit()),
+              AppSpacing.gapMd,
+              // «Ещё одну такую же» стоит рядом с «готово», а не вместо
+              // него: инерцию после удачной сессии грех терять на повторный
+              // check-in, где всё равно будут те же ответы.
+              PixelButton(
+                label: l10n.timerRepeat,
+                primary: false,
+                sprite: PixelSprites.play,
+                onPressed: () => _submit(restart: true),
+              ),
               AppSpacing.gapMd,
               PixelButton(
                 label: l10n.commonSkip,

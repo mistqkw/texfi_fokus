@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_info.dart';
 import '../../core/haptics/haptics.dart';
+import '../../core/theme/app_accent.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
 import '../../data/providers/data_providers.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
+import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
@@ -65,6 +70,58 @@ class SettingsScreen extends ConsumerWidget {
     await ref.read(nightCapHourProvider.notifier).set(picked.hour);
   }
 
+  /// Импорт выгрузки. Два вопроса подряд — какой файл и что делать с тем,
+  /// что уже есть, — потому что «заменить» здесь означает стереть чужую
+  /// историю без возможности отката.
+  Future<void> _import(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+
+    final path = await showDialog<String>(
+      context: context,
+      builder: (context) => const _ImportPathDialog(),
+    );
+    if (path == null || path.trim().isEmpty || !context.mounted) return;
+
+    final file = File(path.trim());
+    if (!file.existsSync()) {
+      Haptics.warning();
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.settingsImportNoFile)),
+      );
+      return;
+    }
+
+    final merge = await showDialog<bool>(
+      context: context,
+      builder: (context) => const _ImportModeDialog(),
+    );
+    if (merge == null || !context.mounted) return;
+
+    try {
+      final result = await ref
+          .read(exportServiceProvider)
+          .importFromFile(file, merge: merge);
+      Haptics.success();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.settingsImportDone(
+              result.habits,
+              result.tasks,
+              result.sessions,
+            ),
+          ),
+        ),
+      );
+    } catch (error) {
+      Haptics.warning();
+      messenger.showSnackBar(
+        SnackBar(content: Text('${l10n.settingsImportFailed}: $error')),
+      );
+    }
+  }
+
   Future<void> _pickSummaryTime(BuildContext context, WidgetRef ref) async {
     final current = ref.read(dailySummaryTimeProvider);
     final picked = await showTimePicker(
@@ -83,6 +140,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final themeMode = ref.watch(themeModeProvider);
+    final accent = ref.watch(accentProvider);
     final locale = ref.watch(localeProvider);
     final sounds = ref.watch(soundsEnabledProvider);
     final vibration = ref.watch(vibrationEnabledProvider);
@@ -119,6 +177,34 @@ class SettingsScreen extends ConsumerWidget {
                       onChanged: (value) =>
                           ref.read(themeModeProvider.notifier).set(value),
                     ),
+                ],
+              ),
+            ),
+            AppSpacing.gapMd,
+            PixelCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.settingsAccent, style: context.text.title),
+                  AppSpacing.gapSm,
+                  Text(l10n.settingsAccentSubtitle, style: context.text.caption),
+                  AppSpacing.gapMd,
+                  Row(
+                    children: [
+                      for (final option in AppAccent.values)
+                        Padding(
+                          padding: const EdgeInsets.only(right: AppSpacing.sm),
+                          child: _AccentSwatch(
+                            accent: option,
+                            selected: option == accent,
+                            onTap: () {
+                              Haptics.tap();
+                              ref.read(accentProvider.notifier).set(option);
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -289,14 +375,28 @@ class SettingsScreen extends ConsumerWidget {
             AppSpacing.gapXl,
             PixelSectionHeader(title: l10n.settingsData),
             PixelCard(
-              child: PixelOptionTile(
-                leading: PixelSprite(
-                  rows: PixelSprites.download,
-                  size: 20,
-                  color: context.colors.accent,
-                ),
-                title: l10n.settingsExport,
-                onTap: () => _export(context, ref),
+              child: Column(
+                children: [
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.download,
+                      size: 20,
+                      color: context.colors.accent,
+                    ),
+                    title: l10n.settingsExport,
+                    onTap: () => _export(context, ref),
+                  ),
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.upload,
+                      size: 20,
+                      color: context.colors.accent,
+                    ),
+                    title: l10n.settingsImport,
+                    subtitle: l10n.settingsImportSubtitle,
+                    onTap: () => _import(context, ref),
+                  ),
+                ],
               ),
             ),
             AppSpacing.gapXl,
@@ -315,6 +415,156 @@ class SettingsScreen extends ConsumerWidget {
                   Text(l10n.settingsAboutBody, style: context.text.body),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Квадратик акцентного цвета. Выбранный обведён рамкой цвета текста —
+/// собственным цветом его было бы не отличить от невыбранного.
+class _AccentSwatch extends StatelessWidget {
+  const _AccentSwatch({
+    required this.accent,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final AppAccent accent;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: accent.color,
+          border: Border.all(
+            color: selected ? colors.textPrimary : colors.divider,
+            width: AppRadius.pixelBorder,
+          ),
+        ),
+        child: selected
+            ? PixelSprite(
+                rows: PixelSprites.check,
+                size: 16,
+                color: colors.background,
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+/// Путь к файлу вводится руками: системный файловый диалог потянул бы ещё
+/// один плагин ради одной кнопки, а путь выгрузки приложение и так
+/// показывает после экспорта.
+class _ImportPathDialog extends StatefulWidget {
+  const _ImportPathDialog();
+
+  @override
+  State<_ImportPathDialog> createState() => _ImportPathDialogState();
+}
+
+class _ImportPathDialogState extends State<_ImportPathDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(AppSpacing.page),
+      child: PixelCard(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.settingsImport, style: context.text.sectionTitle),
+            AppSpacing.gapMd,
+            Text(l10n.settingsImportPathHint, style: context.text.body),
+            AppSpacing.gapMd,
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              decoration: const InputDecoration(hintText: '/home/…/backup.json'),
+              onSubmitted: (value) => Navigator.of(context).pop(value),
+            ),
+            AppSpacing.gapXl,
+            PixelButton(
+              label: l10n.commonNext,
+              onPressed: () => Navigator.of(context).pop(_controller.text),
+            ),
+            AppSpacing.gapMd,
+            PixelButton(
+              label: l10n.commonCancel,
+              primary: false,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Слияние или замена. Замена подписана прямо: «сотрёт всё, что есть» —
+/// на этом экране эвфемизм стоил бы кому-то всей истории.
+class _ImportModeDialog extends StatelessWidget {
+  const _ImportModeDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(AppSpacing.page),
+      child: PixelCard(
+        borderColor: colors.warning,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.settingsImportWarnTitle,
+              style: context.text.sectionTitle.copyWith(color: colors.warning),
+            ),
+            AppSpacing.gapMd,
+            Text(l10n.settingsImportWarnBody, style: context.text.body),
+            AppSpacing.gapXl,
+            PixelButton(
+              label: l10n.settingsImportMerge,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+            AppSpacing.gapMd,
+            PixelButton(
+              label: l10n.settingsImportReplace,
+              danger: true,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            AppSpacing.gapMd,
+            PixelButton(
+              label: l10n.commonCancel,
+              primary: false,
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         ),

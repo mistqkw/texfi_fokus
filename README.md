@@ -25,15 +25,23 @@
 
 - 🎛 **Mood check-in** — a four-state switch (bad · normal · good · full f0kus) with a different vibration pattern for each: one weak pulse at the bottom, a rising burst at the top. The state is something you feel, not just read
 - 🧠 **Recommendations that learn** — a contextual bandit picks between Sprint 15, Pomodoro 25/5, Pomodoro 50/10 and Deep work 90 based on what has actually worked *for you* in this mood, on this kind of task, at this hour. Not a lookup table someone guessed on your behalf
+- 🔍 **Recommendations that show their work** — the "why this" card names the level of context the advice rests on (this exact situation · similar work · this mood in general), how many of your own sessions are behind it and how often it worked out — not a bare confidence percentage
+- 📝 **What the session was actually like** — an optional reason when you stop early (distracted · wrong task · too tired · rather not say) and a short note or pixel sticker afterwards. Choosing a technique against the recommendation is recorded separately and taught at a third of the weight: it says you disagreed with the advice, not that the technique is bad
+- 🛑 **Brakes against burnout** — a nudge when a new session starts within minutes of the last, a night soft cap that stops suggesting anything longer than 25/5 past your chosen hour, and a pause after three interrupted sessions in a row. Every one of them can be overruled on the spot
 - 🌱 **Honest cold start** — for the first ten sessions the app says so plainly and falls back to sensible defaults, instead of dressing up noise as insight
 - ⏱ **A dial you can turn mid-session** — drag the ring to add or shave minutes without leaving the timer; it clicks once per minute under your thumb. Full-screen minimal mode on a double tap
 - ✅ **Habits with a price** — every habit requires you to write down what you owe yourself if you skip it. The app stores it, shows it on the card, and reads it back in the reminder. Nothing is automated — that is the point
+- 🎁 **A reward next to the price** — an optional "if you keep it up for N days" you write yourself, shown the moment the streak reaches it
+- 📅 **Habits that don't need fixed days** — either chosen weekdays or simply N times a week, where the streak counts closed weeks instead of days
+- ❄️ **One way out** — a streak freeze, once a week by default: a skipped day that holds the streak without extending it, with the remaining quota visible on the card
 - 🔥 **Streaks that don't lie** — an unfinished day doesn't break the streak until the day is actually over
-- 📊 **Statistics** — a pixel-art contribution heatmap, focus minutes per day, a breakdown by task category, habit completion rates, and the most useful chart of all: which mood you actually finish sessions in
-- 🔔 **Local reminders** — per-habit reminders plus an end-of-day summary of what's still open
-- 💾 **Export to JSON** — everything you've logged, in one file. The only safety net an offline-only app can offer
+- 🗒 **Plan for the day** — two or three tasks in rough order, offered first at the next check-in, each with an optional checklist of up to five steps you tick off while the timer runs
+- 🔁 **One more like this** — restart a finished session with the same settings, without going through the check-in again
+- 📊 **Statistics** — a pixel-art contribution heatmap, focus minutes per day, a breakdown by task category, habit completion rates, how often each penalty actually bit, why sessions broke off, and the most useful chart of all: which mood you actually finish sessions in
+- 🔔 **Local reminders** — per-habit reminders plus an end-of-day summary: what's still open, and on a productive day the sessions, focus time and dominant mood behind it
+- 💾 **Export and import JSON** — everything you've logged, in one file, and back again on a new device — merging with what's there or replacing it, after a warning that says plainly which one wipes your history
 - 🌍 **Languages** — English, Русский, Polski, Українська, following the system by default
-- 🎨 **Two themes** — pixel-art in the dark (black, grey, `#4a7dfb`) and a warm orange-and-beige light theme
+- 🎨 **Two themes, five accents** — pixel-art in the dark (black, grey, `#4a7dfb`) and a warm orange-and-beige light theme, with a preset accent tone you can swap without the palette losing its footing
 - 📴 **Fully offline** — no account, no cloud, no telemetry. The data never leaves the device
 
 Part of the **TexFi** ecosystem, alongside [TexFi m0ney](https://github.com/mistqkw/texfi-money), [TexFi Files](https://github.com/mistqkw/texfi_files) and [TeFBlock](https://github.com/mistqkw/tefblock).
@@ -96,21 +104,26 @@ lib/
     theme/          palettes, typography, spacing, radii, motion, transitions
     utils/          duration formatting
   data/
-    local/          Drift database, tables, JSON export
+    local/          Drift database, tables, JSON export and import
     providers/      all Riverpod DI wiring, in one file
     recommendation/ BanditRecommendationEngine (Thompson sampling)
     repositories/   Drift-backed repository implementations
   domain/
-    entities/       Habit, Task, Session, Mood, Recommendation, engine interface
+    entities/       Habit, Task, Session, Mood, Recommendation, day plan,
+                    session guards (short break, night cap, burnout streak),
+                    engine interface
     repositories/   abstract repository interfaces
   presentation/
     onboarding/     first run: concept, theme, first habit, notifications
     home/           streak, today's habits, focus summary
     mood_checkin/   the four-state mood switch and task pick
-    timer/          recommendation, manual setup, the dial screen
-    habits/         habit list and editor (incl. the punishment field)
-    statistics/     heatmap, charts, mood-vs-outcome breakdown
-    settings/       theme, haptics, language, notifications, export
+    planner/        day plan and the per-task checklist editor
+    timer/          recommendation, manual setup, the dial screen,
+                    session wrap-up (rating, interruption reason, note)
+    habits/         habit list and editor (punishment, reward, frequency)
+    statistics/     heatmap, charts, mood-vs-outcome, penalties, interruptions
+    settings/       theme, accent, haptics, language, notifications,
+                    pace guards, export and import
     shared/         pixel widget kit, app shell, notification sync
                     pixel_sprite    sprite grids + the PixelSprites catalogue
                     pixel_shadow    the solid offset shadow, used by everything

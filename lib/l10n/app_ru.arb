@@ -363,5 +363,39 @@
       }
     }
   },
-  "notificationDailyAllDone": "Сегодня всё закрыто. Хорошо."
+  "notificationDailyAllDone": "Сегодня всё закрыто. Хорошо.",
+
+  "settingsAccent": "Акцентный цвет",
+  "settingsAccentSubtitle": "Меняется только акцентный тон — остальная палитра остаётся прежней.",
+  "settingsImport": "Импорт из JSON",
+  "settingsImportSubtitle": "Восстановить выгрузку на новом устройстве",
+  "settingsImportPathHint": "Полный путь к выгруженному .json-файлу.",
+  "settingsImportNoFile": "По этому пути файла нет",
+  "settingsImportWarnTitle": "Это затронет твои данные",
+  "settingsImportWarnBody": "Слияние оставит то, что уже есть, и добавит недостающее. Замена сначала сотрёт текущую историю — отменить будет нельзя.",
+  "settingsImportMerge": "Слить",
+  "settingsImportReplace": "Заменить всё",
+  "settingsImportDone": "Импортировано: привычек — {habits}, задач — {tasks}, сессий — {sessions}",
+  "@settingsImportDone": {
+    "placeholders": {
+      "habits": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsImportFailed": "Импорт не удался",
+  "timerRepeat": "Ещё одну такую же",
+  "recommendationEvidenceScopeLabel": "Совпадение контекста",
+  "recommendationEvidenceCountLabel": "Сессий в основе",
+  "recommendationEvidenceRateLabel": "Срабатывало",
+  "recommendationScopeExact": "ровно этот",
+  "recommendationScopeSimilar": "похожая работа",
+  "recommendationScopeBroad": "это настроение вообще",
+  "recommendationScopeNone": "данных пока нет"
 }

@@ -53,12 +53,13 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
     // был согласован с ними ещё до того, как пользователь зайдёт в настройки.
     ref.watch(vibrationEnabledProvider);
     ref.watch(vibrationIntensityProvider);
+    final accent = ref.watch(accentProvider);
 
     return MaterialApp(
       title: AppInfo.name,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.build(brightness: Brightness.light),
-      darkTheme: AppTheme.build(brightness: Brightness.dark),
+      theme: AppTheme.build(brightness: Brightness.light, accent: accent),
+      darkTheme: AppTheme.build(brightness: Brightness.dark, accent: accent),
       themeMode: ref.watch(themeModeProvider),
       themeAnimationDuration: AppMotion.normal,
       locale: ref.watch(localeProvider),

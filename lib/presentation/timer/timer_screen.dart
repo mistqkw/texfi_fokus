@@ -5,6 +5,7 @@ import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
@@ -91,6 +92,15 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     // осталось бы вчерашним текстом.
     await syncNotifications(ref, l10n);
     if (!mounted) return;
+
+    if (wrapUp?.restart ?? false) {
+      // Черновик не сбрасываем: задача, настроение и категория те же — в
+      // этом весь смысл быстрого повтора.
+      Navigator.of(context).pushReplacement(
+        pixelDissolveRoute<void>(const TimerScreen()),
+      );
+      return;
+    }
 
     ref.read(sessionDraftProvider.notifier).reset();
     Navigator.of(context).pop();

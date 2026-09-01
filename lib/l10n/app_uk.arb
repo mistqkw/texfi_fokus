@@ -363,5 +363,39 @@
       }
     }
   },
-  "notificationDailyAllDone": "Сьогодні все закрито. Добре."
+  "notificationDailyAllDone": "Сьогодні все закрито. Добре.",
+
+  "settingsAccent": "Акцентний колір",
+  "settingsAccentSubtitle": "Змінюється лише акцентний тон — решта палітри лишається тією самою.",
+  "settingsImport": "Імпорт із JSON",
+  "settingsImportSubtitle": "Відновити вивантаження на новому пристрої",
+  "settingsImportPathHint": "Повний шлях до вивантаженого .json-файлу.",
+  "settingsImportNoFile": "За цим шляхом файлу немає",
+  "settingsImportWarnTitle": "Це зачепить твої дані",
+  "settingsImportWarnBody": "Злиття залишить те, що вже є, і додасть відсутнє. Заміна спершу зітре поточну історію — скасувати буде неможливо.",
+  "settingsImportMerge": "Злити",
+  "settingsImportReplace": "Замінити все",
+  "settingsImportDone": "Імпортовано: звичок — {habits}, задач — {tasks}, сесій — {sessions}",
+  "@settingsImportDone": {
+    "placeholders": {
+      "habits": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsImportFailed": "Імпорт не вдався",
+  "timerRepeat": "Ще одну таку саму",
+  "recommendationEvidenceScopeLabel": "Збіг контексту",
+  "recommendationEvidenceCountLabel": "Сесій в основі",
+  "recommendationEvidenceRateLabel": "Спрацьовувало",
+  "recommendationScopeExact": "саме цей",
+  "recommendationScopeSimilar": "схожа робота",
+  "recommendationScopeBroad": "цей настрій загалом",
+  "recommendationScopeNone": "даних поки немає"
 }

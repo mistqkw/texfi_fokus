@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_accent.dart';
 import 'app_colors_ext.dart';
 import 'app_page_transitions.dart';
 import 'app_palettes.dart';
@@ -9,8 +10,11 @@ import 'app_spacing.dart';
 import 'app_typography.dart';
 
 abstract final class AppTheme {
-  static ThemeData build({required Brightness brightness}) {
-    final colors = AppPalettes.forBrightness(brightness);
+  static ThemeData build({
+    required Brightness brightness,
+    AppAccent accent = AppAccent.blue,
+  }) {
+    final colors = colorsFor(brightness, accent: accent);
     final textTheme = buildAppTextTheme(colors: colors);
 
     final colorScheme = ColorScheme(
@@ -252,6 +256,24 @@ abstract final class AppTheme {
   }
 
   /// Палитра без BuildContext — нужна на самом первом кадре и в тестах.
-  static AppColorsExt colorsFor(Brightness brightness) =>
-      AppPalettes.forBrightness(brightness);
+  ///
+  /// Акцент накладывается поверх палитры, а не правит её: значения тем
+  /// остаются единственным источником правды, а пресет — тонким слоем
+  /// сверху, который легко снять.
+  static AppColorsExt colorsFor(
+    Brightness brightness, {
+    AppAccent accent = AppAccent.blue,
+  }) {
+    final base = AppPalettes.forBrightness(brightness);
+    if (accent == AppAccent.blue) return base;
+    return base.copyWith(
+      accent: accent.color,
+      // Тень в тёмной теме — глубокий оттенок акцента, в светлой она
+      // остаётся тёплой: там она работает как «бумажная» тень, а не как
+      // продолжение акцента.
+      accentShadow:
+          brightness == Brightness.dark ? accent.shadow : base.accentShadow,
+      scanline: brightness == Brightness.dark ? accent.scanline : base.scanline,
+    );
+  }
 }

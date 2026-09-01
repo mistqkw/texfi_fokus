@@ -859,4 +859,70 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get notificationDailyAllDone =>
       'Dziś wszystko zamknięte. Dobra robota.';
+
+  @override
+  String get settingsAccent => 'Kolor akcentu';
+
+  @override
+  String get settingsAccentSubtitle =>
+      'Zmienia się tylko ton akcentu — reszta palety zostaje bez zmian.';
+
+  @override
+  String get settingsImport => 'Import z JSON';
+
+  @override
+  String get settingsImportSubtitle =>
+      'Przywróć wcześniejszy eksport na nowym urządzeniu';
+
+  @override
+  String get settingsImportPathHint =>
+      'Pełna ścieżka do wyeksportowanego pliku .json.';
+
+  @override
+  String get settingsImportNoFile => 'Pod tą ścieżką nie ma pliku';
+
+  @override
+  String get settingsImportWarnTitle => 'To dotknie twoich danych';
+
+  @override
+  String get settingsImportWarnBody =>
+      'Scalanie zachowa to, co już masz, i doda brakujące. Zamiana najpierw wymaże obecną historię — bez cofnięcia.';
+
+  @override
+  String get settingsImportMerge => 'Scal';
+
+  @override
+  String get settingsImportReplace => 'Zamień wszystko';
+
+  @override
+  String settingsImportDone(int habits, int tasks, int sessions) {
+    return 'Zaimportowano: nawyki — $habits, zadania — $tasks, sesje — $sessions';
+  }
+
+  @override
+  String get settingsImportFailed => 'Import nieudany';
+
+  @override
+  String get timerRepeat => 'Jeszcze jedna taka sama';
+
+  @override
+  String get recommendationEvidenceScopeLabel => 'Dopasowanie kontekstu';
+
+  @override
+  String get recommendationEvidenceCountLabel => 'Sesji u podstaw';
+
+  @override
+  String get recommendationEvidenceRateLabel => 'Zadziałało';
+
+  @override
+  String get recommendationScopeExact => 'dokładnie ten';
+
+  @override
+  String get recommendationScopeSimilar => 'podobna praca';
+
+  @override
+  String get recommendationScopeBroad => 'ten nastrój ogólnie';
+
+  @override
+  String get recommendationScopeNone => 'brak danych';
 }

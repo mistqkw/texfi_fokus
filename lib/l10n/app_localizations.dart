@@ -1619,6 +1619,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everything is closed today. Well done.'**
   String get notificationDailyAllDone;
+
+  /// No description provided for @settingsAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent colour'**
+  String get settingsAccent;
+
+  /// No description provided for @settingsAccentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the accent tone changes — the rest of the palette stays as it is.'**
+  String get settingsAccentSubtitle;
+
+  /// No description provided for @settingsImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from JSON'**
+  String get settingsImport;
+
+  /// No description provided for @settingsImportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore an earlier export on a new device'**
+  String get settingsImportSubtitle;
+
+  /// No description provided for @settingsImportPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Full path to the exported .json file.'**
+  String get settingsImportPathHint;
+
+  /// No description provided for @settingsImportNoFile.
+  ///
+  /// In en, this message translates to:
+  /// **'No file at that path'**
+  String get settingsImportNoFile;
+
+  /// No description provided for @settingsImportWarnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This touches your data'**
+  String get settingsImportWarnTitle;
+
+  /// No description provided for @settingsImportWarnBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge keeps what you already have and adds what is missing. Replace wipes the current history first — there is no undo.'**
+  String get settingsImportWarnBody;
+
+  /// No description provided for @settingsImportMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get settingsImportMerge;
+
+  /// No description provided for @settingsImportReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace everything'**
+  String get settingsImportReplace;
+
+  /// No description provided for @settingsImportDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported: {habits} habits, {tasks} tasks, {sessions} sessions'**
+  String settingsImportDone(int habits, int tasks, int sessions);
+
+  /// No description provided for @settingsImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get settingsImportFailed;
+
+  /// No description provided for @timerRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'One more like this'**
+  String get timerRepeat;
+
+  /// No description provided for @recommendationEvidenceScopeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Context match'**
+  String get recommendationEvidenceScopeLabel;
+
+  /// No description provided for @recommendationEvidenceCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions behind it'**
+  String get recommendationEvidenceCountLabel;
+
+  /// No description provided for @recommendationEvidenceRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked out'**
+  String get recommendationEvidenceRateLabel;
+
+  /// No description provided for @recommendationScopeExact.
+  ///
+  /// In en, this message translates to:
+  /// **'exactly this one'**
+  String get recommendationScopeExact;
+
+  /// No description provided for @recommendationScopeSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'similar work'**
+  String get recommendationScopeSimilar;
+
+  /// No description provided for @recommendationScopeBroad.
+  ///
+  /// In en, this message translates to:
+  /// **'this mood in general'**
+  String get recommendationScopeBroad;
+
+  /// No description provided for @recommendationScopeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'no data yet'**
+  String get recommendationScopeNone;
 }
 
 class _AppLocalizationsDelegate
