@@ -653,4 +653,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionNoteHint => 'A few words or a sticker';
+
+  @override
+  String get guardShortBreakTitle => 'Straight back in?';
+
+  @override
+  String get guardShortBreakBody =>
+      'You just finished a session. A real break makes the next one better.';
+
+  @override
+  String get guardBurnoutTitle => 'Three in a row cut short';
+
+  @override
+  String get guardBurnoutBody =>
+      'Maybe today is a day to rest. Nothing is stopping you if you disagree.';
+
+  @override
+  String get guardNightCapTitle => 'It is late';
+
+  @override
+  String get guardNightCapBody =>
+      'Past your night hour we keep sessions short, whatever the mood and the engine say.';
+
+  @override
+  String get guardStartAnyway => 'Start anyway';
+
+  @override
+  String get guardTakeABreak => 'Not now';
+
+  @override
+  String get settingsBurnout => 'Pace';
+
+  @override
+  String get settingsShortBreakWarning => 'Short break warning';
+
+  @override
+  String settingsShortBreakSubtitle(int count) {
+    return 'Warn if a session starts within $count min of the last one';
+  }
+
+  @override
+  String get settingsShortBreakOff => 'Off';
+
+  @override
+  String get settingsNightCap => 'Night soft cap';
+
+  @override
+  String get settingsNightCapSubtitle =>
+      'Suggest nothing longer than 25/5 late at night';
+
+  @override
+  String get settingsNightCapHour => 'Night starts at';
 }

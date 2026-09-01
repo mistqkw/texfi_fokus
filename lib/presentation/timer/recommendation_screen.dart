@@ -17,6 +17,8 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
 import 'manual_timer_screen.dart';
+import 'session_guard_dialog.dart';
+import 'session_guard_providers.dart';
 import 'timer_providers.dart';
 import 'timer_screen.dart';
 
@@ -27,7 +29,16 @@ import 'timer_screen.dart';
 class RecommendationScreen extends ConsumerWidget {
   const RecommendationScreen({super.key});
 
-  void _start(BuildContext context, WidgetRef ref, Recommendation rec) {
+  Future<void> _start(
+    BuildContext context,
+    WidgetRef ref,
+    Recommendation rec,
+  ) async {
+    // Мягкая пауза перед стартом: слишком короткий перерыв или третья
+    // оборванная сессия подряд. Отказ пользователя ничего не запускает.
+    if (!await confirmSessionStart(context, ref)) return;
+    if (!context.mounted) return;
+
     ref.read(timerPlanProvider.notifier).state =
         TimerPlan.fromRecommendation(rec);
     Navigator.of(context).pushReplacement(
@@ -79,9 +90,27 @@ class _RecommendationBody extends ConsumerWidget {
     final draft = ref.watch(sessionDraftProvider);
     final technique = recommendation.technique;
 
+    final burnout = ref.watch(burnoutStreakProvider);
+
     return ListView(
       padding: AppSpacing.screen,
       children: [
+        // Серия прерываний — не запрет, а повод посмотреть на день целиком,
+        // поэтому это баннер над рекомендацией, а не заслонка перед ней.
+        if (burnout) ...[
+          _WarningBanner(
+            title: l10n.guardBurnoutTitle,
+            body: l10n.guardBurnoutBody,
+          ),
+          AppSpacing.gapLg,
+        ],
+        if (recommendation.cappedForNight) ...[
+          _WarningBanner(
+            title: l10n.guardNightCapTitle,
+            body: l10n.guardNightCapBody,
+          ),
+          AppSpacing.gapLg,
+        ],
         PixelCard(
           accent: true,
           child: Column(
@@ -253,6 +282,48 @@ class _WhyCard extends StatelessWidget {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Плашка с предупреждением — ночной кап или серия прерываний. Рамка цветом
+/// предупреждения, тот же язык, что у «наказания» на карточке привычки.
+class _WarningBanner extends StatelessWidget {
+  const _WarningBanner({required this.title, required this.body});
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return PixelCard(
+      borderColor: colors.warning,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              PixelSprite(
+                rows: PixelSprites.hourglass,
+                size: 14,
+                color: colors.warning,
+              ),
+              AppSpacing.wGapSm,
+              Expanded(
+                child: Text(
+                  title,
+                  style: context.text.chartLabel.copyWith(
+                    color: colors.warning,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.gapSm,
+          Text(body, style: context.text.body),
         ],
       ),
     );

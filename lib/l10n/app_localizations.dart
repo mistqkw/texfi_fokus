@@ -1265,6 +1265,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A few words or a sticker'**
   String get sessionNoteHint;
+
+  /// No description provided for @guardShortBreakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Straight back in?'**
+  String get guardShortBreakTitle;
+
+  /// No description provided for @guardShortBreakBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You just finished a session. A real break makes the next one better.'**
+  String get guardShortBreakBody;
+
+  /// No description provided for @guardBurnoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Three in a row cut short'**
+  String get guardBurnoutTitle;
+
+  /// No description provided for @guardBurnoutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe today is a day to rest. Nothing is stopping you if you disagree.'**
+  String get guardBurnoutBody;
+
+  /// No description provided for @guardNightCapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'It is late'**
+  String get guardNightCapTitle;
+
+  /// No description provided for @guardNightCapBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Past your night hour we keep sessions short, whatever the mood and the engine say.'**
+  String get guardNightCapBody;
+
+  /// No description provided for @guardStartAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Start anyway'**
+  String get guardStartAnyway;
+
+  /// No description provided for @guardTakeABreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get guardTakeABreak;
+
+  /// No description provided for @settingsBurnout.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
+  String get settingsBurnout;
+
+  /// No description provided for @settingsShortBreakWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Short break warning'**
+  String get settingsShortBreakWarning;
+
+  /// No description provided for @settingsShortBreakSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warn if a session starts within {count} min of the last one'**
+  String settingsShortBreakSubtitle(int count);
+
+  /// No description provided for @settingsShortBreakOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get settingsShortBreakOff;
+
+  /// No description provided for @settingsNightCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Night soft cap'**
+  String get settingsNightCap;
+
+  /// No description provided for @settingsNightCapSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest nothing longer than 25/5 late at night'**
+  String get settingsNightCapSubtitle;
+
+  /// No description provided for @settingsNightCapHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Night starts at'**
+  String get settingsNightCapHour;
 }
 
 class _AppLocalizationsDelegate

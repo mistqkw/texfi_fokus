@@ -15,6 +15,7 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
+import 'session_guard_dialog.dart';
 import 'timer_providers.dart';
 import 'timer_screen.dart';
 
@@ -38,7 +39,10 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
   bool _soundOnEnd = true;
   bool _autoStartNext = true;
 
-  void _start() {
+  Future<void> _start() async {
+    if (!await confirmSessionStart(context, ref)) return;
+    if (!mounted) return;
+
     ref.read(timerPlanProvider.notifier).state = TimerPlan(
       technique: _technique,
       focusMinutes: _focusMinutes,

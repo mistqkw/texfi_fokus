@@ -318,5 +318,28 @@
   "interruptionTired": "Too tired",
   "interruptionNoComment": "Rather not say",
   "sessionNoteQuestion": "How did it go?",
-  "sessionNoteHint": "A few words or a sticker"
+  "sessionNoteHint": "A few words or a sticker",
+
+  "guardShortBreakTitle": "Straight back in?",
+  "guardShortBreakBody": "You just finished a session. A real break makes the next one better.",
+  "guardBurnoutTitle": "Three in a row cut short",
+  "guardBurnoutBody": "Maybe today is a day to rest. Nothing is stopping you if you disagree.",
+  "guardNightCapTitle": "It is late",
+  "guardNightCapBody": "Past your night hour we keep sessions short, whatever the mood and the engine say.",
+  "guardStartAnyway": "Start anyway",
+  "guardTakeABreak": "Not now",
+  "settingsBurnout": "Pace",
+  "settingsShortBreakWarning": "Short break warning",
+  "settingsShortBreakSubtitle": "Warn if a session starts within {count} min of the last one",
+  "@settingsShortBreakSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsShortBreakOff": "Off",
+  "settingsNightCap": "Night soft cap",
+  "settingsNightCapSubtitle": "Suggest nothing longer than 25/5 late at night",
+  "settingsNightCapHour": "Night starts at"
 }

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../data/providers/data_providers.dart';
+import '../../domain/entities/session_guards.dart';
 
 /// Ключи SharedPreferences собраны в одном месте: опечатка в строке иначе
 /// молча теряет настройку пользователя.
@@ -16,6 +17,9 @@ abstract final class PrefKeys {
   static const notificationsEnabled = 'notifications_enabled';
   static const dailySummaryMinutes = 'daily_summary_minutes';
   static const onboardingDone = 'onboarding_done';
+  static const shortBreakMinutes = 'short_break_minutes';
+  static const nightCapEnabled = 'night_cap_enabled';
+  static const nightCapHour = 'night_cap_hour';
 }
 
 /// Все поддерживаемые языки. Порядок — как в списке настроек.
@@ -179,6 +183,65 @@ class DailySummaryTimeNotifier extends StateNotifier<int> {
 final dailySummaryTimeProvider =
     StateNotifierProvider<DailySummaryTimeNotifier, int>((ref) {
   return DailySummaryTimeNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// --- Защита от выгорания ---
+
+/// Сколько минут после прошлой сессии считаются «ты только что закончил».
+/// 0 — предупреждение выключено.
+class ShortBreakMinutesNotifier extends StateNotifier<int> {
+  ShortBreakMinutesNotifier(this._prefs)
+      : super(_prefs.getInt(PrefKeys.shortBreakMinutes) ??
+            SessionGuards.defaultShortBreakMinutes);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(int minutes) async {
+    state = minutes;
+    await _prefs.setInt(PrefKeys.shortBreakMinutes, minutes);
+  }
+}
+
+final shortBreakMinutesProvider =
+    StateNotifierProvider<ShortBreakMinutesNotifier, int>((ref) {
+  return ShortBreakMinutesNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+class NightCapEnabledNotifier extends StateNotifier<bool> {
+  NightCapEnabledNotifier(this._prefs)
+      : super(_prefs.getBool(PrefKeys.nightCapEnabled) ?? true);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await _prefs.setBool(PrefKeys.nightCapEnabled, value);
+  }
+}
+
+final nightCapEnabledProvider =
+    StateNotifierProvider<NightCapEnabledNotifier, bool>((ref) {
+  return NightCapEnabledNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+/// С какого часа предложения укорачиваются. Хранится часом, а не минутами:
+/// «полночь с четвертью» тут ничего не уточняет.
+class NightCapHourNotifier extends StateNotifier<int> {
+  NightCapHourNotifier(this._prefs)
+      : super(_prefs.getInt(PrefKeys.nightCapHour) ??
+            SessionGuards.defaultNightCapHour);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(int hour) async {
+    state = hour;
+    await _prefs.setInt(PrefKeys.nightCapHour, hour);
+  }
+}
+
+final nightCapHourProvider =
+    StateNotifierProvider<NightCapHourNotifier, int>((ref) {
+  return NightCapHourNotifier(ref.watch(sharedPreferencesProvider));
 });
 
 // --- Онбординг ---
