@@ -530,5 +530,9 @@
   "updateFailed": "Nie udało się pobrać aktualizacji. Spróbuj później.",
   "updateNoApk": "To wydanie nie ma jeszcze pakietu do instalacji.",
   "timerQuietMode": "Tryb cichy",
-  "timerQuietModeHint": "Dotknij ekranu, aby wrócić"
+  "timerQuietModeHint": "Dotknij ekranu, aby wrócić",
+  "mapWorldIntroLabel": "Nowy świat",
+  "mapWorld1Epigraph": "Tutaj nic nie hałasuje. Na tym polega cała trudność.",
+  "mapWorld2Epigraph": "Tutaj wszystko prosi o swoją kolej. I nic z tego nie jest twoje.",
+  "mapWorld3Epigraph": "Drugiego końca nie widać. I tak idziesz."
 }

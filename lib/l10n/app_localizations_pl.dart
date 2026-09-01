@@ -1454,4 +1454,18 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get timerQuietModeHint => 'Dotknij ekranu, aby wrócić';
+
+  @override
+  String get mapWorldIntroLabel => 'Nowy świat';
+
+  @override
+  String get mapWorld1Epigraph =>
+      'Tutaj nic nie hałasuje. Na tym polega cała trudność.';
+
+  @override
+  String get mapWorld2Epigraph =>
+      'Tutaj wszystko prosi o swoją kolej. I nic z tego nie jest twoje.';
+
+  @override
+  String get mapWorld3Epigraph => 'Drugiego końca nie widać. I tak idziesz.';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/game_entities.dart';
@@ -136,4 +137,35 @@ final gameHabitRecorderProvider = Provider<Future<void> Function()>((ref) {
       debugPrint('applyHabitCompletion failed: $error\n$stack');
     }
   };
+});
+
+/// Какой мир человеку уже представляли заставкой.
+///
+/// Живёт в SharedPreferences, а не в Drift: это не данные о прогрессе, а
+/// память интерфейса о том, что он уже показывал. В схеме прогресса такой
+/// записи делать нечего — по ней ничего не считается, и при экспорте её
+/// незачем переносить.
+///
+/// Хранится номер последнего представленного мира, а не список: миры
+/// открываются строго по порядку, и одного числа достаточно.
+class WorldIntroNotifier extends StateNotifier<int> {
+  WorldIntroNotifier(this._prefs) : super(_prefs.getInt(_key) ?? 0);
+
+  static const String _key = 'game.world_intro_seen';
+
+  final SharedPreferences _prefs;
+
+  /// Отмечает мир представленным. Возвращает `false`, если он уже был
+  /// показан — тогда заставку открывать не нужно.
+  bool markSeen(int world) {
+    if (world <= state) return false;
+    state = world;
+    _prefs.setInt(_key, world);
+    return true;
+  }
+}
+
+final worldIntroProvider =
+    StateNotifierProvider<WorldIntroNotifier, int>((ref) {
+  return WorldIntroNotifier(ref.watch(sharedPreferencesProvider));
 });
