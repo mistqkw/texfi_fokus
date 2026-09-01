@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/notifications/notification_service.dart';
 import '../../domain/entities/recommendation_engine.dart';
+import '../../domain/repositories/game_repository.dart';
 import '../../domain/repositories/habit_repository.dart';
 import '../../domain/repositories/mood_repository.dart';
 import '../../domain/repositories/planner_repository.dart';
@@ -12,6 +13,7 @@ import '../../domain/repositories/task_repository.dart';
 import '../local/database.dart';
 import '../local/export_service.dart';
 import '../recommendation/bandit_recommendation_engine.dart';
+import '../repositories/game_repository_impl.dart';
 import '../repositories/habit_repository_impl.dart';
 import '../repositories/mood_repository_impl.dart';
 import '../repositories/planner_repository_impl.dart';
@@ -33,6 +35,12 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final habitRepositoryProvider = Provider<HabitRepository>((ref) {
   return HabitRepositoryImpl(ref.watch(databaseProvider));
+});
+
+/// Игровой слой. Отдельный репозиторий поверх той же базы: он читает итоги
+/// сессий и привычек, но пишет только в свои три таблицы.
+final gameRepositoryProvider = Provider<GameRepository>((ref) {
+  return GameRepositoryImpl(ref.watch(databaseProvider));
 });
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
