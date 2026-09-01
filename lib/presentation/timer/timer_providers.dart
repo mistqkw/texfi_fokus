@@ -1,16 +1,18 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/focus_technique.dart';
+import '../../domain/entities/phase_clock.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/timer_alarm.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
+import '../settings/settings_providers.dart';
 
 // `TimerPhase` переехала в домен: от неё зависит расчёт будильников, а он
 // должен собираться и тестироваться без Flutter. Реэкспорт оставлен, чтобы
@@ -89,12 +91,20 @@ class TimerState {
     required this.finished,
     required this.focusSeconds,
     required this.startedAt,
+    required this.clock,
     this.completedFully = false,
     this.scheduleEpoch = 0,
   });
 
   final TimerPlan plan;
   final TimerPhase phase;
+
+  /// Источник правды по времени текущей фазы.
+  ///
+  /// [remaining] и [focusSeconds] — снимки, пересчитанные из этих часов и
+  /// удобные для отрисовки; сама арифметика живёт здесь и опирается на
+  /// стенные часы, а не на количество пришедших тиков.
+  final PhaseClock clock;
 
   /// 0-based номер текущего цикла.
   final int cycleIndex;
@@ -139,6 +149,7 @@ class TimerState {
     bool? finished,
     bool? completedFully,
     int? focusSeconds,
+    PhaseClock? clock,
     bool bumpSchedule = false,
   }) {
     return TimerState(
@@ -152,6 +163,7 @@ class TimerState {
       completedFully: completedFully ?? this.completedFully,
       focusSeconds: focusSeconds ?? this.focusSeconds,
       startedAt: startedAt,
+      clock: clock ?? this.clock,
       scheduleEpoch: bumpSchedule ? scheduleEpoch + 1 : scheduleEpoch,
     );
   }
@@ -175,14 +187,31 @@ class TimerState {
 
 /// Ведёт обратный отсчёт и переходы между фазами.
 ///
-/// Время считается тиками по секунде, а не разницей часов: пользователь может
-/// подкрутить оставшееся время диском прямо посреди фазы, и «правильное»
-/// время окончания в этот момент перестаёт существовать. Зато фактическое
-/// время в фокусе накапливается отдельным счётчиком и от подкруток не
-/// страдает — в статистику попадает только реально отсиженное.
-class TimerController extends StateNotifier<TimerState> {
-  TimerController(TimerPlan plan)
-      : super(
+/// Время считается по стенным часам ([PhaseClock]), а не по количеству
+/// пришедших тиков. Это принципиально: когда экран гаснет или приложение
+/// уходит в фон, система придерживает Dart-таймеры — тики или редеют, или
+/// перестают приходить вовсе. Отсчёт «по тикам» на этом отставал ровно на
+/// столько, сколько телефон пролежал заблокированным, и вместе с табло врал
+/// `focusSeconds`, то есть статистика и опыт.
+///
+/// Теперь тик — только повод перерисовать экран; сколько осталось, всегда
+/// спрашивают у часов. Возврат в приложение [settle] пересчитывает состояние
+/// немедленно, и отсчёт мгновенно догоняет реальность, а не доползает до неё
+/// по секунде. Тот же расчёт стоит за системными будильниками
+/// ([TimerAlarmPlanner]), так что экран и уведомление больше не могут
+/// разъехаться: у них одна точка отсчёта.
+///
+/// Подкрутка диском переставляет якорь часов, а не ломает модель: остаток
+/// меняется, и с этого момента отсчёт идёт от нового значения.
+class TimerController extends StateNotifier<TimerState>
+    with WidgetsBindingObserver {
+  TimerController(
+    TimerPlan plan, {
+    this.onAlarm,
+    DateTime Function()? clock,
+    this.observeLifecycle = true,
+  })  : _now = clock ?? DateTime.now,
+        super(
           TimerState(
             plan: plan,
             phase: TimerPhase.focus,
@@ -192,83 +221,206 @@ class TimerController extends StateNotifier<TimerState> {
             running: true,
             finished: false,
             focusSeconds: 0,
-            startedAt: DateTime.now(),
+            startedAt: (clock ?? DateTime.now)(),
+            clock: PhaseClock.startedAt(
+              (clock ?? DateTime.now)(),
+              Duration(minutes: plan.focusMinutes),
+            ),
           ),
         ) {
+    if (observeLifecycle) {
+      WidgetsBinding.instance.addObserver(this);
+    }
     _start();
   }
 
+  /// Сигнал окончания фазы — звук. Приходит извне, чтобы контроллер не знал
+  /// ни про плагин аудио, ни про то, включён ли звук в настройках.
+  final VoidCallback? onAlarm;
+
+  final DateTime Function() _now;
+
+  /// Подписываться ли на жизненный цикл приложения. Выключается в тестах,
+  /// где `WidgetsBinding` может быть не поднят.
+  final bool observeLifecycle;
+
   Timer? _ticker;
+
+  /// Секунды фокуса, закрытые предыдущими циклами. Текущая фаза добавляется
+  /// к ним из часов, а не накапливается тиками.
+  int _bankedFocusSeconds = 0;
 
   void _start() {
     _ticker?.cancel();
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    // Секунда — частота обновления картинки, не единица счёта. Если система
+    // проглотит половину тиков, показанное время от этого не пострадает.
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => settle());
   }
 
-  void _tick() {
-    if (!state.running || state.finished) return;
+  // Параметр назван не `state`, как в базовом классе, намеренно: у
+  // `StateNotifier` уже есть `state`, и одноимённый аргумент перекрыл бы его
+  // внутри метода.
+  @override
+  // ignore: avoid_renaming_method_parameters
+  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    // Вернулись на передний план — пересчитываем немедленно. Иначе первый
+    // кадр после разблокировки показал бы время, застывшее на момент, когда
+    // экран погас.
+    if (lifecycleState == AppLifecycleState.resumed) settle();
+  }
 
-    final next = state.remaining - const Duration(seconds: 1);
-    final focusSeconds = state.phase == TimerPhase.focus
-        ? state.focusSeconds + 1
-        : state.focusSeconds;
+  /// Привести состояние в соответствие с текущим временем.
+  ///
+  /// Пока экран был заблокирован, могло пройти несколько фаз сразу, поэтому
+  /// переходы делаются циклом. Звук и вибрация при этом срабатывают один
+  /// раз, а не по разу на каждую пропущенную границу: человеку нужен сигнал
+  /// «время вышло», а не серия сигналов задним числом.
+  void settle() {
+    if (state.finished) return;
 
-    if (next.inSeconds > 0) {
-      state = state.copyWith(remaining: next, focusSeconds: focusSeconds);
-      return;
+    var crossedPhase = false;
+    var completed = false;
+
+    // Ограничение сверху — страховка от бесконечного цикла на вырожденном
+    // плане (например, нулевой длительности фазы), а не ожидаемый режим.
+    for (var guard = 0; guard < 512; guard++) {
+      final now = _now();
+      final clock = state.clock;
+
+      if (!clock.running || !clock.isExpiredAt(now)) {
+        _publish(now);
+        break;
+      }
+
+      // Фаза истекла. Перелёт — насколько поздно мы об этом узнали.
+      final overshoot = -clock.remainingAt(now);
+      // Отработанное в этой фазе закрываем до перехода: дальше часы уже
+      // будут принадлежать следующей фазе.
+      _bankFocus(now);
+
+      final outcome = _advancePhase(now: now, overshoot: overshoot);
+      crossedPhase = true;
+      if (outcome == _PhaseOutcome.finished) {
+        completed = true;
+        break;
+      }
+      if (outcome == _PhaseOutcome.paused) break;
     }
 
-    state = state.copyWith(remaining: Duration.zero, focusSeconds: focusSeconds);
-    _advancePhase();
+    if (!crossedPhase) return;
+
+    // Вибрация здесь — не украшение к звуку, а самостоятельный сигнал: при
+    // выключенном звуке она остаётся единственным, что человек почувствует,
+    // не глядя на экран.
+    if (completed) {
+      Haptics.timerAlarm();
+    } else {
+      Haptics.cycleComplete();
+    }
+    onAlarm?.call();
   }
 
-  void _advancePhase() {
+  /// Пересчитать снимки [TimerState.remaining] и [TimerState.focusSeconds]
+  /// из часов. Состояние обновляется только если картинка действительно
+  /// изменилась — лишние перестройки экрана раз в секунду ни к чему.
+  void _publish(DateTime now) {
+    final remaining = state.clock.displayRemainingAt(now);
+    final focusSeconds = _focusSecondsAt(now);
+    if (remaining == state.remaining && focusSeconds == state.focusSeconds) {
+      return;
+    }
+    state = state.copyWith(remaining: remaining, focusSeconds: focusSeconds);
+  }
+
+  int _focusSecondsAt(DateTime now) {
+    if (state.phase != TimerPhase.focus) return _bankedFocusSeconds;
+    return _bankedFocusSeconds + state.clock.servedAt(now).inSeconds;
+  }
+
+  /// Перевести таймер в следующую фазу. Возвращает, что с ним стало: можно
+  /// ли продолжать разбор пропущенного времени.
+  _PhaseOutcome _advancePhase({
+    required DateTime now,
+    required Duration overshoot,
+  }) {
     final plan = state.plan;
 
     if (state.phase == TimerPhase.focus) {
       final isLastCycle = state.cycleIndex >= plan.cycles - 1;
       if (isLastCycle) {
-        // Вибрация здесь — не украшение к звуку, а самостоятельный сигнал:
-        // при выключенном звуке она остаётся единственным, что человек
-        // почувствует, не глядя на экран.
-        Haptics.timerAlarm();
-        if (plan.soundOnEnd) SystemSound.play(SystemSoundType.alert);
-        _finish(completedFully: true);
-        return;
+        _finish(completedFully: true, bankFocus: false);
+        return _PhaseOutcome.finished;
       }
 
-      Haptics.cycleComplete();
-      if (plan.soundOnEnd) SystemSound.play(SystemSoundType.alert);
+      final breakDuration = Duration(minutes: plan.breakMinutes);
       state = state.copyWith(
         phase: TimerPhase.rest,
-        remaining: Duration(minutes: plan.breakMinutes),
-        phaseTotal: Duration(minutes: plan.breakMinutes),
+        remaining: breakDuration,
+        phaseTotal: breakDuration,
         running: plan.autoStartNext,
+        focusSeconds: _bankedFocusSeconds,
+        clock: state.clock.nextPhase(
+          duration: breakDuration,
+          running: plan.autoStartNext,
+          overshoot: overshoot,
+          now: now,
+        ),
         bumpSchedule: true,
       );
-      return;
+      return plan.autoStartNext ? _PhaseOutcome.running : _PhaseOutcome.paused;
     }
 
     // Перерыв закончился — следующий цикл фокуса.
-    Haptics.cycleComplete();
+    final focusDuration = Duration(minutes: plan.focusMinutes);
     state = state.copyWith(
       phase: TimerPhase.focus,
       cycleIndex: state.cycleIndex + 1,
-      remaining: Duration(minutes: plan.focusMinutes),
-      phaseTotal: Duration(minutes: plan.focusMinutes),
+      remaining: focusDuration,
+      phaseTotal: focusDuration,
       running: plan.autoStartNext,
+      clock: state.clock.nextPhase(
+        duration: focusDuration,
+        running: plan.autoStartNext,
+        overshoot: overshoot,
+        now: now,
+      ),
+      bumpSchedule: true,
+    );
+    return plan.autoStartNext ? _PhaseOutcome.running : _PhaseOutcome.paused;
+  }
+
+  void pause() {
+    if (state.finished || !state.running) return;
+    final now = _now();
+    // Пауза закрывает отработанный кусок фокуса: дальше часы стоят, и
+    // добавлять к банку станет нечего.
+    _bankFocus(now);
+    state = state.copyWith(
+      running: false,
+      remaining: state.clock.displayRemainingAt(now),
+      focusSeconds: _bankedFocusSeconds,
+      clock: state.clock.pausedAt(now),
       bumpSchedule: true,
     );
   }
 
-  void pause() {
-    if (state.finished) return;
-    state = state.copyWith(running: false, bumpSchedule: true);
+  /// Перенести отработанное текущей фазой в банк.
+  ///
+  /// Вызов идемпотентен, пока часы не переставили: [PhaseClock.servedAt]
+  /// остановленных часов равен нулю, а живые дают ту же величину, что уже
+  /// учтена. Это важно — банк трогают и пауза, и пропуск, и завершение.
+  void _bankFocus(DateTime now) {
+    if (state.phase != TimerPhase.focus) return;
+    _bankedFocusSeconds = _focusSecondsAt(now);
   }
 
   void resume() {
-    if (state.finished) return;
-    state = state.copyWith(running: true, bumpSchedule: true);
+    if (state.finished || state.running) return;
+    state = state.copyWith(
+      running: true,
+      clock: state.clock.resumedAt(_now()),
+      bumpSchedule: true,
+    );
   }
 
   void toggle() => state.running ? pause() : resume();
@@ -276,8 +428,16 @@ class TimerController extends StateNotifier<TimerState> {
   /// Пропустить текущую фазу целиком.
   void skipPhase() {
     if (state.finished) return;
-    state = state.copyWith(remaining: Duration.zero);
-    _advancePhase();
+    final now = _now();
+    // Обнуляем остаток и запускаем часы, чтобы разбор в [settle] увидел
+    // истёкшую фазу и провёл переход по общему пути.
+    _bankFocus(now);
+    state = state.copyWith(
+      remaining: Duration.zero,
+      focusSeconds: _bankedFocusSeconds,
+      clock: PhaseClock(plannedRemaining: Duration.zero, runningSince: now),
+    );
+    settle();
   }
 
   /// Подкрутка диском. Оставшееся время не может уйти ниже нуля; если его
@@ -285,13 +445,16 @@ class TimerController extends StateNotifier<TimerState> {
   /// прогресса — иначе кольцо «переполнилось» бы.
   void adjustMinutes(int delta) {
     if (state.finished) return;
-    final next = state.remaining + Duration(minutes: delta);
+    final now = _now();
+    final next = state.clock.displayRemainingAt(now) + Duration(minutes: delta);
     final clamped = next.isNegative ? Duration.zero : next;
     state = state.copyWith(
       remaining: clamped,
       phaseTotal: clamped > state.phaseTotal ? clamped : state.phaseTotal,
-      // Диск двигает конец фазы — значит, и запланированное уведомление
-      // должно переехать вместе с ним.
+      // Диск переставляет якорь часов: с этого момента отсчёт идёт от нового
+      // остатка, и расчётный конец фазы — вместе с ним.
+      clock: state.clock.withRemaining(clamped, now),
+      // А значит, и запланированное уведомление должно переехать.
       bumpSchedule: true,
     );
   }
@@ -299,14 +462,20 @@ class TimerController extends StateNotifier<TimerState> {
   /// Досрочная остановка пользователем.
   void stop() => _finish(completedFully: false);
 
-  void _finish({required bool completedFully}) {
+  void _finish({required bool completedFully, bool bankFocus = true}) {
     _ticker?.cancel();
     _ticker = null;
+    final now = _now();
+    // При разборе пропущенного времени фаза уже закрыта в [settle] — второй
+    // раз её отрабатывать нельзя.
+    if (bankFocus) _bankFocus(now);
     state = state.copyWith(
       running: false,
       finished: true,
       completedFully: completedFully,
       remaining: Duration.zero,
+      focusSeconds: _bankedFocusSeconds,
+      clock: const PhaseClock.paused(Duration.zero),
       bumpSchedule: true,
     );
   }
@@ -314,8 +483,23 @@ class TimerController extends StateNotifier<TimerState> {
   @override
   void dispose() {
     _ticker?.cancel();
+    if (observeLifecycle) {
+      WidgetsBinding.instance.removeObserver(this);
+    }
     super.dispose();
   }
+}
+
+/// Во что перешёл таймер после границы фазы.
+enum _PhaseOutcome {
+  /// Следующая фаза идёт — можно разбирать пропущенное время дальше.
+  running,
+
+  /// Следующая фаза ждёт нажатия: `autoStartNext` выключен.
+  paused,
+
+  /// Сессия закончена.
+  finished,
 }
 
 /// План устанавливается до перехода на экран таймера.
@@ -327,7 +511,17 @@ final timerControllerProvider =
   if (plan == null) {
     throw StateError('timerPlanProvider must be set before opening the timer');
   }
-  final controller = TimerController(plan);
+  // Настройки звука читаются в момент сигнала, а не подписываются: смена
+  // пресета посреди сессии не должна пересоздавать контроллер и обнулять
+  // отсчёт.
+  final controller = TimerController(
+    plan,
+    onAlarm: () {
+      if (!plan.soundOnEnd) return;
+      if (!ref.read(soundsEnabledProvider)) return;
+      ref.read(alarmSoundPlayerProvider).play(ref.read(alarmSoundProvider));
+    },
+  );
   ref.onDispose(controller.dispose);
   return controller;
 });
