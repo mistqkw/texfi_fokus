@@ -796,4 +796,67 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get statsInterruptionUnnamed => 'Bez podanego powodu';
+
+  @override
+  String get homePlanDay => 'Zaplanuj dzień';
+
+  @override
+  String get planTitle => 'Plan na dziś';
+
+  @override
+  String get planIntro =>
+      'Dwa–trzy zadania, mniej więcej po kolei. Opcjonalne — po prostu nie musisz wymyślać zadania, gdy już siadasz do pracy.';
+
+  @override
+  String get planAddHint => 'Czym się dziś zajmiesz?';
+
+  @override
+  String get planEnough => 'Trzy na dzień zwykle wystarczą.';
+
+  @override
+  String get planToday => 'W planie';
+
+  @override
+  String get planEmpty => 'Nic jeszcze nie zaplanowano.';
+
+  @override
+  String get planFromTasks => 'Z twoich zadań';
+
+  @override
+  String get planDone => 'Odhacz';
+
+  @override
+  String get planUndone => 'Cofnij';
+
+  @override
+  String get planSubtasks => 'Lista kroków';
+
+  @override
+  String get planSubtaskHint => 'Jeden krok';
+
+  @override
+  String planSubtaskCount(int done, int total) {
+    return '$done z $total kroków';
+  }
+
+  @override
+  String get planSubtasksEmpty =>
+      'Brak kroków — w sesji pokazują się jako lista.';
+
+  @override
+  String planSubtasksFull(int count) {
+    return '$count kroków to limit na jedną sesję.';
+  }
+
+  @override
+  String get moodFromPlan => 'Z dzisiejszego planu';
+
+  @override
+  String notificationDailyProductive(int sessions, int minutes, String mood) {
+    return 'Dziś: $sessions sesji, $minutes min skupienia, najczęściej — $mood.';
+  }
+
+  @override
+  String get notificationDailyAllDone =>
+      'Dziś wszystko zamknięte. Dobra robota.';
 }

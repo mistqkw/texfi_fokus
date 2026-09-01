@@ -178,8 +178,10 @@ void main() {
     expect(habit.reward, isNull);
     expect(habit.freezeIntervalDays, 7);
 
-    // Новая таблица заморозок создана и пуста.
+    // Новые таблицы созданы и пусты — заморозки, план дня, чеклисты.
     expect(await db.select(db.habitFreezes).get(), isEmpty);
+    expect(await db.select(db.dayPlanEntries).get(), isEmpty);
+    expect(await db.select(db.subtasks).get(), isEmpty);
 
     final version = await db
         .customSelect('PRAGMA user_version')

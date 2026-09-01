@@ -314,5 +314,54 @@
   "statsPunishmentEmpty": "W tym okresie nic nie pominięto.",
   "statsInterruptions": "Dlaczego sesje się urywały",
   "statsInterruptionsEmpty": "W tym okresie nie było przerwanych sesji.",
-  "statsInterruptionUnnamed": "Bez podanego powodu"
+  "statsInterruptionUnnamed": "Bez podanego powodu",
+
+  "homePlanDay": "Zaplanuj dzień",
+  "planTitle": "Plan na dziś",
+  "planIntro": "Dwa–trzy zadania, mniej więcej po kolei. Opcjonalne — po prostu nie musisz wymyślać zadania, gdy już siadasz do pracy.",
+  "planAddHint": "Czym się dziś zajmiesz?",
+  "planEnough": "Trzy na dzień zwykle wystarczą.",
+  "planToday": "W planie",
+  "planEmpty": "Nic jeszcze nie zaplanowano.",
+  "planFromTasks": "Z twoich zadań",
+  "planDone": "Odhacz",
+  "planUndone": "Cofnij",
+  "planSubtasks": "Lista kroków",
+  "planSubtaskHint": "Jeden krok",
+  "planSubtaskCount": "{done} z {total} kroków",
+  "@planSubtaskCount": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "planSubtasksEmpty": "Brak kroków — w sesji pokazują się jako lista.",
+  "planSubtasksFull": "{count} kroków to limit na jedną sesję.",
+  "@planSubtasksFull": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moodFromPlan": "Z dzisiejszego planu",
+  "notificationDailyProductive": "Dziś: {sessions} sesji, {minutes} min skupienia, najczęściej — {mood}.",
+  "@notificationDailyProductive": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationDailyAllDone": "Dziś wszystko zamknięte. Dobra robota."
 }

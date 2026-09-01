@@ -17,6 +17,8 @@ class NotificationCopy {
     required this.habitBody,
     required this.dailyTitle,
     required this.dailyBody,
+    required this.dailyProductiveBody,
+    required this.dailyAllDoneBody,
   });
 
   final String channelName;
@@ -32,6 +34,37 @@ class NotificationCopy {
 
   /// `(число невыполненных целей) -> тело`.
   final String Function(int count) dailyBody;
+
+  /// `(сессии, минуты в фокусе, настроение) -> тело` для продуктивного дня.
+  final String Function(int sessions, int minutes, String mood)
+      dailyProductiveBody;
+
+  /// Все цели закрыты и сессий не было — говорить «осталось 0» глупо.
+  final String dailyAllDoneBody;
+}
+
+/// Итог дня для вечернего уведомления. Собирается на стороне приложения:
+/// сервис уведомлений о сессиях и настроениях ничего не знает.
+class DailyDigest {
+  const DailyDigest({
+    required this.pendingHabits,
+    this.sessions = 0,
+    this.focusMinutes = 0,
+    this.dominantMood,
+  });
+
+  final int pendingHabits;
+  final int sessions;
+  final int focusMinutes;
+
+  /// Подпись преобладающего настроения дня; null — сессий не было.
+  final String? dominantMood;
+
+  /// Был ли день продуктивным настолько, чтобы об этом стоило сказать.
+  ///
+  /// Одна сессия — это ещё не сводка: «сегодня: 1 сессия, 12 минут» звучит
+  /// как упрёк, а не как похвала.
+  bool get isProductive => sessions >= 2 && focusMinutes > 0;
 }
 
 /// Локальные уведомления: напоминания по привычкам и общий итог дня.
@@ -215,7 +248,7 @@ class NotificationService {
   /// Ежедневная проверка ближе к концу дня: сколько целей осталось незакрытыми.
   Future<void> scheduleDailySummary({
     required int minutesFromMidnight,
-    required int pendingCount,
+    required DailyDigest digest,
     required NotificationCopy copy,
   }) async {
     if (!_canSchedule) return;
@@ -226,7 +259,7 @@ class NotificationService {
       await _plugin.zonedSchedule(
         _dailySummaryId,
         copy.dailyTitle,
-        copy.dailyBody(pendingCount),
+        _dailyBody(digest, copy),
         _nextInstanceOf(minutesFromMidnight),
         _details(copy),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -239,6 +272,35 @@ class NotificationService {
       debugPrint('scheduleDailySummary failed: $error');
     }
   }
+
+  /// Текст вечернего уведомления.
+  ///
+  /// Слот тот же, что был, — меняется только содержание. Напоминание о
+  /// незакрытых целях остаётся главным, но если день вышел рабочим, об этом
+  /// говорится первым: приложение, которое к вечеру умеет только упрекать,
+  /// быстро отключают.
+  String _dailyBody(DailyDigest digest, NotificationCopy copy) {
+    final summary = digest.isProductive
+        ? copy.dailyProductiveBody(
+            digest.sessions,
+            digest.focusMinutes,
+            digest.dominantMood ?? '',
+          )
+        : null;
+
+    if (digest.pendingHabits == 0) {
+      return summary ?? copy.dailyAllDoneBody;
+    }
+    final pending = copy.dailyBody(digest.pendingHabits);
+    return summary == null ? pending : '$summary $pending';
+  }
+
+  /// Тот же сборщик текста, что уходит в уведомление, — открыт для тестов.
+  /// Планировщик на тестовой платформе не работает, а проверять надо именно
+  /// формулировку, а не факт вызова плагина.
+  @visibleForTesting
+  String debugDailyBody(DailyDigest digest, NotificationCopy copy) =>
+      _dailyBody(digest, copy);
 
   Future<void> cancelDailySummary() async {
     if (!_canNotify) return;
@@ -255,7 +317,7 @@ class NotificationService {
     required List<HabitEntity> habits,
     required bool enabled,
     required int dailySummaryMinutes,
-    required int pendingCount,
+    required DailyDigest digest,
     required NotificationCopy copy,
   }) async {
     if (!_canNotify) return;
@@ -269,7 +331,7 @@ class NotificationService {
     }
     await scheduleDailySummary(
       minutesFromMidnight: dailySummaryMinutes,
-      pendingCount: pendingCount,
+      digest: digest,
       copy: copy,
     );
   }

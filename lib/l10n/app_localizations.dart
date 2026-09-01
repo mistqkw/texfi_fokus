@@ -1511,6 +1511,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No reason given'**
   String get statsInterruptionUnnamed;
+
+  /// No description provided for @homePlanDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan the day'**
+  String get homePlanDay;
+
+  /// No description provided for @planTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s plan'**
+  String get planTitle;
+
+  /// No description provided for @planIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Two or three tasks, roughly in order. Optional — it just saves you from inventing a task when you already sat down to work.'**
+  String get planIntro;
+
+  /// No description provided for @planAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you doing today?'**
+  String get planAddHint;
+
+  /// No description provided for @planEnough.
+  ///
+  /// In en, this message translates to:
+  /// **'Three is usually enough for one day.'**
+  String get planEnough;
+
+  /// No description provided for @planToday.
+  ///
+  /// In en, this message translates to:
+  /// **'In the plan'**
+  String get planToday;
+
+  /// No description provided for @planEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned yet.'**
+  String get planEmpty;
+
+  /// No description provided for @planFromTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'From your tasks'**
+  String get planFromTasks;
+
+  /// No description provided for @planDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark done'**
+  String get planDone;
+
+  /// No description provided for @planUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get planUndone;
+
+  /// No description provided for @planSubtasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get planSubtasks;
+
+  /// No description provided for @planSubtaskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One step'**
+  String get planSubtaskHint;
+
+  /// No description provided for @planSubtaskCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} steps'**
+  String planSubtaskCount(int done, int total);
+
+  /// No description provided for @planSubtasksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps yet — a session shows them as a checklist.'**
+  String get planSubtasksEmpty;
+
+  /// No description provided for @planSubtasksFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} steps is the limit for one session.'**
+  String planSubtasksFull(int count);
+
+  /// No description provided for @moodFromPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'From today\'s plan'**
+  String get moodFromPlan;
+
+  /// No description provided for @notificationDailyProductive.
+  ///
+  /// In en, this message translates to:
+  /// **'Today: {sessions} sessions, {minutes} min in focus, mostly {mood}.'**
+  String notificationDailyProductive(int sessions, int minutes, String mood);
+
+  /// No description provided for @notificationDailyAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is closed today. Well done.'**
+  String get notificationDailyAllDone;
 }
 
 class _AppLocalizationsDelegate

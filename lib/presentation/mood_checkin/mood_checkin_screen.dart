@@ -10,11 +10,13 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/entities/task_entity.dart';
+import '../planner/planner_providers.dart';
 import '../shared/enum_labels.dart';
 import '../shared/mood_switcher.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_sprite.dart';
 import '../timer/recommendation_screen.dart';
 import 'mood_checkin_providers.dart';
 
@@ -71,6 +73,7 @@ class _MoodCheckinScreenState extends ConsumerState<MoodCheckinScreen> {
     final l10n = context.l10n;
     final draft = ref.watch(sessionDraftProvider);
     final tasks = ref.watch(tasksProvider);
+    final plan = ref.watch(todayPlanProvider).valueOrNull ?? const [];
 
     return PixelBackground(
       child: Scaffold(
@@ -94,6 +97,56 @@ class _MoodCheckinScreenState extends ConsumerState<MoodCheckinScreen> {
               style: context.text.caption,
             ),
             AppSpacing.gapXxl,
+            // План на сегодня идёт до поля ввода: если человек утром уже
+            // решил, чем займётся, придумывать задачу заново не нужно.
+            if (plan.isNotEmpty) ...[
+              PixelSectionHeader(title: l10n.moodFromPlan),
+              for (final entry in plan)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: PixelCard(
+                    raised: false,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    borderColor: draft.taskId == entry.task.id
+                        ? context.colors.accent
+                        : null,
+                    onTap: () {
+                      Haptics.tap();
+                      _titleController.text = entry.task.title;
+                      ref
+                          .read(sessionDraftProvider.notifier)
+                          .selectTask(entry.task);
+                      if (_showTaskError) {
+                        setState(() => _showTaskError = false);
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            entry.task.title,
+                            style: context.text.body.copyWith(
+                              decoration: entry.done
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        if (draft.taskId == entry.task.id)
+                          PixelSprite(
+                            rows: PixelSprites.check,
+                            size: 14,
+                            color: context.colors.accent,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              AppSpacing.gapXl,
+            ],
             PixelSectionHeader(title: l10n.moodPickTaskTitle),
             TextField(
               controller: _titleController,

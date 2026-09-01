@@ -798,4 +798,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statsInterruptionUnnamed => 'No reason given';
+
+  @override
+  String get homePlanDay => 'Plan the day';
+
+  @override
+  String get planTitle => 'Today\'s plan';
+
+  @override
+  String get planIntro =>
+      'Two or three tasks, roughly in order. Optional — it just saves you from inventing a task when you already sat down to work.';
+
+  @override
+  String get planAddHint => 'What are you doing today?';
+
+  @override
+  String get planEnough => 'Three is usually enough for one day.';
+
+  @override
+  String get planToday => 'In the plan';
+
+  @override
+  String get planEmpty => 'Nothing planned yet.';
+
+  @override
+  String get planFromTasks => 'From your tasks';
+
+  @override
+  String get planDone => 'Mark done';
+
+  @override
+  String get planUndone => 'Undo';
+
+  @override
+  String get planSubtasks => 'Checklist';
+
+  @override
+  String get planSubtaskHint => 'One step';
+
+  @override
+  String planSubtaskCount(int done, int total) {
+    return '$done of $total steps';
+  }
+
+  @override
+  String get planSubtasksEmpty =>
+      'No steps yet — a session shows them as a checklist.';
+
+  @override
+  String planSubtasksFull(int count) {
+    return '$count steps is the limit for one session.';
+  }
+
+  @override
+  String get moodFromPlan => 'From today\'s plan';
+
+  @override
+  String notificationDailyProductive(int sessions, int minutes, String mood) {
+    return 'Today: $sessions sessions, $minutes min in focus, mostly $mood.';
+  }
+
+  @override
+  String get notificationDailyAllDone =>
+      'Everything is closed today. Well done.';
 }

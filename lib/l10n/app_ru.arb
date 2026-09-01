@@ -314,5 +314,54 @@
   "statsPunishmentEmpty": "За период ничего не пропущено.",
   "statsInterruptions": "Почему сессии обрывались",
   "statsInterruptionsEmpty": "За период прерванных сессий не было.",
-  "statsInterruptionUnnamed": "Причина не названа"
+  "statsInterruptionUnnamed": "Причина не названа",
+
+  "homePlanDay": "Спланировать день",
+  "planTitle": "План на сегодня",
+  "planIntro": "Две-три задачи, примерно по порядку. Необязательно — просто чтобы не придумывать задачу в момент, когда уже сел работать.",
+  "planAddHint": "Чем займёшься сегодня?",
+  "planEnough": "Трёх на день обычно достаточно.",
+  "planToday": "В плане",
+  "planEmpty": "Пока ничего не запланировано.",
+  "planFromTasks": "Из твоих задач",
+  "planDone": "Отметить",
+  "planUndone": "Снять отметку",
+  "planSubtasks": "Чеклист",
+  "planSubtaskHint": "Один шаг",
+  "planSubtaskCount": "{done} из {total} шагов",
+  "@planSubtaskCount": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "planSubtasksEmpty": "Шагов пока нет — в сессии они показываются чеклистом.",
+  "planSubtasksFull": "{count} шагов — предел для одной сессии.",
+  "@planSubtasksFull": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moodFromPlan": "Из плана на сегодня",
+  "notificationDailyProductive": "Сегодня: {sessions} сессии, {minutes} мин в фокусе, чаще всего — {mood}.",
+  "@notificationDailyProductive": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "mood": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationDailyAllDone": "Сегодня всё закрыто. Хорошо."
 }
