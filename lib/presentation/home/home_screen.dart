@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -226,14 +228,57 @@ class _InsightCard extends ConsumerWidget {
   }
 }
 
-class _HabitsList extends ConsumerWidget {
+class _HabitsList extends ConsumerStatefulWidget {
   const _HabitsList({required this.items});
 
   final List<HabitWithStatus> items;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_HabitsList> createState() => _HabitsListState();
+}
+
+class _HabitsListState extends ConsumerState<_HabitsList>
+    with SingleTickerProviderStateMixin {
+  /// Вспышка на закрытие последней привычки за день.
+  ///
+  /// Фраза «Все цели на сегодня закрыты» и до этого появлялась в нужный
+  /// момент — но появлялась молча, ниже последней карточки, куда в момент
+  /// нажатия никто не смотрит. Вспышка не сообщает ничего нового: она только
+  /// переводит взгляд туда, где ответ уже написан.
+  ///
+  /// Отбивается ровно переход «оставалась одна → не осталось ни одной».
+  /// На экране, открытом с уже закрытым днём, ничего не мигает: это был бы
+  /// не отклик на действие, а приветствие.
+  late final AnimationController _allDone = AnimationController(
+    vsync: this,
+    duration: AppMotion.flourish,
+  );
+
+  static int _doneCount(List<HabitWithStatus> items) =>
+      items.where((h) => h.doneToday).length;
+
+  bool _complete(List<HabitWithStatus> items) =>
+      items.isNotEmpty && _doneCount(items) == items.length;
+
+  @override
+  void didUpdateWidget(_HabitsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_complete(oldWidget.items) && _complete(widget.items)) {
+      _allDone.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _allDone.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
+    final items = widget.items;
 
     if (items.isEmpty) {
       return PixelCard(
@@ -241,27 +286,52 @@ class _HabitsList extends ConsumerWidget {
       );
     }
 
-    final done = items.where((h) => h.doneToday).length;
+    final done = _doneCount(items);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < items.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: _HabitTile(item: items[i])
-                .animate()
-                .fadeIn(duration: AppMotion.fast, delay: AppMotion.stagger * i)
-                .slideY(begin: 0.08, end: 0, duration: AppMotion.fast),
+    return AnimatedBuilder(
+      animation: _allDone,
+      builder: (context, child) {
+        // Два коротких удара вместо одного длинного затухания: ровная
+        // синусоида читалась бы как подсветка, а пара вспышек — как отбивка.
+        final t = _allDone.value;
+        final punch = t == 0 || t == 1 ? 0.0 : math.sin(t * math.pi * 2).abs();
+
+        return Container(
+          padding: const EdgeInsets.all(AppSpacing.xs),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: colors.success.withValues(alpha: punch),
+              width: AppRadius.pixelBorder,
+            ),
           ),
-        AppSpacing.gapSm,
-        Text(
-          done == items.length
-              ? l10n.homeAllDone
-              : l10n.homePending(items.length - done, items.length),
-          style: context.text.caption,
-        ),
-      ],
+          child: child,
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < items.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: _HabitTile(item: items[i])
+                  .animate()
+                  .fadeIn(
+                    duration: AppMotion.fast,
+                    delay: AppMotion.stagger * i,
+                  )
+                  .slideY(begin: 0.08, end: 0, duration: AppMotion.fast),
+            ),
+          AppSpacing.gapSm,
+          Text(
+            done == items.length
+                ? l10n.homeAllDone
+                : l10n.homePending(items.length - done, items.length),
+            style: context.text.caption.copyWith(
+              color: done == items.length ? colors.success : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
