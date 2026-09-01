@@ -5,15 +5,18 @@ import '../../data/repositories/habit_repository_impl.dart' show dayOf;
 import '../../domain/entities/habit_entity.dart';
 import '../../domain/entities/insight.dart';
 import '../game/game_providers.dart';
+import '../settings/settings_providers.dart';
 
 /// Сегодняшний день, нормализованный к полуночи. Отдельный провайдер, чтобы
 /// его можно было подменить в тестах и инвалидировать при смене суток.
 final todayProvider = Provider<DateTime>((ref) => dayOf(DateTime.now()));
 
-/// Начало текущей недели (понедельник).
+/// Начало текущей недели — по настройке пользователя, а не всегда с
+/// понедельника: для части мира неделя начинается с воскресенья, и «за эту
+/// неделю» у них означает другой набор дней.
 final weekStartProvider = Provider<DateTime>((ref) {
   final today = ref.watch(todayProvider);
-  return today.subtract(Duration(days: today.weekday - 1));
+  return ref.watch(weekStartDayProvider).startOf(today);
 });
 
 final todayHabitsProvider = StreamProvider<List<HabitWithStatus>>((ref) {

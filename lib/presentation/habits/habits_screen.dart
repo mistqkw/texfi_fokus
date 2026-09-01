@@ -13,6 +13,7 @@ import '../../domain/entities/habit_entity.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
+import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
 import 'habit_edit_screen.dart';
 import 'habits_providers.dart';
@@ -78,7 +79,7 @@ class HabitsScreen extends ConsumerWidget {
           ),
         ),
         body: habits.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: PixelSpinner()),
           error: (error, _) => Padding(
             padding: AppSpacing.screen,
             child: Text('$error', style: context.text.body),
@@ -171,7 +172,11 @@ class _HabitCard extends StatelessWidget {
                 child: Text(habit.name, style: context.text.title),
               ),
               IconButton(
-                icon: Icon(Icons.delete_outline, color: colors.textTertiary),
+                icon: PixelSprite(
+                rows: PixelSprites.trash,
+                size: 16,
+                color: colors.textTertiary,
+              ),
                 onPressed: onDelete,
                 visualDensity: VisualDensity.compact,
               ),

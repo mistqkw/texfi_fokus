@@ -22,6 +22,7 @@ import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
+import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
 import 'home_providers.dart';
 
@@ -70,7 +71,7 @@ class HomeScreen extends ConsumerWidget {
             habits.when(
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: PixelSpinner()),
               ),
               error: (error, _) =>
                   PixelCard(child: Text('$error', style: context.text.body)),

@@ -261,7 +261,11 @@ class _HabitEditScreenState extends ConsumerState<HabitEditScreen> {
                     if (_reminderMinutes != null)
                       IconButton(
                         tooltip: l10n.habitReminderOff,
-                        icon: Icon(Icons.close, color: colors.textTertiary),
+                        icon: PixelSprite(
+                rows: PixelSprites.close,
+                size: 14,
+                color: colors.textTertiary,
+              ),
                         onPressed: () =>
                             setState(() => _reminderMinutes = null),
                       ),
