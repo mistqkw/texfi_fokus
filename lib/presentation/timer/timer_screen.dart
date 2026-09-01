@@ -10,6 +10,8 @@ import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
+import '../game/encounter_result_sheet.dart';
+import '../game/game_providers.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../planner/planner_providers.dart';
 import '../shared/notification_sync.dart';
@@ -132,10 +134,28 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     );
     if (!mounted) return;
 
+    // Игровой слой идёт строго после того, как сессия сохранена и скормлена
+    // движку рекомендаций: он надстройка, и его сбой не должен утащить с
+    // собой основную запись. Черновик ещё жив — из него берутся сложность и
+    // настроение, с которым сессия начиналась.
+    final draft = ref.read(sessionDraftProvider);
+    await ref.read(gameSessionRecorderProvider)(
+      focusSeconds: state.focusSeconds,
+      difficulty: draft.difficulty,
+      mood: draft.mood,
+      completedFully: state.completedFully,
+    );
+    if (!mounted) return;
+
     // Вечерняя сводка собирается в момент планирования уведомления, поэтому
     // после каждой сессии её пересобираем: иначе «сегодня две сессии» так и
     // осталось бы вчерашним текстом.
     await syncNotifications(ref, l10n);
+    if (!mounted) return;
+
+    // Победа, поражение или новый уровень — единственные события, ради
+    // которых стоит задержать пользователя ещё одним экраном.
+    await showEncounterResultIfAny(context, ref);
     if (!mounted) return;
 
     if (wrapUp?.restart ?? false) {

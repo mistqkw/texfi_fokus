@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_l10n_ext.dart';
+import '../game/game_providers.dart';
+import '../game/game_sprites.dart';
+import '../game/map_screen.dart';
 import '../habits/habits_screen.dart';
 import '../home/home_screen.dart';
 import '../settings/settings_screen.dart';
@@ -22,30 +25,42 @@ class AppShell extends ConsumerStatefulWidget {
 class _AppShellState extends ConsumerState<AppShell> {
   int _index = 0;
 
-  static const List<Widget> _screens = [
-    HomeScreen(),
-    HabitsScreen(),
-    StatisticsScreen(),
-    SettingsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
+    // Карта — единственная вкладка, которой может не быть. В обычном режиме
+    // её не просто прячут за заглушкой: её нет в таббаре вовсе, иначе
+    // «обычный трекер» перестал бы быть обычным.
+    final gameOn = ref.watch(gameModeOnProvider);
+
+    final screens = <Widget>[
+      const HomeScreen(),
+      const HabitsScreen(),
+      if (gameOn) const MapScreen(),
+      const StatisticsScreen(),
+      const SettingsScreen(),
+    ];
+
+    final items = <PixelNavItem>[
+      PixelNavItem(sprite: PixelSprites.navHome, label: l10n.navHome),
+      PixelNavItem(sprite: PixelSprites.navHabits, label: l10n.navHabits),
+      if (gameOn)
+        PixelNavItem(sprite: GameSprites.nodeCurrent, label: l10n.navMap),
+      PixelNavItem(sprite: PixelSprites.navStats, label: l10n.navStats),
+      PixelNavItem(sprite: PixelSprites.navSettings, label: l10n.navSettings),
+    ];
+
+    // Режим могли выключить, стоя на карте: индекс за пределами списка
+    // уронил бы IndexedStack.
+    final index = _index.clamp(0, screens.length - 1);
+
     return Scaffold(
-      body: IndexedStack(index: _index, children: _screens),
+      body: IndexedStack(index: index, children: screens),
       bottomNavigationBar: PixelNavBar(
-        currentIndex: _index,
-        onSelected: (index) => setState(() => _index = index),
-        items: [
-          PixelNavItem(sprite: PixelSprites.navHome, label: l10n.navHome),
-          PixelNavItem(sprite: PixelSprites.navHabits, label: l10n.navHabits),
-          PixelNavItem(sprite: PixelSprites.navStats, label: l10n.navStats),
-          PixelNavItem(
-            sprite: PixelSprites.navSettings,
-            label: l10n.navSettings,
-          ),
-        ],
+        currentIndex: index,
+        onSelected: (value) => setState(() => _index = value),
+        items: items,
       ),
     );
   }

@@ -8,11 +8,15 @@ import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_accent.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
+import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
 import '../../data/providers/data_providers.dart';
+import '../game/character_screen.dart';
+import '../game/game_providers.dart';
+import '../game/game_sprites.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
@@ -284,6 +288,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             AppSpacing.gapXl,
+            const _GameModeSection(),
             PixelSectionHeader(title: l10n.settingsNotifications),
             PixelCard(
               child: Column(
@@ -569,6 +574,117 @@ class _ImportModeDialog extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// Переключатель игрового режима.
+///
+/// Вынесен в отдельный виджет, а не вписан в общий список: он единственный
+/// в настройках, кто подписан на БД, и перестраивать из-за него весь экран
+/// на каждое изменение опыта было бы расточительно.
+class _GameModeSection extends ConsumerWidget {
+  const _GameModeSection();
+
+  Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.gameReset),
+        content: Text(l10n.gameResetConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.gameReset),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref.read(gameRepositoryProvider).resetProgress();
+    Haptics.warning();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.gameResetDone)));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final enabled = ref.watch(gameModeOnProvider);
+    final progress = ref.watch(playerProgressProvider).valueOrNull;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PixelSectionHeader(title: l10n.gameSectionTitle),
+        PixelCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              PixelSwitchTile(
+                value: enabled,
+                title: l10n.gameModeToggle,
+                subtitle: l10n.gameModeSubtitle,
+                onChanged: (value) async {
+                  Haptics.tap();
+                  await ref.read(gameRepositoryProvider).setEnabled(value);
+                },
+              ),
+
+              // Обещание «данные не пропадут» стоит написать прямо, а не
+              // оставлять пользователю проверять его выключением.
+              AppSpacing.gapSm,
+              Text(
+                l10n.gameModeOffNote,
+                style: context.text.caption.copyWith(
+                  color: colors.textTertiary,
+                ),
+              ),
+
+              if (enabled) ...[
+                AppSpacing.gapMd,
+                PixelOptionTile(
+                  leading: PixelSprite(
+                    rows: GameSprites.avatarFlame,
+                    size: 20,
+                    color: colors.accent,
+                  ),
+                  title: l10n.characterTitle,
+                  subtitle: progress == null
+                      ? null
+                      : l10n.characterLevel(progress.level),
+                  onTap: () {
+                    Haptics.tap();
+                    Navigator.of(context).push(
+                      pixelDissolveRoute<void>(const CharacterScreen()),
+                    );
+                  },
+                ),
+                PixelOptionTile(
+                  leading: PixelSprite(
+                    rows: GameSprites.nodeCleared,
+                    size: 20,
+                    color: colors.danger,
+                  ),
+                  title: l10n.gameReset,
+                  subtitle: l10n.gameResetSubtitle,
+                  onTap: () => _confirmReset(context, ref),
+                ),
+              ],
+            ],
+          ),
+        ),
+        AppSpacing.gapXl,
+      ],
     );
   }
 }

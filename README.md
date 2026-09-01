@@ -42,6 +42,8 @@
 - 💾 **Export and import JSON** — everything you've logged, in one file, and back again on a new device — merging with what's there or replacing it, after a warning that says plainly which one wipes your history
 - 🌍 **Languages** — English, Русский, Polski, Українська, following the system by default
 - 🎨 **Two themes, five accents** — pixel-art in the dark (black, grey, `#4a7dfb`) and a warm orange-and-beige light theme, with a preset accent tone you can swap without the palette losing its footing
+- 🎮 **An optional game on top** — switch the tracker into game mode and the same sessions become a fight. Drifters (creatures that pull your attention away) stand on a map of worlds with a boss at the end of each; a session's minutes are damage, finished habits and sessions are XP, and your character levels up through four visual stages. Bosses only take real damage from sessions started in **full f0kus** — and if you abandon enough of those, the boss heals and says so plainly instead of quietly rolling your progress back. Turning game mode off hides all of it and keeps every point of it
+- 🔕 **A timer end you can't miss** — the completion notification is handed to the system when the session starts, not fired by a live timer, so it survives the app being closed or the screen locked; it waits in the tray instead of auto-dismissing, and the vibration goes straight to the motor so silent mode can't swallow it
 - 📴 **Fully offline** — no account, no cloud, no telemetry. The data never leaves the device
 
 Part of the **TexFi** ecosystem, alongside [TexFi m0ney](https://github.com/mistqkw/texfi-money), [TexFi Files](https://github.com/mistqkw/texfi_files) and [TeFBlock](https://github.com/mistqkw/tefblock).
@@ -111,6 +113,7 @@ lib/
   domain/
     entities/       Habit, Task, Session, Mood, Recommendation, day plan,
                     session guards (short break, night cap, burnout streak),
+                    timer alarm planning, game rules and entities,
                     engine interface
     repositories/   abstract repository interfaces
   presentation/
@@ -122,8 +125,10 @@ lib/
                     session wrap-up (rating, interruption reason, note)
     habits/         habit list and editor (punishment, reward, frequency)
     statistics/     heatmap, charts, mood-vs-outcome, penalties, interruptions
+    game/           the optional RPG layer: map, character, encounter UI,
+                    drifter and boss sprites, game providers
     settings/       theme, accent, haptics, language, notifications,
-                    pace guards, export and import
+                    pace guards, game mode, export and import
     shared/         pixel widget kit, app shell, notification sync
                     pixel_sprite    sprite grids + the PixelSprites catalogue
                     pixel_shadow    the solid offset shadow, used by everything

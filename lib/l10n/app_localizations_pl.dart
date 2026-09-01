@@ -891,6 +891,204 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Mapa';
+
+  @override
+  String get gameSectionTitle => 'Tryb gry';
+
+  @override
+  String get gameModeToggle => 'Graj, a nie tylko odhaczaj';
+
+  @override
+  String get gameModeSubtitle =>
+      'Sesje i nawyki zostają dokładnie takie same — nad nimi pojawiają się mapa, dryfery i poziomy.';
+
+  @override
+  String get gameModeOffNote =>
+      'Wyłączenie tylko ukrywa grę. Poziom i postęp na mapie zostają, wrócisz w to samo miejsce.';
+
+  @override
+  String get gameReset => 'Zacznij grę od nowa';
+
+  @override
+  String get gameResetSubtitle =>
+      'Zeruje doświadczenie i mapę. Nie dotyka sesji ani nawyków.';
+
+  @override
+  String get gameResetConfirm =>
+      'Zacząć od nowa? Poziom i mapa wrócą do zera. Sesje, nawyki i statystyki zostaną nietknięte.';
+
+  @override
+  String get gameResetDone => 'Mapa zaczyna się od początku.';
+
+  @override
+  String get mapTitle => 'Mapa';
+
+  @override
+  String mapWorld(int world) {
+    return 'Świat $world';
+  }
+
+  @override
+  String get mapAllCleared =>
+      'Wszystkie światy przejdziesz. Sesje wciąż dają doświadczenie.';
+
+  @override
+  String get mapNodeLocked => 'Zamknięty';
+
+  @override
+  String get mapNodeCleared => 'Przejdziony';
+
+  @override
+  String get mapNodeCurrent => 'Jesteś tutaj';
+
+  @override
+  String get mapBossNode => 'Boss';
+
+  @override
+  String get characterTitle => 'Postać';
+
+  @override
+  String characterLevel(int level) {
+    return 'Poziom $level';
+  }
+
+  @override
+  String characterXp(int current, int needed) {
+    return '$current / $needed XP';
+  }
+
+  @override
+  String characterToNextLevel(int xp) {
+    return '$xp XP do następnego poziomu';
+  }
+
+  @override
+  String get characterDriftersDefeated => 'Pokonane dryfery';
+
+  @override
+  String get characterBossesDefeated => 'Pokonani bossowie';
+
+  @override
+  String get characterTotalXp => 'Zdobyte doświadczenie';
+
+  @override
+  String get characterStage1 => 'Iskra';
+
+  @override
+  String get characterStage2 => 'Równy płomyk';
+
+  @override
+  String get characterStage3 => 'Płomyk z aurą';
+
+  @override
+  String get characterStage4 => 'Płomyk w koronie';
+
+  @override
+  String get drifterBuzz => 'Brzęk';
+
+  @override
+  String get drifterCreep => 'Pełzacz';
+
+  @override
+  String get drifterLoom => 'Mara';
+
+  @override
+  String get drifterBuzzFlavor =>
+      'Rozpiętość skrzydeł większa niż ciało. Brzęknie raz — i uwagi nie ma.';
+
+  @override
+  String get drifterCreepFlavor =>
+      'Niski i wielonogi. Nie nadlatuje, tylko podchodzi od dołu.';
+
+  @override
+  String get drifterLoomFlavor =>
+      'Wysoka, wąska, z jednym pustym okiem. Po prostu stoi i patrzy.';
+
+  @override
+  String get bossScroll => 'Wstęga';
+
+  @override
+  String get bossChorus => 'Chór';
+
+  @override
+  String get bossHollow => 'Pustka';
+
+  @override
+  String get bossScrollFlavor =>
+      'Wstęga zwinięta w samą siebie. Nie ma końca — na tym polega sztuczka.';
+
+  @override
+  String get bossChorusFlavor =>
+      'Nie jedno stworzenie, lecz kiść głów, i mówią wszystkie naraz.';
+
+  @override
+  String get bossHollowFlavor => 'Ciężka rama wokół niczego. Wciąga do środka.';
+
+  @override
+  String get encounterTitle => 'Naprzeciw ciebie';
+
+  @override
+  String encounterHp(int current, int max) {
+    return '$current / $max HP';
+  }
+
+  @override
+  String get encounterWounded => 'Ranny — dokończ go.';
+
+  @override
+  String get encounterHealed => 'Kiedy cię nie było, zdążył się wylizać.';
+
+  @override
+  String get encounterBossHint =>
+      'Naprawdę ranią go tylko sesje zaczęte w full f0kus.';
+
+  @override
+  String encounterBossStamina(int current, int total) {
+    return 'Twoja wytrzymałość: $current z $total';
+  }
+
+  @override
+  String get encounterBossStaminaHint =>
+      'Każde porzucone podejście w f0kus kosztuje jeden punkt.';
+
+  @override
+  String get encounterFokusMissing =>
+      'Wybierz full f0kus przy check-inie, żeby walczyć pełną siłą.';
+
+  @override
+  String gameXpGained(int xp) {
+    return '+$xp XP';
+  }
+
+  @override
+  String gameLevelUp(int level) {
+    return 'Poziom $level';
+  }
+
+  @override
+  String get gameLevelUpBody => 'Twój płomyk się zmienił.';
+
+  @override
+  String get gameDrifterDefeated => 'Dryfer pokonany';
+
+  @override
+  String get gameBossDefeated => 'Boss pokonany';
+
+  @override
+  String get gameBossDefeatedBody => 'Droga do następnego świata jest otwarta.';
+
+  @override
+  String get gamePlayerDefeated => 'Boss doszedł do siebie';
+
+  @override
+  String get gamePlayerDefeatedBody =>
+      'Znów jest pełen sił, i twoja wytrzymałość też. Spróbuj ponownie, gdy będziesz gotów — nic więcej nie przepadło.';
+
+  @override
+  String get gameContinue => 'Dalej';
+
+  @override
   String get settingsAccent => 'Kolor akcentu';
 
   @override

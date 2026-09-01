@@ -1668,6 +1668,342 @@ abstract class AppLocalizations {
   /// **'{minutes} min planned in focus. Well held.'**
   String notificationTimerSessionDoneBody(int minutes);
 
+  /// No description provided for @navMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get navMap;
+
+  /// No description provided for @gameSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Game mode'**
+  String get gameSectionTitle;
+
+  /// No description provided for @gameModeToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play instead of just tracking'**
+  String get gameModeToggle;
+
+  /// No description provided for @gameModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions and habits stay exactly as they are — a map, drifters and levels appear on top of them.'**
+  String get gameModeSubtitle;
+
+  /// No description provided for @gameModeOffNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning it off only hides the game. Your level and map progress are kept, and you will come back to the same spot.'**
+  String get gameModeOffNote;
+
+  /// No description provided for @gameReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the game over'**
+  String get gameReset;
+
+  /// No description provided for @gameResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clears XP and the map. Sessions and habits are not affected.'**
+  String get gameResetSubtitle;
+
+  /// No description provided for @gameResetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start over? The level and the map go back to zero. Sessions, habits and statistics stay untouched.'**
+  String get gameResetConfirm;
+
+  /// No description provided for @gameResetDone.
+  ///
+  /// In en, this message translates to:
+  /// **'The map starts from the beginning.'**
+  String get gameResetDone;
+
+  /// No description provided for @mapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mapTitle;
+
+  /// No description provided for @mapWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World {world}'**
+  String mapWorld(int world);
+
+  /// No description provided for @mapAllCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Every world is cleared. Sessions still bring XP.'**
+  String get mapAllCleared;
+
+  /// No description provided for @mapNodeLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get mapNodeLocked;
+
+  /// No description provided for @mapNodeCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared'**
+  String get mapNodeCleared;
+
+  /// No description provided for @mapNodeCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'You are here'**
+  String get mapNodeCurrent;
+
+  /// No description provided for @mapBossNode.
+  ///
+  /// In en, this message translates to:
+  /// **'Boss'**
+  String get mapBossNode;
+
+  /// No description provided for @characterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Character'**
+  String get characterTitle;
+
+  /// No description provided for @characterLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String characterLevel(int level);
+
+  /// No description provided for @characterXp.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {needed} XP'**
+  String characterXp(int current, int needed);
+
+  /// No description provided for @characterToNextLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'{xp} XP to the next level'**
+  String characterToNextLevel(int xp);
+
+  /// No description provided for @characterDriftersDefeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Drifters defeated'**
+  String get characterDriftersDefeated;
+
+  /// No description provided for @characterBossesDefeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bosses defeated'**
+  String get characterBossesDefeated;
+
+  /// No description provided for @characterTotalXp.
+  ///
+  /// In en, this message translates to:
+  /// **'XP earned'**
+  String get characterTotalXp;
+
+  /// No description provided for @characterStage1.
+  ///
+  /// In en, this message translates to:
+  /// **'A spark'**
+  String get characterStage1;
+
+  /// No description provided for @characterStage2.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady flame'**
+  String get characterStage2;
+
+  /// No description provided for @characterStage3.
+  ///
+  /// In en, this message translates to:
+  /// **'A flame with a halo'**
+  String get characterStage3;
+
+  /// No description provided for @characterStage4.
+  ///
+  /// In en, this message translates to:
+  /// **'A crowned flame'**
+  String get characterStage4;
+
+  /// No description provided for @drifterBuzz.
+  ///
+  /// In en, this message translates to:
+  /// **'Buzz'**
+  String get drifterBuzz;
+
+  /// No description provided for @drifterCreep.
+  ///
+  /// In en, this message translates to:
+  /// **'Creep'**
+  String get drifterCreep;
+
+  /// No description provided for @drifterLoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Loom'**
+  String get drifterLoom;
+
+  /// No description provided for @drifterBuzzFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Wide wings, tiny body. Pings once and carries your attention off.'**
+  String get drifterBuzzFlavor;
+
+  /// No description provided for @drifterCreepFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Low and many-legged. Does not swoop — it creeps up from below.'**
+  String get drifterCreepFlavor;
+
+  /// No description provided for @drifterLoomFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Tall, narrow, one empty eye. Just stands there and watches.'**
+  String get drifterLoomFlavor;
+
+  /// No description provided for @bossScroll.
+  ///
+  /// In en, this message translates to:
+  /// **'The Scroll'**
+  String get bossScroll;
+
+  /// No description provided for @bossChorus.
+  ///
+  /// In en, this message translates to:
+  /// **'The Chorus'**
+  String get bossChorus;
+
+  /// No description provided for @bossHollow.
+  ///
+  /// In en, this message translates to:
+  /// **'The Hollow'**
+  String get bossHollow;
+
+  /// No description provided for @bossScrollFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A ribbon coiled into itself. It has no end, that is the whole trick.'**
+  String get bossScrollFlavor;
+
+  /// No description provided for @bossChorusFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Not one creature but a cluster of heads, all talking at once.'**
+  String get bossChorusFlavor;
+
+  /// No description provided for @bossHollowFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A heavy frame around nothing at all. It pulls inward.'**
+  String get bossHollowFlavor;
+
+  /// No description provided for @encounterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Facing you'**
+  String get encounterTitle;
+
+  /// No description provided for @encounterHp.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {max} HP'**
+  String encounterHp(int current, int max);
+
+  /// No description provided for @encounterWounded.
+  ///
+  /// In en, this message translates to:
+  /// **'Wounded — finish it off.'**
+  String get encounterWounded;
+
+  /// No description provided for @encounterHealed.
+  ///
+  /// In en, this message translates to:
+  /// **'It had time to recover while you were away.'**
+  String get encounterHealed;
+
+  /// No description provided for @encounterBossHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only sessions started in full f0kus really hurt this one.'**
+  String get encounterBossHint;
+
+  /// No description provided for @encounterBossStamina.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamina: {current} of {total}'**
+  String encounterBossStamina(int current, int total);
+
+  /// No description provided for @encounterBossStaminaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Each abandoned f0kus run costs one.'**
+  String get encounterBossStaminaHint;
+
+  /// No description provided for @encounterFokusMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick full f0kus at check-in to fight it properly.'**
+  String get encounterFokusMissing;
+
+  /// No description provided for @gameXpGained.
+  ///
+  /// In en, this message translates to:
+  /// **'+{xp} XP'**
+  String gameXpGained(int xp);
+
+  /// No description provided for @gameLevelUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String gameLevelUp(int level);
+
+  /// No description provided for @gameLevelUpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your flame has changed.'**
+  String get gameLevelUpBody;
+
+  /// No description provided for @gameDrifterDefeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Drifter defeated'**
+  String get gameDrifterDefeated;
+
+  /// No description provided for @gameBossDefeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Boss defeated'**
+  String get gameBossDefeated;
+
+  /// No description provided for @gameBossDefeatedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The way to the next world is open.'**
+  String get gameBossDefeatedBody;
+
+  /// No description provided for @gamePlayerDefeated.
+  ///
+  /// In en, this message translates to:
+  /// **'The boss caught its breath'**
+  String get gamePlayerDefeated;
+
+  /// No description provided for @gamePlayerDefeatedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.'**
+  String get gamePlayerDefeatedBody;
+
+  /// No description provided for @gameContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Onward'**
+  String get gameContinue;
+
   /// No description provided for @settingsAccent.
   ///
   /// In en, this message translates to:
