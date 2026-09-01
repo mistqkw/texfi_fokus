@@ -564,6 +564,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsVibrationIntensity => 'Vibration intensity';
 
   @override
+  String get settingsAlarmSound => 'Completion sound';
+
+  @override
+  String get settingsAlarmSoundHint =>
+      'Plays through the alarm channel, so it is audible on silent. Tap to preview.';
+
+  @override
+  String get soundArcadeCoin => 'Arcade coin';
+
+  @override
+  String get soundLevelUp => 'Level up';
+
+  @override
+  String get soundAlarmBeep => 'Alarm beep';
+
+  @override
+  String get soundSoftChime => 'Soft chime';
+
+  @override
+  String get soundPowerDown => 'Power down';
+
+  @override
   String get settingsLanguage => 'Language';
 
   @override

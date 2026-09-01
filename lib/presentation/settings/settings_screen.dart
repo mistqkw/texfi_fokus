@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/audio/alarm_sound.dart';
 import '../../core/constants/app_info.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_accent.dart';
@@ -23,6 +24,7 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
+import 'alarm_sound_labels.dart';
 import 'settings_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -147,6 +149,7 @@ class SettingsScreen extends ConsumerWidget {
     final accent = ref.watch(accentProvider);
     final locale = ref.watch(localeProvider);
     final sounds = ref.watch(soundsEnabledProvider);
+    final alarmSound = ref.watch(alarmSoundProvider);
     final vibration = ref.watch(vibrationEnabledProvider);
     final intensity = ref.watch(vibrationIntensityProvider);
     final notifications = ref.watch(notificationsEnabledProvider);
@@ -225,6 +228,42 @@ class SettingsScreen extends ConsumerWidget {
                       ref.read(soundsEnabledProvider.notifier).set(value);
                     },
                   ),
+                  // Выбор сигнала показываем только при включённом звуке:
+                  // перебирать пресеты, которые всё равно не прозвучат в
+                  // конце сессии, — предложение ни о чём.
+                  if (sounds) ...[
+                    AppSpacing.gapSm,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        l10n.settingsAlarmSound,
+                        style: context.text.label,
+                      ),
+                    ),
+                    for (final sound in AlarmSound.values)
+                      PixelRadioTile<AlarmSound>(
+                        title: alarmSoundLabel(l10n, sound),
+                        value: sound,
+                        groupValue: alarmSound,
+                        onChanged: (value) {
+                          Haptics.tap();
+                          ref.read(alarmSoundProvider.notifier).set(value);
+                          // Прослушивание — часть выбора: человек должен
+                          // услышать пресет в тот же момент, когда его
+                          // выбрал, а не только в конце сессии.
+                          ref
+                              .read(alarmSoundPlayerProvider)
+                              .preview(value);
+                        },
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: Text(
+                        l10n.settingsAlarmSoundHint,
+                        style: context.text.caption,
+                      ),
+                    ),
+                  ],
                   PixelSwitchTile(
                     value: vibration,
                     title: l10n.settingsVibration,

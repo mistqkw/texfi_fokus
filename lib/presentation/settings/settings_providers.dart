@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/audio/alarm_sound.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_accent.dart';
 import '../../data/providers/data_providers.dart';
@@ -13,6 +14,7 @@ abstract final class PrefKeys {
   static const themeMode = 'theme_mode';
   static const localeCode = 'locale_code';
   static const soundsEnabled = 'sounds_enabled';
+  static const alarmSound = 'alarm_sound';
   static const vibrationEnabled = 'vibration_enabled';
   static const vibrationIntensity = 'vibration_intensity';
   static const notificationsEnabled = 'notifications_enabled';
@@ -122,6 +124,34 @@ class SoundsNotifier extends StateNotifier<bool> {
 final soundsEnabledProvider =
     StateNotifierProvider<SoundsNotifier, bool>((ref) {
   return SoundsNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+/// Выбранный пресет сигнала окончания сессии.
+class AlarmSoundNotifier extends StateNotifier<AlarmSound> {
+  AlarmSoundNotifier(this._prefs)
+      : super(AlarmSound.fromId(_prefs.getString(PrefKeys.alarmSound)));
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(AlarmSound sound) async {
+    state = sound;
+    await _prefs.setString(PrefKeys.alarmSound, sound.id);
+  }
+}
+
+final alarmSoundProvider =
+    StateNotifierProvider<AlarmSoundNotifier, AlarmSound>((ref) {
+  return AlarmSoundNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+/// Один проигрыватель на всё приложение: и прослушивание в настройках, и
+/// боевой сигнал в конце сессии идут через него, а значит — через одну и ту
+/// же настроенную аудиосессию. Разные проигрыватели легко разъехались бы по
+/// потокам, и человек выбирал бы одно, а слышал в конце другое.
+final alarmSoundPlayerProvider = Provider<AlarmSoundPlayer>((ref) {
+  final player = AlarmSoundPlayer();
+  ref.onDispose(player.dispose);
+  return player;
 });
 
 /// Держит статический [Haptics] в согласии с настройкой. Статика тут

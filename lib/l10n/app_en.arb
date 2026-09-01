@@ -300,6 +300,34 @@
   "settingsSounds": "Sounds",
   "settingsVibration": "Vibration",
   "settingsVibrationIntensity": "Vibration intensity",
+  "settingsAlarmSound": "Completion sound",
+  "@settingsAlarmSound": {
+    "description": "Section label for choosing which sound plays when a focus session ends"
+  },
+  "settingsAlarmSoundHint": "Plays through the alarm channel, so it is audible on silent. Tap to preview.",
+  "@settingsAlarmSoundHint": {
+    "description": "Explains that the completion sound bypasses silent mode and that tapping previews it"
+  },
+  "soundArcadeCoin": "Arcade coin",
+  "@soundArcadeCoin": {
+    "description": "Name of the completion sound preset: a short two-note arcade coin blip"
+  },
+  "soundLevelUp": "Level up",
+  "@soundLevelUp": {
+    "description": "Name of the completion sound preset: a rising major arpeggio"
+  },
+  "soundAlarmBeep": "Alarm beep",
+  "@soundAlarmBeep": {
+    "description": "Name of the completion sound preset: three sharp repeated beeps"
+  },
+  "soundSoftChime": "Soft chime",
+  "@soundSoftChime": {
+    "description": "Name of the completion sound preset: a gentle descending triangle-wave chime"
+  },
+  "soundPowerDown": "Power down",
+  "@soundPowerDown": {
+    "description": "Name of the completion sound preset: a descending run, like a machine switching off"
+  },
   "settingsLanguage": "Language",
   "settingsLanguageSystem": "System",
   "settingsNotifications": "Notifications",

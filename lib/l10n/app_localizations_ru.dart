@@ -564,6 +564,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsVibrationIntensity => 'Интенсивность вибрации';
 
   @override
+  String get settingsAlarmSound => 'Звук окончания';
+
+  @override
+  String get settingsAlarmSoundHint =>
+      'Идёт через канал будильника, поэтому слышен на беззвучном. Нажмите, чтобы прослушать.';
+
+  @override
+  String get soundArcadeCoin => 'Монетка';
+
+  @override
+  String get soundLevelUp => 'Новый уровень';
+
+  @override
+  String get soundAlarmBeep => 'Гудок будильника';
+
+  @override
+  String get soundSoftChime => 'Мягкий перезвон';
+
+  @override
+  String get soundPowerDown => 'Выключение';
+
+  @override
   String get settingsLanguage => 'Язык';
 
   @override

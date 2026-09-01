@@ -1110,6 +1110,48 @@ abstract class AppLocalizations {
   /// **'Vibration intensity'**
   String get settingsVibrationIntensity;
 
+  /// Section label for choosing which sound plays when a focus session ends
+  ///
+  /// In en, this message translates to:
+  /// **'Completion sound'**
+  String get settingsAlarmSound;
+
+  /// Explains that the completion sound bypasses silent mode and that tapping previews it
+  ///
+  /// In en, this message translates to:
+  /// **'Plays through the alarm channel, so it is audible on silent. Tap to preview.'**
+  String get settingsAlarmSoundHint;
+
+  /// Name of the completion sound preset: a short two-note arcade coin blip
+  ///
+  /// In en, this message translates to:
+  /// **'Arcade coin'**
+  String get soundArcadeCoin;
+
+  /// Name of the completion sound preset: a rising major arpeggio
+  ///
+  /// In en, this message translates to:
+  /// **'Level up'**
+  String get soundLevelUp;
+
+  /// Name of the completion sound preset: three sharp repeated beeps
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm beep'**
+  String get soundAlarmBeep;
+
+  /// Name of the completion sound preset: a gentle descending triangle-wave chime
+  ///
+  /// In en, this message translates to:
+  /// **'Soft chime'**
+  String get soundSoftChime;
+
+  /// Name of the completion sound preset: a descending run, like a machine switching off
+  ///
+  /// In en, this message translates to:
+  /// **'Power down'**
+  String get soundPowerDown;
+
   /// No description provided for @settingsLanguage.
   ///
   /// In en, this message translates to:
