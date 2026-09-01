@@ -294,6 +294,12 @@ abstract class AppLocalizations {
   /// **'Streak'**
   String get homeStreakLabel;
 
+  /// No description provided for @homeStreakBasis.
+  ///
+  /// In en, this message translates to:
+  /// **'from habits'**
+  String get homeStreakBasis;
+
   /// No description provided for @homeStreakValue.
   ///
   /// In en, this message translates to:

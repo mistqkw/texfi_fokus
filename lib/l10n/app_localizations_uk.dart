@@ -115,6 +115,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeStreakLabel => 'Стрік';
 
   @override
+  String get homeStreakBasis => 'за звичками';
+
+  @override
   String homeStreakValue(int days) {
     return '$days д';
   }

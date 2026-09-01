@@ -4,6 +4,7 @@ import 'app_colors_ext.dart';
 import 'app_page_transitions.dart';
 import 'app_palettes.dart';
 import 'app_radius.dart';
+import 'app_slider_shapes.dart';
 import 'app_spacing.dart';
 import 'app_typography.dart';
 
@@ -183,7 +184,13 @@ abstract final class AppTheme {
         thumbColor: colors.accent,
         overlayColor: colors.accent.withValues(alpha: 0.12),
         trackHeight: 6,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+        // Круглый ползунок был последним «материальным» контролом,
+        // выбивавшимся из пиксельного языка на экране настроек.
+        thumbShape: PixelSliderThumb(
+          color: colors.accent,
+          borderColor: colors.onAccent,
+        ),
+        overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: colors.surface,

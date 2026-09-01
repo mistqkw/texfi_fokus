@@ -53,9 +53,21 @@ a `ThemeExtension` (`context.colors`), never as literal colors in a screen.
 
 Cards carry moderate radii (8–12px) so the interface still reads as modern; buttons,
 switches, checkboxes and heatmap cells stay square, with a 2px border and a solid offset
-shadow instead of a blur — a key that visibly depresses when you press it. Every distance
-comes from one 4pt scale in [`app_spacing.dart`](lib/core/theme/app_spacing.dart) rather
-than being eyeballed per screen.
+shadow instead of a blur — a key that visibly depresses when you press it. That shadow is
+one widget ([`pixel_shadow.dart`](lib/presentation/shared/pixel_shadow.dart)), reused by
+cards, buttons and the range switches alike, so the sense of depth cannot drift a pixel
+between screens. Every distance comes from one 4pt scale in
+[`app_spacing.dart`](lib/core/theme/app_spacing.dart) rather than being eyeballed per
+screen.
+
+Every icon in the app is a sprite drawn from a text grid — `'.'` for empty, `'x'` for a
+filled pixel — rendered by [`pixel_sprite.dart`](lib/presentation/shared/pixel_sprite.dart)
+and catalogued in `PixelSprites`. The bottom tab bar, the mood faces, the onboarding
+illustrations and the button glyphs all come from that one grid, so nothing has to be
+imported from a Material icon set that belongs to a different design language. Radio
+buttons, checkboxes and switches are square-framed pixel indicators
+([`pixel_radio.dart`](lib/presentation/shared/pixel_radio.dart)) rather than Material's
+circles, down to a square slider thumb.
 
 Screen transitions use a short pixel-dissolve with a scanline pass
 ([`app_page_transitions.dart`](lib/core/theme/app_page_transitions.dart)) — ~260ms, present
@@ -71,7 +83,7 @@ deterministic pixel speckle so the dark theme reads as a surface rather than a v
 - **fl_chart** — bar and pie charts, restyled square to match the pixel language
 - **flutter_local_notifications + timezone** — scheduled habit reminders
 - **vibration** — custom haptic patterns, with the built-in `HapticFeedback` as the fallback wherever there's no motor
-- **google_fonts** — Press Start 2P and Inter, fetched and cached at runtime
+- **Bundled fonts** — Press Start 2P and Inter ship in `assets/fonts` rather than being fetched at runtime. The app is offline-only; when the download quietly failed, Flutter fell back to the system font and every heading and counter stopped being pixel-art at once
 
 ## Project structure
 
@@ -100,7 +112,14 @@ lib/
     statistics/     heatmap, charts, mood-vs-outcome breakdown
     settings/       theme, haptics, language, notifications, export
     shared/         pixel widget kit, app shell, notification sync
+                    pixel_sprite    sprite grids + the PixelSprites catalogue
+                    pixel_shadow    the solid offset shadow, used by everything
+                    pixel_nav_bar   bottom navigation on sprites
+                    pixel_radio     square radio / checkbox / switch indicators
+                    pixel_card      bordered card, pixel_button, pixel_heatmap
   l10n/             ARB files: en, ru, pl, uk
+assets/
+  fonts/            Press Start 2P, Inter — bundled, not fetched
 tool/
   generate_icon.py  draws the pixel hourglass icon for every platform
 ```

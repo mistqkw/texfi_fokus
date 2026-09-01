@@ -27,7 +27,6 @@ dependencies:
   shared_preferences: ^2.3.3
 
   # UI / UX
-  google_fonts: ^6.2.1
   fl_chart: ^0.70.2
   flutter_animate: ^4.5.2
   intl: ^0.20.2
@@ -56,6 +55,22 @@ flutter:
 
   assets:
     - assets/icon/
+
+  # Шрифты лежат в репозитории, а не тянутся google_fonts по сети: на
+  # устройстве без интернета (а приложение принципиально офлайновое)
+  # загрузка молча проваливалась, и весь пиксельный шрифт подменялся
+  # системным — интерфейс переставал быть пиксель-артом.
+  fonts:
+    - family: PressStart2P
+      fonts:
+        - asset: assets/fonts/PressStart2P-Regular.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
 
 flutter_launcher_icons:
   android: true

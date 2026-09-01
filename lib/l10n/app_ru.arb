@@ -36,6 +36,7 @@
 
   "homeTitle": "f0kus",
   "homeStreakLabel": "Стрик",
+  "homeStreakBasis": "по привычкам",
   "homeStreakValue": "{days} д",
   "homeTodayHabits": "Сегодня",
   "homeHabitsEmpty": "Привычек пока нет. Добавь первую.",

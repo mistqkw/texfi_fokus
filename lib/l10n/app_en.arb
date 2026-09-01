@@ -41,6 +41,7 @@
 
   "homeTitle": "f0kus",
   "homeStreakLabel": "Streak",
+  "homeStreakBasis": "from habits",
   "homeStreakValue": "{days} d",
   "@homeStreakValue": {
     "placeholders": {

@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:texfi_fokus/data/local/database.dart';
 import 'package:texfi_fokus/data/providers/data_providers.dart';
@@ -11,6 +10,7 @@ import 'package:texfi_fokus/main.dart';
 import 'package:texfi_fokus/presentation/boot/boot_gate.dart';
 import 'package:texfi_fokus/presentation/settings/settings_providers.dart';
 import 'package:texfi_fokus/presentation/shared/app_entry.dart';
+import 'package:texfi_fokus/presentation/shared/pixel_nav_bar.dart';
 
 /// Поднимает приложение на базе в памяти и на пустых настройках.
 ///
@@ -61,10 +61,6 @@ Future<void> _drain(WidgetTester tester) async {
 
 void main() {
   setUpAll(() {
-    // В тестах шрифты не качаем: иначе google_fonts уходит в сеть и
-    // оставляет после себя незакрытые таймеры, на которых падает биндинг.
-    GoogleFonts.config.allowRuntimeFetching = false;
-
     // Плагина уведомлений в тестовом окружении нет, сервис ловит
     // MissingPluginException и пишет её через debugPrint. Стандартный
     // debugPrint throttled — он заводит таймер, и биндинг падает на
@@ -79,7 +75,7 @@ void main() {
     // Каркас с нижней навигацией — минимальный признак того, что тема,
     // локализация и слой данных поднялись вместе.
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(PixelNavBar), findsOneWidget);
 
     await _drain(tester);
   });
@@ -90,7 +86,7 @@ void main() {
     await _finishBoot(tester);
 
     expect(find.byType(PageView), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(PixelNavBar), findsNothing);
 
     await _drain(tester);
   });
@@ -102,7 +98,7 @@ void main() {
     // Заставка держится на экране, но приложение под ней уже построено —
     // именно поэтому она ничего не задерживает.
     expect(find.byKey(BootGate.overlayKey), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(PixelNavBar), findsOneWidget);
 
     await _finishBoot(tester);
 

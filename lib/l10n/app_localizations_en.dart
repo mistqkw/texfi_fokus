@@ -115,6 +115,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStreakLabel => 'Streak';
 
   @override
+  String get homeStreakBasis => 'from habits';
+
+  @override
   String homeStreakValue(int days) {
     return '$days d';
   }

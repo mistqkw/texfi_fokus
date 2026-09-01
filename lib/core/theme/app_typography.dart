@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors_ext.dart';
 
@@ -14,6 +13,18 @@ import 'app_colors_ext.dart';
 ///
 /// Числовые стили (таймер, статистика) идут с табличными цифрами, чтобы
 /// значение не «прыгало» по ширине на каждой смене секунды.
+///
+/// Оба шрифта лежат в `assets/fonts` и объявлены в pubspec, а не тянутся
+/// `google_fonts` по сети. Приложение офлайновое: при недоступной сети
+/// загрузка проваливалась молча, Flutter подставлял системный шрифт — и
+/// заголовки с цифрами переставали быть пиксельными на всех экранах сразу.
+/// Шрифт, на котором держится вся стилистика, не может зависеть от связи.
+/// Пиксельный шрифт акцентных элементов — заголовки, цифры, счётчики.
+const String pixelFontFamily = 'PressStart2P';
+
+/// Основной текстовый шрифт — всё, что читается ради смысла.
+const String sansFontFamily = 'Inter';
+
 TextTheme buildAppTextTheme({required AppColorsExt colors}) {
   const tabular = [FontFeature.tabularFigures()];
 
@@ -24,14 +35,13 @@ TextTheme buildAppTextTheme({required AppColorsExt colors}) {
     double height = 1.4,
     List<FontFeature> features = const [],
   }) {
-    return GoogleFonts.pressStart2p(
-      textStyle: TextStyle(
-        fontSize: size,
-        color: color,
-        letterSpacing: letterSpacing,
-        height: height,
-        fontFeatures: features,
-      ),
+    return TextStyle(
+      fontFamily: pixelFontFamily,
+      fontSize: size,
+      color: color,
+      letterSpacing: letterSpacing,
+      height: height,
+      fontFeatures: features,
     );
   }
 
@@ -43,15 +53,14 @@ TextTheme buildAppTextTheme({required AppColorsExt colors}) {
     double height = 1.35,
     List<FontFeature> features = const [],
   }) {
-    return GoogleFonts.inter(
-      textStyle: TextStyle(
-        fontSize: size,
-        fontWeight: weight,
-        color: color,
-        letterSpacing: letterSpacing,
-        height: height,
-        fontFeatures: features,
-      ),
+    return TextStyle(
+      fontFamily: sansFontFamily,
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      letterSpacing: letterSpacing,
+      height: height,
+      fontFeatures: features,
     );
   }
 

@@ -2,20 +2,24 @@ import 'package:flutter/material.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
+import 'pixel_shadow.dart';
+import 'pixel_sprite.dart';
 
-/// Блочная кнопка с ретро-«тенью»: сплошной прямоугольник со смещением
-/// вместо размытия. При нажатии кнопка съезжает на эти же пиксели и тень
-/// исчезает — как физическая клавиша.
+/// Блочная кнопка с ретро-«тенью» (см. [PixelShadowBox]): при нажатии
+/// съезжает на её высоту и тень исчезает — как физическая клавиша.
+///
+/// Иконка задаётся спрайтом ([sprite]), а не [IconData]: набор Material
+/// внутри пиксельной кнопки сразу выдаёт, что интерфейс собран из чужих
+/// деталей.
 class PixelButton extends StatefulWidget {
   const PixelButton({
     super.key,
     required this.label,
     required this.onPressed,
-    this.icon,
+    this.sprite,
     this.primary = true,
     this.expand = true,
     this.danger = false,
@@ -23,7 +27,9 @@ class PixelButton extends StatefulWidget {
 
   final String label;
   final VoidCallback? onPressed;
-  final IconData? icon;
+
+  /// Сетка спрайта из [PixelSprites].
+  final List<String>? sprite;
 
   /// Заливка акцентом; иначе — прозрачная кнопка с рамкой.
   final bool primary;
@@ -59,13 +65,7 @@ class _PixelButtonState extends State<PixelButton> {
         ? colors.danger.withValues(alpha: 0.5)
         : (widget.primary ? colors.accentShadow : colors.divider);
 
-    const offset = AppRadius.pixelShadowOffset;
-    final shift = _pressed ? offset : 0.0;
-
-    final body = AnimatedContainer(
-      duration: AppMotion.instant,
-      curve: AppMotion.enter,
-      transform: Matrix4.translationValues(shift, shift, 0),
+    final body = Container(
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.lg,
         horizontal: AppSpacing.xl,
@@ -82,10 +82,10 @@ class _PixelButtonState extends State<PixelButton> {
         mainAxisSize: widget.expand ? MainAxisSize.max : MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (widget.icon != null) ...[
-            Icon(
-              widget.icon,
-              size: 16,
+          if (widget.sprite != null) ...[
+            PixelSprite(
+              rows: widget.sprite!,
+              size: 14,
               color: _enabled ? foreground : colors.textTertiary,
             ),
             AppSpacing.wGapSm,
@@ -114,26 +114,11 @@ class _PixelButtonState extends State<PixelButton> {
               widget.onPressed!.call();
             }
           : null,
-      child: Stack(
-        children: [
-          // Нижний слой и есть «тень»: тот же прямоугольник, смещённый вниз-вправо.
-          if (_enabled)
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.only(left: offset, top: offset),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: shadowColor,
-                    borderRadius: AppRadius.controlSmallAll,
-                  ),
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.only(right: offset, bottom: offset),
-            child: body,
-          ),
-        ],
+      child: PixelShadowBox(
+        shadowColor: shadowColor,
+        enabled: _enabled,
+        pressed: _pressed,
+        child: body,
       ),
     );
   }

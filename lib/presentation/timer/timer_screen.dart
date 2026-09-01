@@ -10,6 +10,7 @@ import '../../core/theme/app_text_styles_ext.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
+import '../shared/pixel_sprite.dart';
 import '../shared/timer_dial.dart';
 import 'timer_providers.dart';
 
@@ -172,9 +173,9 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                                   label: state.running
                                       ? l10n.timerPause
                                       : l10n.timerResume,
-                                  icon: state.running
-                                      ? Icons.pause_rounded
-                                      : Icons.play_arrow_rounded,
+                                  sprite: state.running
+                                      ? PixelSprites.pause
+                                      : PixelSprites.play,
                                   onPressed:
                                       state.finished ? null : controller.toggle,
                                 ),
@@ -184,7 +185,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                                 child: PixelButton(
                                   label: l10n.timerSkip,
                                   primary: false,
-                                  icon: Icons.skip_next_rounded,
+                                  sprite: PixelSprites.skip,
                                   onPressed: state.finished
                                       ? null
                                       : controller.skipPhase,
@@ -196,7 +197,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                           PixelButton(
                             label: l10n.timerStop,
                             danger: true,
-                            icon: Icons.stop_rounded,
+                            sprite: PixelSprites.stop,
                             onPressed: state.finished ? null : _confirmStop,
                           ),
                         ],

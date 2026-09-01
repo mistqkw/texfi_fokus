@@ -4,9 +4,16 @@ import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
+import 'pixel_shadow.dart';
 
 /// Карточка приложения: умеренно скруглённая (8–12), с пиксельной рамкой
-/// в 2px. Рамка, а не тень — тени в ретро-эстетике выглядят чужеродно.
+/// в 2px и сплошной ретро-тенью со смещением — тем же приёмом, что у
+/// [PixelButton], а не мягким Material-блюром.
+///
+/// [raised] отвечает за тень. По умолчанию она есть: без неё карточки
+/// читались как плоские прямоугольники и весь пиксельный «объём»
+/// оставался только на одной кнопке. Выключать её стоит там, где карточка
+/// вложена в другую или прижата к краю экрана.
 class PixelCard extends StatelessWidget {
   const PixelCard({
     super.key,
@@ -15,6 +22,8 @@ class PixelCard extends StatelessWidget {
     this.onTap,
     this.accent = false,
     this.borderColor,
+    this.raised = true,
+    this.background,
   });
 
   final Widget child;
@@ -25,6 +34,10 @@ class PixelCard extends StatelessWidget {
   final bool accent;
 
   final Color? borderColor;
+  final Color? background;
+
+  /// Сплошная тень со смещением.
+  final bool raised;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +47,7 @@ class PixelCard extends StatelessWidget {
     final content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: colors.surface,
+        color: background ?? colors.surface,
         borderRadius: AppRadius.cardMediumAll,
         border: Border.all(color: border, width: AppRadius.pixelBorder),
       ),
@@ -47,11 +60,25 @@ class PixelCard extends StatelessWidget {
       ),
     );
 
-    if (onTap == null) return content;
-    return InkWell(
-      onTap: onTap,
+    final tappable = onTap == null
+        ? content
+        : InkWell(
+            onTap: onTap,
+            borderRadius: AppRadius.cardMediumAll,
+            child: content,
+          );
+
+    if (!raised) return tappable;
+
+    // Тень карточки — приглушённый вариант её же рамки: у акцентной
+    // карточки синяя, у обычной цвет разделителя. Так «объём» появляется
+    // везде, но не превращает список в лес одинаковых плашек.
+    return PixelShadowBox(
+      shadowColor: accent
+          ? colors.accentShadow
+          : (borderColor ?? colors.divider),
       borderRadius: AppRadius.cardMediumAll,
-      child: content,
+      child: tappable,
     );
   }
 }

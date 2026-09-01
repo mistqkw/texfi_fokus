@@ -15,6 +15,7 @@ import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_heatmap.dart';
+import '../shared/pixel_shadow.dart';
 import 'statistics_providers.dart';
 
 class StatisticsScreen extends ConsumerWidget {
@@ -74,24 +75,37 @@ class _RangeSelector extends ConsumerWidget {
                   Haptics.tap();
                   ref.read(statsRangeProvider.notifier).state = range;
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: range == selected
-                        ? colors.accent.withValues(alpha: 0.18)
-                        : colors.surfaceVariant,
-                    border: Border.all(
-                      color: range == selected ? colors.accent : colors.divider,
-                      width: AppRadius.pixelBorder,
+                // Выбранный период «утоплен»: тень есть только у
+                // невыбранного, ровно как у нажатой пиксельной кнопки.
+                child: PixelShadowBox(
+                  shadowColor: colors.divider,
+                  borderRadius: AppRadius.controlNoneAll,
+                  pressed: range == selected,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
                     ),
-                  ),
-                  child: Text(
-                    range == StatsRange.week ? l10n.statsWeek : l10n.statsMonth,
-                    style: context.text.pixelLabel.copyWith(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
                       color: range == selected
-                          ? colors.accent
-                          : colors.textSecondary,
+                          ? colors.accent.withValues(alpha: 0.18)
+                          : colors.surfaceVariant,
+                      border: Border.all(
+                        color: range == selected
+                            ? colors.accent
+                            : colors.divider,
+                        width: AppRadius.pixelBorder,
+                      ),
+                    ),
+                    child: Text(
+                      range == StatsRange.week
+                          ? l10n.statsWeek
+                          : l10n.statsMonth,
+                      style: context.text.pixelLabel.copyWith(
+                        color: range == selected
+                            ? colors.accent
+                            : colors.textSecondary,
+                      ),
                     ),
                   ),
                 ),

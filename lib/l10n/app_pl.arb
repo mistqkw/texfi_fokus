@@ -36,6 +36,7 @@
 
   "homeTitle": "f0kus",
   "homeStreakLabel": "Seria",
+  "homeStreakBasis": "wg nawyków",
   "homeStreakValue": "{days} d",
   "homeTodayHabits": "Dzisiaj",
   "homeHabitsEmpty": "Brak nawyków. Dodaj pierwszy.",
