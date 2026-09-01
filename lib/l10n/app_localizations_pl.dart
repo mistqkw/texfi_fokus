@@ -1468,4 +1468,134 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mapWorld3Epigraph => 'Drugiego końca nie widać. I tak idziesz.';
+
+  @override
+  String get techniqueCustomDesc =>
+      'Twój własny preset. Bierze udział w rekomendacjach na równi z wbudowanymi i zbiera własne statystyki.';
+
+  @override
+  String get settingsPresetsTitle => 'Moje presety';
+
+  @override
+  String get settingsPresetsHint =>
+      'Cztery wbudowane techniki nie pasują każdemu. Dodany tu preset silnik proponuje na równi z wbudowanymi.';
+
+  @override
+  String get settingsPresetsEmpty =>
+      'Nie ma jeszcze presetów. Dodaj własny, jeśli żaden z czterech wbudowanych rytmów nie jest twój.';
+
+  @override
+  String get settingsPresetAdd => 'Dodaj preset';
+
+  @override
+  String get settingsPresetEdit => 'Edytuj preset';
+
+  @override
+  String get settingsPresetName => 'Nazwa';
+
+  @override
+  String get settingsPresetNameHint => 'Na przykład: 35/7';
+
+  @override
+  String get settingsPresetLimitReached =>
+      'Maksymalnie pięć presetów. Każdy to kolejna opcja do nauczenia, a sesje mają wspólne.';
+
+  @override
+  String get settingsPresetDelete => 'Usuń preset';
+
+  @override
+  String get settingsBurnoutStreakTitle => 'Przerwanych sesji z rzędu';
+
+  @override
+  String get settingsBurnoutStreakHint =>
+      'Po tylu przerwanych sesjach z rzędu aplikacja zaproponuje przerwę. Dwie to zła godzina, pięć to cały uparty dzień.';
+
+  @override
+  String get settingsWeekStartTitle => 'Tydzień zaczyna się od';
+
+  @override
+  String get settingsWeekStartHint =>
+      'Wpływa na kalendarz aktywności i na wszystko liczone tygodniami.';
+
+  @override
+  String get settingsWeekStartMonday => 'Poniedziałku';
+
+  @override
+  String get settingsWeekStartSunday => 'Niedzieli';
+
+  @override
+  String get settingsAutoBackupTitle => 'Kopia raz w tygodniu';
+
+  @override
+  String get settingsAutoBackupHint =>
+      'Raz w tygodniu po cichu zapisuj kopię wszystkiego do folderu backups aplikacji. Bez chmury — plik zostaje na tym urządzeniu.';
+
+  @override
+  String get settingsAutoBackupNever => 'Kopia jeszcze nie powstała';
+
+  @override
+  String get statsSummaryEmpty =>
+      'W tym okresie nie było sesji. Liczby poniżej zostaną zerami do pierwszej.';
+
+  @override
+  String get statsActivityEmpty =>
+      'Kalendarz wypełnia się z czasem: kwadrat to dzień, jaśniejszy przy dłuższym skupieniu.';
+
+  @override
+  String get statsHabitsEmpty =>
+      'W tym okresie nie zaplanowano nawyków — nie ma czego liczyć.';
+
+  @override
+  String get characterStatsEmptyNew =>
+      'Tu jeszcze pusto. Liczby ruszą po pierwszej dokończonej sesji.';
+
+  @override
+  String get characterStatsNoWins =>
+      'Sesje się odbywają, ale żadna nie została dokończona — wygraną liczy się tylko sesja doprowadzona do końca.';
+
+  @override
+  String get mapIntroTitle => 'Dokąd to prowadzi';
+
+  @override
+  String get mapIntroBody =>
+      'Każda dokończona sesja to krok po szlaku. Światy otwierają się kolejno — nie ma tu czego kupować ani zgadywać.';
+
+  @override
+  String get mapPreparing => 'Rozkładamy szlak…';
+
+  @override
+  String get commonLoadError =>
+      'Nie udało się wczytać. Spróbuj ponownie — dane są na urządzeniu, nic nie zginęło.';
+
+  @override
+  String get homeHabitsEmptyHint =>
+      'Nawyk to dzienny cel plus to, co jesteś sobie winien, jeśli go pominiesz.';
+
+  @override
+  String get planEmptyHint =>
+      'Plan to krótka lista na dziś, nie na cały tydzień — trzy linijki to już plan.';
+
+  @override
+  String get commonUndo => 'Cofnij';
+
+  @override
+  String get habitUndone => 'Odznaczono nawyk';
+
+  @override
+  String get habitsSearchHint => 'Znajdź nawyk';
+
+  @override
+  String get habitsSearchNothing => 'Żaden nawyk nie pasuje.';
+
+  @override
+  String settingsBurnoutStreakValue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sesji',
+      few: '$count sesje',
+      one: '$count sesja',
+    );
+    return '$_temp0';
+  }
 }

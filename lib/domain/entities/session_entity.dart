@@ -68,6 +68,7 @@ class SessionEntity {
     this.interruptionReason,
     this.sessionNote,
     this.photoPath,
+    this.customTechniqueKey,
   });
 
   final String id;
@@ -76,7 +77,24 @@ class SessionEntity {
   final TaskCategory category;
   final TaskDifficulty difficulty;
   final Mood mood;
+
+  /// Встроенная техника. Для сессии, запущенной по пользовательскому пресету,
+  /// здесь лежит ближайшая встроенная — как подложка для мест, умеющих
+  /// работать только с перечислением. Источником правды для обучения и
+  /// хранения служит [techniqueKey], а не это поле.
   final FocusTechnique technique;
+
+  /// Ключ пользовательского пресета (`custom:<id>`), если сессия шла по нему.
+  /// null — работала встроенная техника.
+  final String? customTechniqueKey;
+
+  /// То, что реально пишется в колонку `sessions.technique` и в таблицу
+  /// весов. Разделение важно: без него сессия по пресету 35/7 обучала бы
+  /// статистику ближайшего помидора и портила бы её чужими исходами.
+  String get techniqueKey => customTechniqueKey ?? technique.key;
+
+  /// Сессия шла по пользовательскому пресету.
+  bool get isCustomTechnique => customTechniqueKey != null;
 
   final int plannedFocusMinutes;
   final int plannedBreakMinutes;

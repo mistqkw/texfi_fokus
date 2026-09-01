@@ -26,6 +26,12 @@ abstract final class SessionGuards {
   /// картина дня, и продолжать в том же режиме смысла мало.
   static const int burnoutStreakThreshold = 3;
 
+  /// Границы настройки. Единица означала бы «после любой прерванной сессии»
+  /// — это не забота, а придирка; выше пяти разговор об усталости приходит
+  /// уже после того, как день закончился.
+  static const int minStreakThreshold = 2;
+  static const int maxStreakThreshold = 5;
+
   /// Самое длинное, что предлагаем ночью. Полный помидор 25/5 ещё оставляет
   /// шанс лечь спать; deep work на 90 минут в час ночи — нет.
   static const FocusTechnique nightCapTechnique = FocusTechnique.pomodoro2505;
@@ -98,6 +104,7 @@ abstract final class SessionGuards {
       breakMinutes: capped.breakMinutes,
       cycles: capped.cycles,
       cappedForNight: true,
+      clearPreset: true,
     );
   }
 }

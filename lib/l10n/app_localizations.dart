@@ -2681,6 +2681,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The far end is out of sight. You walk it anyway.'**
   String get mapWorld3Epigraph;
+
+  /// TexFi f0kus polish pass 2: techniqueCustomDesc
+  ///
+  /// In en, this message translates to:
+  /// **'Your own preset. It competes with the built-in techniques on equal terms and builds up its own stats.'**
+  String get techniqueCustomDesc;
+
+  /// TexFi f0kus polish pass 2: settingsPresetsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'My presets'**
+  String get settingsPresetsTitle;
+
+  /// TexFi f0kus polish pass 2: settingsPresetsHint
+  ///
+  /// In en, this message translates to:
+  /// **'Four built-in techniques don\'t fit everyone. A preset you add here is offered by the engine just like the built-in ones.'**
+  String get settingsPresetsHint;
+
+  /// TexFi f0kus polish pass 2: settingsPresetsEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No presets yet. Add one if none of the four built-in rhythms is yours.'**
+  String get settingsPresetsEmpty;
+
+  /// TexFi f0kus polish pass 2: settingsPresetAdd
+  ///
+  /// In en, this message translates to:
+  /// **'Add preset'**
+  String get settingsPresetAdd;
+
+  /// TexFi f0kus polish pass 2: settingsPresetEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit preset'**
+  String get settingsPresetEdit;
+
+  /// TexFi f0kus polish pass 2: settingsPresetName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get settingsPresetName;
+
+  /// TexFi f0kus polish pass 2: settingsPresetNameHint
+  ///
+  /// In en, this message translates to:
+  /// **'For example: 35/7'**
+  String get settingsPresetNameHint;
+
+  /// TexFi f0kus polish pass 2: settingsPresetLimitReached
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 5 presets. Each one is another option the engine has to learn, and they all share the same sessions.'**
+  String get settingsPresetLimitReached;
+
+  /// TexFi f0kus polish pass 2: settingsPresetDelete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete preset'**
+  String get settingsPresetDelete;
+
+  /// TexFi f0kus polish pass 2: settingsBurnoutStreakTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Aborted sessions in a row'**
+  String get settingsBurnoutStreakTitle;
+
+  /// TexFi f0kus polish pass 2: settingsBurnoutStreakHint
+  ///
+  /// In en, this message translates to:
+  /// **'After this many aborted sessions in a row the app suggests stopping for today. Two is a bad hour; five is a whole stubborn day.'**
+  String get settingsBurnoutStreakHint;
+
+  /// TexFi f0kus polish pass 2: settingsWeekStartTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Week starts on'**
+  String get settingsWeekStartTitle;
+
+  /// TexFi f0kus polish pass 2: settingsWeekStartHint
+  ///
+  /// In en, this message translates to:
+  /// **'Affects the activity calendar and everything counted by weeks.'**
+  String get settingsWeekStartHint;
+
+  /// TexFi f0kus polish pass 2: settingsWeekStartMonday
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get settingsWeekStartMonday;
+
+  /// TexFi f0kus polish pass 2: settingsWeekStartSunday
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get settingsWeekStartSunday;
+
+  /// TexFi f0kus polish pass 2: settingsAutoBackupTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly backup'**
+  String get settingsAutoBackupTitle;
+
+  /// TexFi f0kus polish pass 2: settingsAutoBackupHint
+  ///
+  /// In en, this message translates to:
+  /// **'Once a week, quietly save a copy of everything to the app\'s backups folder. No cloud — the file stays on this device.'**
+  String get settingsAutoBackupHint;
+
+  /// TexFi f0kus polish pass 2: settingsAutoBackupNever
+  ///
+  /// In en, this message translates to:
+  /// **'No copy made yet'**
+  String get settingsAutoBackupNever;
+
+  /// TexFi f0kus polish pass 2: statsSummaryEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions in this period. The numbers below stay at zero until the first one.'**
+  String get statsSummaryEmpty;
+
+  /// TexFi f0kus polish pass 2: statsActivityEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'The calendar fills in as you go: one square per day, brighter with more time in focus.'**
+  String get statsActivityEmpty;
+
+  /// TexFi f0kus polish pass 2: statsHabitsEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No habits scheduled in this period — nothing to count yet.'**
+  String get statsHabitsEmpty;
+
+  /// TexFi f0kus polish pass 2: characterStatsEmptyNew
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet. Numbers start moving after your first finished session.'**
+  String get characterStatsEmptyNew;
+
+  /// TexFi f0kus polish pass 2: characterStatsNoWins
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions are happening, but none has been finished yet — only a session carried to the end counts as a win.'**
+  String get characterStatsNoWins;
+
+  /// TexFi f0kus polish pass 2: mapIntroTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Where this leads'**
+  String get mapIntroTitle;
+
+  /// TexFi f0kus polish pass 2: mapIntroBody
+  ///
+  /// In en, this message translates to:
+  /// **'Each finished session is one step along the trail. Worlds open one after another — nothing here needs to be bought or guessed.'**
+  String get mapIntroBody;
+
+  /// TexFi f0kus polish pass 2: mapPreparing
+  ///
+  /// In en, this message translates to:
+  /// **'Laying out the trail…'**
+  String get mapPreparing;
+
+  /// TexFi f0kus polish pass 2: commonLoadError
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this. Try again — the data is on this device, so nothing is lost.'**
+  String get commonLoadError;
+
+  /// TexFi f0kus polish pass 2: homeHabitsEmptyHint
+  ///
+  /// In en, this message translates to:
+  /// **'A habit is a daily goal plus what you owe yourself if you skip it.'**
+  String get homeHabitsEmptyHint;
+
+  /// TexFi f0kus polish pass 2: planEmptyHint
+  ///
+  /// In en, this message translates to:
+  /// **'A plan is a short list for today, not for the whole week — three lines is already a plan.'**
+  String get planEmptyHint;
+
+  /// TexFi f0kus polish pass 2: commonUndo
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get commonUndo;
+
+  /// TexFi f0kus polish pass 2: habitUndone
+  ///
+  /// In en, this message translates to:
+  /// **'Habit unmarked'**
+  String get habitUndone;
+
+  /// TexFi f0kus polish pass 2: habitsSearchHint
+  ///
+  /// In en, this message translates to:
+  /// **'Find a habit'**
+  String get habitsSearchHint;
+
+  /// TexFi f0kus polish pass 2: habitsSearchNothing
+  ///
+  /// In en, this message translates to:
+  /// **'No habit matches that.'**
+  String get habitsSearchNothing;
+
+  /// Number of aborted sessions in a row before the burnout warning
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} session} other{{count} sessions}}'**
+  String settingsBurnoutStreakValue(int count);
 }
 
 class _AppLocalizationsDelegate

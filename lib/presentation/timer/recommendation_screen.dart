@@ -135,11 +135,21 @@ class _RecommendationBody extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                technique.label(l10n),
+                // Пресет показываем под его собственным именем: подменять
+                // его ближайшей встроенной техникой значило бы соврать о
+                // том, что именно предложено.
+                recommendation.preset?.name ?? technique.label(l10n),
                 style: context.text.headline.copyWith(color: colors.accent),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               AppSpacing.gapMd,
-              Text(technique.description(l10n), style: context.text.body),
+              Text(
+                recommendation.preset == null
+                    ? technique.description(l10n)
+                    : l10n.techniqueCustomDesc,
+                style: context.text.body,
+              ),
               AppSpacing.gapLg,
               Row(
                 children: [

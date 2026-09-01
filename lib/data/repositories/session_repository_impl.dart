@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../core/photos/session_photo_store.dart';
+import '../../domain/entities/custom_preset.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/session_entity.dart';
@@ -28,7 +29,12 @@ class SessionRepositoryImpl implements SessionRepository {
       category: TaskCategory.fromIndex(row.category),
       difficulty: TaskDifficulty.fromIndex(row.difficulty),
       mood: Mood.fromIndex(row.mood),
+      // Колонка текстовая и хранит либо имя встроенной техники, либо
+      // `custom:<id>`. Второе не должно молча выродиться в помидор:
+      // `fromKey` даёт подложку для enum, а сам ключ едет отдельным полем.
       technique: FocusTechnique.fromKey(row.technique),
+      customTechniqueKey:
+          CustomPreset.isCustomKey(row.technique) ? row.technique : null,
       plannedFocusMinutes: row.plannedFocusMinutes,
       plannedBreakMinutes: row.plannedBreakMinutes,
       plannedCycles: row.plannedCycles,
@@ -57,7 +63,9 @@ class SessionRepositoryImpl implements SessionRepository {
             category: Value(session.category.index),
             difficulty: Value(session.difficulty.index),
             mood: Value(session.mood.index),
-            technique: Value(session.technique.key),
+            // Именно techniqueKey: у сессии по пользовательскому пресету
+            // enum — только подложка, и запись по ней потеряла бы пресет.
+            technique: Value(session.techniqueKey),
             plannedFocusMinutes: Value(session.plannedFocusMinutes),
             plannedBreakMinutes: Value(session.plannedBreakMinutes),
             plannedCycles: Value(session.plannedCycles),

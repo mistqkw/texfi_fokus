@@ -1466,4 +1466,134 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mapWorld3Epigraph => 'Дальнего конца не видно. Всё равно идёшь.';
+
+  @override
+  String get techniqueCustomDesc =>
+      'Твой собственный пресет. Участвует в рекомендациях наравне со встроенными и копит свою статистику.';
+
+  @override
+  String get settingsPresetsTitle => 'Мои пресеты';
+
+  @override
+  String get settingsPresetsHint =>
+      'Четыре встроенные техники подходят не всем. Заведённый здесь пресет движок предлагает наравне со встроенными.';
+
+  @override
+  String get settingsPresetsEmpty =>
+      'Пресетов пока нет. Заведи свой, если ни один из четырёх встроенных ритмов не твой.';
+
+  @override
+  String get settingsPresetAdd => 'Добавить пресет';
+
+  @override
+  String get settingsPresetEdit => 'Изменить пресет';
+
+  @override
+  String get settingsPresetName => 'Название';
+
+  @override
+  String get settingsPresetNameHint => 'Например: 35/7';
+
+  @override
+  String get settingsPresetLimitReached =>
+      'Не больше пяти пресетов. Каждый — ещё один вариант, который движку надо выучить, а сессии у них общие.';
+
+  @override
+  String get settingsPresetDelete => 'Удалить пресет';
+
+  @override
+  String get settingsBurnoutStreakTitle => 'Прерванных сессий подряд';
+
+  @override
+  String get settingsBurnoutStreakHint =>
+      'После стольких прерванных сессий подряд приложение предложит остановиться. Две — неудачный час, пять — целый упрямый день.';
+
+  @override
+  String get settingsWeekStartTitle => 'Неделя начинается с';
+
+  @override
+  String get settingsWeekStartHint =>
+      'Влияет на календарь активности и на всё, что считается по неделям.';
+
+  @override
+  String get settingsWeekStartMonday => 'Понедельника';
+
+  @override
+  String get settingsWeekStartSunday => 'Воскресенья';
+
+  @override
+  String get settingsAutoBackupTitle => 'Копия раз в неделю';
+
+  @override
+  String get settingsAutoBackupHint =>
+      'Раз в неделю молча сохранять копию всего в папку backups приложения. Без облака — файл остаётся на этом устройстве.';
+
+  @override
+  String get settingsAutoBackupNever => 'Копия ещё не делалась';
+
+  @override
+  String get statsSummaryEmpty =>
+      'За этот период сессий не было. Числа ниже останутся нулями до первой.';
+
+  @override
+  String get statsActivityEmpty =>
+      'Календарь заполняется по ходу дела: квадрат — день, чем ярче, тем больше времени в фокусе.';
+
+  @override
+  String get statsHabitsEmpty =>
+      'В этом периоде привычек не запланировано — считать пока нечего.';
+
+  @override
+  String get characterStatsEmptyNew =>
+      'Здесь пока пусто. Числа сдвинутся после первой доведённой до конца сессии.';
+
+  @override
+  String get characterStatsNoWins =>
+      'Сессии идут, но ни одна ещё не доведена до конца — победой считается только досиженная сессия.';
+
+  @override
+  String get mapIntroTitle => 'Куда это ведёт';
+
+  @override
+  String get mapIntroBody =>
+      'Каждая доведённая до конца сессия — шаг по тропе. Миры открываются один за другим; здесь нечего покупать и не о чем гадать.';
+
+  @override
+  String get mapPreparing => 'Раскладываем тропу…';
+
+  @override
+  String get commonLoadError =>
+      'Не удалось загрузить. Попробуй ещё раз — данные лежат на устройстве, ничего не потеряно.';
+
+  @override
+  String get homeHabitsEmptyHint =>
+      'Привычка — это дневная цель плюс то, что ты себе должен, если её пропустишь.';
+
+  @override
+  String get planEmptyHint =>
+      'План — это короткий список на сегодня, а не на всю неделю: три строки уже план.';
+
+  @override
+  String get commonUndo => 'Отменить';
+
+  @override
+  String get habitUndone => 'Отметка снята';
+
+  @override
+  String get habitsSearchHint => 'Найти привычку';
+
+  @override
+  String get habitsSearchNothing => 'Ни одна привычка не подходит.';
+
+  @override
+  String settingsBurnoutStreakValue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сессий',
+      few: '$count сессии',
+      one: '$count сессия',
+    );
+    return '$_temp0';
+  }
 }

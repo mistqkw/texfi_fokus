@@ -1,8 +1,10 @@
 import 'package:collection/collection.dart';
 
+import 'custom_preset.dart';
 import 'focus_technique.dart';
 import 'mood.dart';
 import 'task_category.dart';
+import 'technique_arm.dart';
 
 /// Время суток, огрублённое до четырёх корзин. Минуты и даже часы в чистом
 /// виде дали бы слишком разреженную статистику: по каждому сочетанию просто
@@ -204,7 +206,31 @@ class Recommendation {
     required this.sampleSize,
     this.evidence = RecommendationEvidence.empty,
     this.cappedForNight = false,
+    this.preset,
   });
+
+  /// Предложение по конкретной руке — встроенной или пользовательской.
+  /// Длительности берутся из руки, поэтому пресет попадает в таймер ровно
+  /// таким, каким его завёл пользователь.
+  factory Recommendation.ofArm(
+    TechniqueArm arm, {
+    required RecommendationReason reason,
+    double confidence = 0.5,
+    int sampleSize = 0,
+    RecommendationEvidence evidence = RecommendationEvidence.empty,
+  }) {
+    return Recommendation(
+      technique: arm.technique,
+      focusMinutes: arm.focusMinutes,
+      breakMinutes: arm.breakMinutes,
+      cycles: arm.cycles,
+      reason: reason,
+      confidence: confidence,
+      sampleSize: sampleSize,
+      evidence: evidence,
+      preset: arm.preset,
+    );
+  }
 
   /// Предложение «как в технике по умолчанию», без правок длительностей.
   factory Recommendation.ofTechnique(
@@ -246,14 +272,26 @@ class Recommendation {
   /// вслух: беззвучно подменённая рекомендация выглядит как сбой движка.
   final bool cappedForNight;
 
+  /// Пользовательский пресет, если предложена именно его рука. null —
+  /// встроенная техника.
+  final CustomPreset? preset;
+
+  /// Ключ руки — то, что уедет в сессию и в таблицу весов.
+  String get techniqueKey => preset?.key ?? technique.key;
+
   Recommendation copyWith({
     FocusTechnique? technique,
     int? focusMinutes,
     int? breakMinutes,
     int? cycles,
     bool? cappedForNight,
+    // Ночной кап подменяет руку на встроенную, и пресет обязан сброситься
+    // вместе с ней: иначе сессия ушла бы в статистику пресета, которого в
+    // ней уже нет.
+    bool clearPreset = false,
   }) {
     return Recommendation(
+      preset: clearPreset ? null : preset,
       technique: technique ?? this.technique,
       focusMinutes: focusMinutes ?? this.focusMinutes,
       breakMinutes: breakMinutes ?? this.breakMinutes,

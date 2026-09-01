@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/notifications/notification_service.dart';
 import '../../data/providers/data_providers.dart';
+import '../../domain/entities/custom_preset.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/phase_clock.dart';
 import '../../domain/entities/recommendation.dart';
@@ -35,6 +36,7 @@ class TimerPlan {
     this.autoStartNext = true,
     this.wasRecommended = true,
     this.wasManualOverride = false,
+    this.preset,
   });
 
   factory TimerPlan.fromRecommendation(Recommendation recommendation) {
@@ -43,10 +45,16 @@ class TimerPlan {
       focusMinutes: recommendation.focusMinutes,
       breakMinutes: recommendation.breakMinutes,
       cycles: recommendation.cycles,
+      preset: recommendation.preset,
     );
   }
 
   final FocusTechnique technique;
+
+  /// Пользовательский пресет, если сессия идёт по нему. Долетает до
+  /// [SessionEntity.customTechniqueKey], а оттуда — до таблицы весов.
+  final CustomPreset? preset;
+
   final int focusMinutes;
   final int breakMinutes;
   final int cycles;
@@ -67,8 +75,13 @@ class TimerPlan {
     bool? autoStartNext,
     bool? wasRecommended,
     bool? wasManualOverride,
+    // Смена техники руками обнуляет пресет: иначе сессия ушла бы в
+    // статистику пресета, по которому её уже не проводят.
+    bool clearPreset = false,
+    CustomPreset? preset,
   }) {
     return TimerPlan(
+      preset: clearPreset ? null : (preset ?? this.preset),
       technique: technique ?? this.technique,
       focusMinutes: focusMinutes ?? this.focusMinutes,
       breakMinutes: breakMinutes ?? this.breakMinutes,
@@ -577,6 +590,7 @@ final saveSessionProvider = Provider<
       difficulty: draft.difficulty,
       mood: draft.mood,
       technique: state.plan.technique,
+      customTechniqueKey: state.plan.preset?.key,
       plannedFocusMinutes: state.plan.focusMinutes,
       plannedBreakMinutes: state.plan.breakMinutes,
       plannedCycles: state.plan.cycles,
