@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:texfi_fokus/domain/entities/focus_technique.dart';
+import 'package:texfi_fokus/domain/entities/phase_clock.dart';
 import 'package:texfi_fokus/domain/entities/timer_alarm.dart';
 import 'package:texfi_fokus/presentation/timer/timer_providers.dart';
 
@@ -151,6 +152,10 @@ void main() {
           finished: false,
           focusSeconds: 0,
           startedAt: DateTime(2026),
+          clock: PhaseClock.startedAt(
+            DateTime(2026),
+            Duration(minutes: p.focusMinutes),
+          ),
         );
 
     const plan2 = TimerPlan(
@@ -195,6 +200,7 @@ void main() {
           finished: false,
           focusSeconds: 0,
           startedAt: DateTime(2026),
+          clock: PhaseClock.startedAt(DateTime(2026), const Duration(minutes: 25)),
         );
 
     test('тик секунды график не трогает', () {
