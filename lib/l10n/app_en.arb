@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appTitle": "TexFi f0kus",
-
   "commonCancel": "Cancel",
   "commonSave": "Save",
   "commonDelete": "Delete",
@@ -18,10 +16,11 @@
   "commonMinutesFull": "{count} min",
   "@commonMinutesFull": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "onboardingWelcomeTitle": "TexFi f0kus",
   "onboardingWelcomeBody": "A focus timer that learns how you actually work — and a habit tracker that does not let you off the hook.",
   "onboardingMoodTitle": "Start with your mood",
@@ -38,14 +37,15 @@
   "onboardingNotificationsBody": "Let TexFi f0kus notify you about unfinished goals at the end of the day.",
   "onboardingAllowNotifications": "Allow notifications",
   "onboardingFinish": "Let's go",
-
   "homeTitle": "f0kus",
   "homeStreakLabel": "Streak",
   "homeStreakBasis": "from habits",
   "homeStreakValue": "{days} d",
   "@homeStreakValue": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "homeTodayHabits": "Today",
@@ -58,56 +58,75 @@
   "homePending": "{count} of {total} goals left",
   "@homePending": {
     "placeholders": {
-      "count": { "type": "int" },
-      "total": { "type": "int" }
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "insightTitle": "Pattern spotted",
   "insightBestMood": "Sessions you start in “{mood}” finish {percent}% of the time — your strongest state.",
   "@insightBestMood": {
     "placeholders": {
-      "mood": { "type": "String" },
-      "percent": { "type": "int" }
+      "mood": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "insightBestWeekday": "{day} is your deepest focus day — {minutes} min on average.",
   "@insightBestWeekday": {
     "placeholders": {
-      "day": { "type": "String" },
-      "minutes": { "type": "int" }
+      "day": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "insightBestTime": "{time} is when you follow through: {percent}% of those sessions land.",
   "@insightBestTime": {
     "placeholders": {
-      "time": { "type": "String" },
-      "percent": { "type": "int" }
+      "time": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "insightBestTechnique": "{technique} works for you more than anything else — {percent}% of those sessions land.",
   "@insightBestTechnique": {
     "placeholders": {
-      "technique": { "type": "String" },
-      "percent": { "type": "int" }
+      "technique": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "insightBasis": "From {count} sessions over the last 30 days.",
   "@insightBasis": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeOfDayMorning": "Morning",
   "timeOfDayAfternoon": "Afternoon",
   "timeOfDayEvening": "Evening",
   "timeOfDayNight": "Night",
-
   "navHome": "Home",
   "navHabits": "Habits",
   "navStats": "Stats",
   "navSettings": "Settings",
-
   "moodTitle": "How are you right now?",
   "moodBad": "bad",
   "moodNeutral": "normal",
@@ -124,20 +143,20 @@
   "moodDifficultyHard": "Hard",
   "moodContinue": "Continue",
   "moodTaskRequired": "Enter a task name",
-
   "categoryStudy": "Study",
   "categoryWork": "Work",
   "categoryCreative": "Creative",
   "categoryChores": "Chores",
   "categorySport": "Sport",
   "categoryOther": "Other",
-
   "recommendationTitle": "Recommended for you",
   "recommendationColdStart": "A safe default for this mood — the app has not seen enough of your sessions yet.",
   "recommendationColdStartProgress": "{count} more sessions and the picks become yours.",
   "@recommendationColdStartProgress": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "recommendationWhyTitle": "Why this",
@@ -146,22 +165,34 @@
   "recommendationEvidenceExact": "In this exact setup you ran {count} sessions with it — {percent}% of them worked out.",
   "@recommendationEvidenceExact": {
     "placeholders": {
-      "count": { "type": "int" },
-      "percent": { "type": "int" }
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "recommendationEvidenceSimilar": "With a similar mood and task you ran {count} sessions with it — {percent}% of them worked out.",
   "@recommendationEvidenceSimilar": {
     "placeholders": {
-      "count": { "type": "int" },
-      "percent": { "type": "int" }
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "recommendationEvidenceBroad": "In this mood you ran {count} sessions with it — {percent}% of them worked out.",
   "@recommendationEvidenceBroad": {
     "placeholders": {
-      "count": { "type": "int" },
-      "percent": { "type": "int" }
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "recommendationEvidenceNone": "No history for this one yet — the app is checking whether it fits you.",
@@ -169,7 +200,9 @@
   "recommendationHistorySize": "Learned from {count} sessions in total.",
   "@recommendationHistorySize": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "recommendationStart": "Start",
@@ -180,7 +213,6 @@
   "recommendationCycles": "Cycles",
   "recommendationSoundOnEnd": "Sound when a cycle ends",
   "recommendationAutoStart": "Auto-start the next cycle",
-
   "techniqueSprint15": "Sprint 15",
   "techniqueSprint15Desc": "15 min of work, 5 min off. Gentle start when nothing works.",
   "techniquePomodoro2505": "Pomodoro 25/5",
@@ -189,7 +221,6 @@
   "techniquePomodoro5010Desc": "50 min of work, 10 min off. For tasks that need momentum.",
   "techniqueDeepWork90": "Deep work 90",
   "techniqueDeepWork90Desc": "90 min without interruptions. Only when you are truly on.",
-
   "timerFocusPhase": "FOCUS",
   "timerBreakPhase": "BREAK",
   "timerPause": "Pause",
@@ -199,8 +230,12 @@
   "timerCycleOf": "Cycle {current} of {total}",
   "@timerCycleOf": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "timerDialHint": "Drag the dial to adjust the remaining time",
@@ -213,7 +248,6 @@
   "timerRateSave": "Save",
   "timerFullscreen": "Fullscreen",
   "timerExitFullscreen": "Exit fullscreen",
-
   "habitsTitle": "Habits",
   "habitsEmpty": "No habits yet.",
   "habitsEmptyHint": "A habit is a daily goal plus what you owe yourself if you skip it.",
@@ -236,11 +270,12 @@
   "habitStreakLabel": "Streak: {days} d",
   "@habitStreakLabel": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "habitDaysShort": "Mon Tue Wed Thu Fri Sat Sun",
-
   "statsTitle": "Statistics",
   "statsWeek": "Week",
   "statsMonth": "Month",
@@ -255,7 +290,6 @@
   "statsSessions": "Sessions",
   "statsCompletionRate": "Finished",
   "statsEmpty": "Not enough data yet. Run a couple of sessions.",
-
   "settingsTitle": "Settings",
   "settingsAppearance": "Appearance",
   "settingsTheme": "Theme",
@@ -276,7 +310,9 @@
   "settingsExportDone": "Saved to {path}",
   "@settingsExportDone": {
     "placeholders": {
-      "path": { "type": "String" }
+      "path": {
+        "type": "String"
+      }
     }
   },
   "settingsExportFailed": "Export failed",
@@ -284,33 +320,39 @@
   "settingsVersion": "Version {version}",
   "@settingsVersion": {
     "placeholders": {
-      "version": { "type": "String" }
+      "version": {
+        "type": "String"
+      }
     }
   },
   "settingsAboutBody": "Part of the TexFi ecosystem. Works fully offline — your data never leaves the device.",
-
   "notificationHabitTitle": "Goal not done: {habit}",
   "@notificationHabitTitle": {
     "placeholders": {
-      "habit": { "type": "String" }
+      "habit": {
+        "type": "String"
+      }
     }
   },
   "notificationHabitBody": "You promised yourself: {punishment}",
   "@notificationHabitBody": {
     "placeholders": {
-      "punishment": { "type": "String" }
+      "punishment": {
+        "type": "String"
+      }
     }
   },
   "notificationDailyTitle": "End of the day",
   "notificationDailyBody": "{count} goals are still unfinished. Still time.",
   "@notificationDailyBody": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "notificationChannelHabits": "Habit reminders",
   "notificationChannelHabitsDesc": "Reminders about unfinished daily goals",
-
   "interruptionQuestion": "What pulled you out?",
   "interruptionOptional": "Optional — it helps the app read your patterns.",
   "interruptionDistracted": "Got distracted",
@@ -319,7 +361,6 @@
   "interruptionNoComment": "Rather not say",
   "sessionNoteQuestion": "How did it go?",
   "sessionNoteHint": "A few words or a sticker",
-
   "guardShortBreakTitle": "Straight back in?",
   "guardShortBreakBody": "You just finished a session. A real break makes the next one better.",
   "guardBurnoutTitle": "Three in a row cut short",
@@ -342,7 +383,6 @@
   "settingsNightCap": "Night soft cap",
   "settingsNightCapSubtitle": "Suggest nothing longer than 25/5 late at night",
   "settingsNightCapHour": "Night starts at",
-
   "habitByWeekdays": "On chosen weekdays",
   "habitTimesPerWeek": "N times a week",
   "habitTimesPerWeekLabel": "Times a week",
@@ -424,7 +464,6 @@
   "statsInterruptions": "Why sessions broke off",
   "statsInterruptionsEmpty": "No interrupted sessions in this period.",
   "statsInterruptionUnnamed": "No reason given",
-
   "homePlanDay": "Plan the day",
   "planTitle": "Today's plan",
   "planIntro": "Two or three tasks, roughly in order. Optional — it just saves you from inventing a task when you already sat down to work.",
@@ -552,10 +591,10 @@
   "characterDriftersDefeated": "Drifters defeated",
   "characterBossesDefeated": "Bosses defeated",
   "characterTotalXp": "XP earned",
-  "characterStage1": "A spark",
-  "characterStage2": "A steady flame",
-  "characterStage3": "A flame with a halo",
-  "characterStage4": "A crowned flame",
+  "characterStage1": "Just a core",
+  "characterStage2": "A shaped flame",
+  "characterStage3": "A halo of sparks",
+  "characterStage4": "A crown",
   "drifterBuzz": "Buzz",
   "drifterCreep": "Creep",
   "drifterLoom": "Loom",
@@ -619,7 +658,6 @@
   "gamePlayerDefeated": "The boss caught its breath",
   "gamePlayerDefeatedBody": "It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.",
   "gameContinue": "Onward",
-
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
   "settingsImport": "Import from JSON",
@@ -652,5 +690,101 @@
   "recommendationScopeExact": "exactly this one",
   "recommendationScopeSimilar": "similar work",
   "recommendationScopeBroad": "this mood in general",
-  "recommendationScopeNone": "no data yet"
+  "recommendationScopeNone": "no data yet",
+  "drifterTangle": "Tangle",
+  "drifterTangleFlavor": "Two funnels meeting at a single thread. The longer you pull, the tighter it sits.",
+  "drifterMote": "Motes",
+  "drifterMoteFlavor": "Not one thing but eight small ones around the edges. None of them weighs anything.",
+  "drifterHusk": "Husk",
+  "drifterHuskFlavor": "A closed shell with nothing left inside. Someone emptied this task a while ago.",
+  "drifterSiphon": "Siphon",
+  "drifterSiphonFlavor": "Wide at the top, a thin trickle at the bottom. Everything goes in, almost nothing comes out.",
+  "drifterKnot": "Knot",
+  "drifterKnotFlavor": "A post with two crossbars. Not a creature — a thing standing in the way.",
+  "drifterVeil": "Veil",
+  "drifterVeilFlavor": "A heavy drape sliding across at an angle. It does not hide the work, it dims it.",
+  "mapWorld1Name": "The Still Room",
+  "mapWorld2Name": "The Loud Field",
+  "mapWorld3Name": "The Long Hall",
+  "characterStage5": "A full corona",
+  "characterStage6": "Almost a sun",
+  "characterRank1": "A spark",
+  "characterRank2": "A flicker",
+  "characterRank3": "An ember",
+  "characterRank4": "A steady flame",
+  "characterRank5": "A torch",
+  "characterRank6": "A beacon",
+  "characterRank7": "A furnace",
+  "characterRank8": "A small sun",
+  "characterStagesTitle": "How it grows",
+  "characterStagesBody": "The shape changes on its own at these levels. Nothing here is hidden — this is the whole ladder.",
+  "characterStageAtLevel": "Level {level}",
+  "@characterStageAtLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "characterStageCurrent": "You are here",
+  "characterNextStage": "Next change at level {level}",
+  "@characterNextStage": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "characterFinalStage": "Final shape. Everything ahead is just more of it.",
+  "battleTitle": "Encounter",
+  "battleEnemyHp": "Its HP",
+  "battleProgressHint": "Its HP falls with your focus time. Finish the session and the damage sticks.",
+  "battleVictoryTitle": "It's down.",
+  "battleVictoryBody": "You sat the session out to the end, and that was enough. Respect.",
+  "battleBossVictoryTitle": "The way is open.",
+  "battleHeldTitle": "It held its ground.",
+  "battleHeldBody": "You stopped early, so it stopped taking damage. It is still standing, and so are you. Come back to it.",
+  "battleBossResetTitle": "It pulled itself back together.",
+  "battleBossResetBody": "Your stamina ran out, so the boss is back at full HP. The XP you earned stays — that part is yours.",
+  "battleXpLine": "Earned this session: +{xp} XP",
+  "@battleXpLine": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "battleBossStakes": "Run out of stamina and it goes back to full HP.",
+  "battleTimerHint": "Same session, same timer — it just has a face on it now.",
+  "onboardingModeTitle": "How should it run?",
+  "onboardingModeBody": "You can switch this later in Settings — nothing is locked in.",
+  "onboardingModePlain": "Just the tracker",
+  "onboardingModePlainBody": "Sessions, habits, statistics. Nothing on top of them.",
+  "onboardingModeGame": "With the game",
+  "onboardingModeGameBody": "The same tracker, plus a map to move along, opponents your sessions wear down, and a character that grows with them.",
+  "photoSectionTitle": "Photo",
+  "photoAdd": "Add a photo",
+  "photoHint": "What you are actually working on — a notebook, a screen, a desk. Stays on this device.",
+  "photoReplace": "Replace",
+  "photoRemove": "Remove",
+  "photoFromCamera": "Take one",
+  "photoFromGallery": "Pick from gallery",
+  "photoSourceTitle": "Where from?",
+  "photoFailed": "Could not attach that photo.",
+  "photoMissing": "The file is gone from this device.",
+  "photoViewerTitle": "Session photo",
+  "historyTitle": "Recent sessions",
+  "historyEmpty": "Nothing in this range yet.",
+  "historyDelete": "Delete",
+  "historyDeleteTitle": "Delete this session?",
+  "historyDeleteBody": "It leaves history and stops counting toward statistics. The attached photo is deleted from the device too. There is no undo.",
+  "historyDeleted": "Session deleted.",
+  "historyMinutes": "{minutes} min",
+  "@historyMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }
