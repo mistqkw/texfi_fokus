@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
+import '../../core/theme/app_motion.dart';
 
 /// Круговая «крутилка» таймера: показывает прогресс и позволяет прямо во
 /// время сессии подкрутить оставшееся время.
@@ -49,11 +50,29 @@ class TimerDial extends StatefulWidget {
   State<TimerDial> createState() => _TimerDialState();
 }
 
-class _TimerDialState extends State<TimerDial> {
+class _TimerDialState extends State<TimerDial>
+    with SingleTickerProviderStateMixin {
   /// Сколько полных оборотов «накручено» с начала жеста, в минутах.
   double _accumulatedMinutes = 0;
   int _lastAppliedTick = 0;
   double? _lastAngle;
+
+  /// «Взятость» крутилки: 0 — отпущена, 1 — палец на ней.
+  ///
+  /// Пока отклик был только в цифрах, крутилка не отличалась от картинки:
+  /// человек тянет за неё, число меняется, но сам элемент никак не
+  /// подтверждает, что жест вообще принят. Масштаб это подтверждает раньше,
+  /// чем успеет прочитаться цифра.
+  late final AnimationController _grab = AnimationController(
+    vsync: this,
+    duration: AppMotion.pop,
+  );
+
+  @override
+  void dispose() {
+    _grab.dispose();
+    super.dispose();
+  }
 
   /// Один полный оборот = 60 минут. Так жест совпадает с часовой метафорой:
   /// четверть круга — 15 минут.
@@ -67,6 +86,7 @@ class _TimerDialState extends State<TimerDial> {
 
   void _onPanStart(DragStartDetails details, Size size) {
     if (!widget.enabled) return;
+    _grab.forward();
     _lastAngle = _angleOf(details.localPosition, size);
     _accumulatedMinutes = 0;
     _lastAppliedTick = 0;
@@ -96,6 +116,7 @@ class _TimerDialState extends State<TimerDial> {
   }
 
   void _onPanEnd() {
+    _grab.reverse();
     _lastAngle = null;
     _accumulatedMinutes = 0;
     _lastAppliedTick = 0;
@@ -131,12 +152,21 @@ class _TimerDialState extends State<TimerDial> {
             onPanUpdate: (d) => _onPanUpdate(d, size),
             onPanEnd: (_) => _onPanEnd(),
             onPanCancel: _onPanEnd,
-            child: CustomPaint(
+            child: AnimatedBuilder(
+              animation: _grab,
+              builder: (context, child) => Transform.scale(
+                // Ровно 3%: жест должен ощущаться принятым, а не должен
+                // перекомпоновывать экран под пальцем.
+                scale: 1 + 0.03 * _grab.value,
+                child: child,
+              ),
+              child: CustomPaint(
               painter: _DialPainter(
                 progress: widget.progress.clamp(0.0, 1.0),
                 accent: accent,
                 track: colors.surfaceVariant,
                 knob: widget.enabled ? accent : colors.textTertiary,
+                grab: _grab,
               ),
               child: Center(
                 child: Column(
@@ -166,6 +196,7 @@ class _TimerDialState extends State<TimerDial> {
                 ),
               ),
             ),
+            ),
           ),
         );
       },
@@ -174,17 +205,22 @@ class _TimerDialState extends State<TimerDial> {
 }
 
 class _DialPainter extends CustomPainter {
-  const _DialPainter({
+  _DialPainter({
     required this.progress,
     required this.accent,
     required this.track,
     required this.knob,
-  });
+    required this.grab,
+  }) : super(repaint: grab);
 
   final double progress;
   final Color accent;
   final Color track;
   final Color knob;
+
+  /// 0..1 — насколько крутилка «взята». Подсвечивает ручку: за неё берутся
+  /// пальцем, и именно она должна показать, что жест принят.
+  final Animation<double> grab;
 
   /// Сегментов в круге. 60 — по минуте на сегмент при часовом обороте.
   static const int _segments = 60;
@@ -234,19 +270,22 @@ class _DialPainter extends CustomPainter {
     canvas.save();
     canvas.translate(knobCenter.dx, knobCenter.dy);
     canvas.rotate(knobAngle + math.pi / 2);
+    final grabbed = grab.value;
+    final knobSide = ringWidth * (1.15 + 0.35 * grabbed);
     canvas.drawRect(
       Rect.fromCenter(
         center: Offset.zero,
-        width: ringWidth * 1.15,
-        height: ringWidth * 1.15,
+        width: knobSide,
+        height: knobSide,
       ),
-      Paint()..color = knob,
+      Paint()..color = Color.lerp(knob, accent, grabbed) ?? knob,
     );
     canvas.restore();
   }
 
   @override
   bool shouldRepaint(_DialPainter oldDelegate) =>
+      oldDelegate.grab != grab ||
       oldDelegate.progress != progress ||
       oldDelegate.accent != accent ||
       oldDelegate.track != track ||

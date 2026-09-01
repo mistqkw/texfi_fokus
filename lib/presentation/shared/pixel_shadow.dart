@@ -44,28 +44,42 @@ class PixelShadowBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shift = pressed ? offset : 0.0;
-
     // Отступ справа и снизу резервирует место под тень: без него элемент
     // занимал бы на 3px больше собственной раскладки.
     final body = Padding(
       padding: EdgeInsets.only(right: offset, bottom: offset),
-      child: AnimatedContainer(
-        duration: AppMotion.instant,
-        curve: AppMotion.enter,
-        transform: Matrix4.translationValues(shift, shift, 0),
-        child: child,
-      ),
+      child: child,
     );
 
-    if (!enabled || pressed) return body;
+    if (!enabled) return body;
 
-    return CustomPaint(
-      painter: _PixelShadowPainter(
-        color: shadowColor,
-        radius: borderRadius,
-        offset: offset,
-      ),
+    // Сдвиг содержимого и убыль тени идут от одного значения.
+    //
+    // Раньше содержимое уезжало за [AppMotion.instant], а тень пропадала
+    // мгновенно — на те же 90 мс кнопка оставалась в верхнем положении, но
+    // уже без объёма, и нажатие читалось как мигание, а не как утапливание.
+    // Физическая клавиша так себя не ведёт: она уходит вниз ровно настолько,
+    // насколько закрывает собой тень.
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: pressed ? 1 : 0),
+      duration: AppMotion.instant,
+      curve: AppMotion.enter,
+      builder: (context, t, child) {
+        final shift = offset * t;
+        return CustomPaint(
+          painter: _PixelShadowPainter(
+            color: shadowColor,
+            radius: borderRadius,
+            offset: offset,
+            // Тень не просто исчезает — её съедает опускающийся элемент.
+            visible: 1 - t,
+          ),
+          child: Transform.translate(
+            offset: Offset(shift, shift),
+            child: child,
+          ),
+        );
+      },
       child: body,
     );
   }
@@ -76,19 +90,27 @@ class _PixelShadowPainter extends CustomPainter {
     required this.color,
     required this.radius,
     required this.offset,
+    this.visible = 1,
   });
 
   final Color color;
   final BorderRadius radius;
   final double offset;
 
+  /// 0..1 — сколько тени осталось видно. Тень не растворяется прозрачностью,
+  /// а укорачивается: полупрозрачный блок здесь был бы единственным местом
+  /// в интерфейсе, где «объём» размывается.
+  final double visible;
+
   @override
   void paint(Canvas canvas, Size size) {
+    if (visible <= 0) return;
+    final shown = offset * visible;
     final rect = Rect.fromLTWH(
       offset,
       offset,
-      size.width - offset,
-      size.height - offset,
+      size.width - offset - (offset - shown),
+      size.height - offset - (offset - shown),
     );
     if (rect.isEmpty) return;
     canvas.drawRRect(
@@ -101,5 +123,6 @@ class _PixelShadowPainter extends CustomPainter {
   bool shouldRepaint(_PixelShadowPainter oldDelegate) =>
       oldDelegate.color != color ||
       oldDelegate.radius != radius ||
-      oldDelegate.offset != offset;
+      oldDelegate.offset != offset ||
+      oldDelegate.visible != visible;
 }

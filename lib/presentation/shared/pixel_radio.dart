@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
@@ -47,7 +50,7 @@ class PixelRadioIndicator extends StatelessWidget {
 }
 
 /// Квадратный чекбокс с пиксельной галочкой-спрайтом.
-class PixelCheckIndicator extends StatelessWidget {
+class PixelCheckIndicator extends StatefulWidget {
   const PixelCheckIndicator({
     super.key,
     required this.checked,
@@ -62,10 +65,52 @@ class PixelCheckIndicator extends StatelessWidget {
   final Color? color;
 
   @override
+  State<PixelCheckIndicator> createState() => _PixelCheckIndicatorState();
+}
+
+class _PixelCheckIndicatorState extends State<PixelCheckIndicator>
+    with SingleTickerProviderStateMixin {
+  /// «Поп» при отметке: коробочка коротко раздувается и садится обратно.
+  ///
+  /// Отметить привычку — единственное действие на «Главной», у которого нет
+  /// ни экрана, ни диалога: всё подтверждение — в самом чекбоксе. Мгновенная
+  /// смена состояния сообщает результат, но не сообщает, что нажатие
+  /// вообще произошло, — а при промахе по соседней карточке это две разные
+  /// вещи.
+  late final AnimationController _pop = AnimationController(
+    vsync: this,
+    duration: AppMotion.pop,
+  );
+
+  @override
+  void didUpdateWidget(PixelCheckIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Только на отметку, не на снятие: снятие — это отмена, и праздновать
+    // её нечем.
+    if (!oldWidget.checked && widget.checked) _pop.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _pop.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final on = color ?? colors.success;
-    return SizedBox(
+    final checked = widget.checked;
+    final size = widget.size;
+    final on = widget.color ?? colors.success;
+
+    return AnimatedBuilder(
+      animation: _pop,
+      builder: (context, child) => Transform.scale(
+        // Один взмах вверх-вниз: 1 → 1.25 → 1.
+        scale: 1 + 0.25 * math.sin(_pop.value * math.pi),
+        child: child,
+      ),
+      child: SizedBox(
       width: size,
       height: size,
       child: DecoratedBox(
@@ -85,6 +130,7 @@ class PixelCheckIndicator extends StatelessWidget {
                 ),
               )
             : null,
+      ),
       ),
     );
   }
