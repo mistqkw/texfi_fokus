@@ -152,16 +152,34 @@ class _WorldSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                l10n.mapWorld(world),
-                style: context.text.sectionTitle.copyWith(
-                  color: revealed ? colors.textPrimary : colors.textTertiary,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Номер остался, но ушёл в подпись: он отвечает «где я в
+                  // списке», а имя — «куда я попал». Второе для карты важнее.
+                  Text(
+                    l10n.mapWorld(world),
+                    style: context.text.chartLabel.copyWith(
+                      color: colors.textTertiary,
+                    ),
+                  ),
+                  Text(
+                    worldName(l10n, world),
+                    style: context.text.sectionTitle.copyWith(
+                      color:
+                          revealed ? colors.textPrimary : colors.textTertiary,
+                    ),
+                  ),
+                ],
               ),
               AppSpacing.wGapSm,
               Expanded(
-                child: Container(height: 2, color: colors.divider),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Container(height: 2, color: colors.divider),
+                ),
               ),
             ],
           ),

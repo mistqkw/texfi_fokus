@@ -69,10 +69,125 @@ abstract final class GameSprites {
     '..x..x...x..',
   ];
 
+  // --- Мир 2: те же 12×12, но ни одного знакомого силуэта ---
+
+  /// Клубок: две воронки, сходящиеся в тонкой перемычке посередине. Ничего
+  /// сплошного — только скрещённые нити, и чем ближе к центру, тем туже.
+  static const List<String> drifterTangle = [
+    '............',
+    '.xx......xx.',
+    '..xx....xx..',
+    '...xx..xx...',
+    '....xxxx....',
+    '.....xx.....',
+    '.....xx.....',
+    '....xxxx....',
+    '...xx..xx...',
+    '..xx....xx..',
+    '.xx......xx.',
+    '............',
+  ];
+
+  /// Мошкара: единственный «дрифер», у которого нет тела. Восемь мелких
+  /// пятен по краям кадра и пустота в середине — взгляду не за что
+  /// зацепиться, и в этом вся суть.
+  static const List<String> drifterMote = [
+    'xx......xx..',
+    'xx......xx..',
+    '....xx......',
+    '....xx......',
+    'xx........xx',
+    'xx........xx',
+    '..xx....xx..',
+    '..xx....xx..',
+    'xx......xx..',
+    'xx......xx..',
+    '....xx..xx..',
+    '....xx..xx..',
+  ];
+
+  /// Скорлупа: замкнутое кольцо и ничего внутри. Самый лёгкий силуэт на
+  /// карте — одна линия по кругу.
+  static const List<String> drifterHusk = [
+    '....xxxx....',
+    '..xx....xx..',
+    '.x........x.',
+    '.x........x.',
+    'x..........x',
+    'x..........x',
+    'x..........x',
+    '.x........x.',
+    '.x........x.',
+    '..xx....xx..',
+    '....xxxx....',
+    '............',
+  ];
+
+  // --- Мир 3 ---
+
+  /// Воронка: тяжёлая сплошная шапка во всю ширину, сходящаяся к тонкой
+  /// ножке. Вертикаль, но перевёрнутая относительно Морока — тот тяжёл
+  /// внизу, эта сверху.
+  static const List<String> drifterSiphon = [
+    'xxxxxxxxxxxx',
+    'xxxxxxxxxxxx',
+    '.xxxxxxxxxx.',
+    '..xxxxxxxx..',
+    '...xxxxxx...',
+    '....xxxx....',
+    '....x..x....',
+    '.....xx.....',
+    '.....xx.....',
+    '.....xx.....',
+    '....xxxx....',
+    '............',
+  ];
+
+  /// Узел: столб во всю высоту с двумя перекладинами поперёк. Единственная
+  /// фигура на карте, построенная из прямых углов, — она не существо, она
+  /// препятствие.
+  static const List<String> drifterKnot = [
+    '.....xx.....',
+    '.....xx.....',
+    'xxxxxxxxxxxx',
+    'xxxxxxxxxxxx',
+    '.....xx.....',
+    '.....xx.....',
+    '..xxxxxxxx..',
+    '..xxxxxxxx..',
+    '.....xx.....',
+    '.....xx.....',
+    '.....xx.....',
+    '.....xx.....',
+  ];
+
+  /// Полог: косая масса из угла в угол с обтрёпанным нижним краем.
+  /// Единственный несимметричный силуэт — он один «падает» в сторону.
+  static const List<String> drifterVeil = [
+    'xxxxxxx.....',
+    'xxxxxxxx....',
+    '.xxxxxxxx...',
+    '..xxxxxxxx..',
+    '...xxxxxxxx.',
+    '....xxxxxxxx',
+    '.....xxxxxxx',
+    '....x.xxxxx.',
+    '...x...xxx..',
+    '..x.....x...',
+    '.x..........',
+    'x...........',
+  ];
+
   static List<String> drifter(DrifterSpecies species) => switch (species) {
         DrifterSpecies.buzz => drifterBuzz,
         DrifterSpecies.creep => drifterCreep,
         DrifterSpecies.loom => drifterLoom,
+        DrifterSpecies.tangle => drifterTangle,
+        DrifterSpecies.mote => drifterMote,
+        DrifterSpecies.husk => drifterHusk,
+        DrifterSpecies.siphon => drifterSiphon,
+        DrifterSpecies.knot => drifterKnot,
+        DrifterSpecies.veil => drifterVeil,
       };
 
   // --- Боссы, 16×16. У каждого мира свой, со своей идеей ---
@@ -220,12 +335,56 @@ abstract final class GameSprites {
     'x...x..x...x',
   ];
 
-  static List<String> avatar(int stage) => switch (stage) {
-        0 => avatarSpark,
-        1 => avatarFlame,
-        2 => avatarAura,
-        _ => avatarCrown,
-      };
+  /// Ступень 4 (15–20) — корона смыкается в сплошной венец, лучи идут
+  /// по всем четырём сторонам.
+  static const List<String> avatarCorona = [
+    'x.xxxxxxxx.x',
+    '.xxxxxxxxxx.',
+    'xxxxxxxxxxxx',
+    '.xxxxxxxxxx.',
+    '..xxx..xxx..',
+    '.xxx....xxx.',
+    '.xx......xx.',
+    '.xxxxxxxxxx.',
+    '.xxxxxxxxxx.',
+    '..xxxxxxxx..',
+    '.x.xxxxxx.x.',
+    'x.x.xxxx.x.x',
+  ];
+
+  /// Ступень 5 (21+) — огонёк занимает почти весь кадр: сердцевина всё ещё
+  /// полая, но вокруг неё уже не аура, а сплошное свечение.
+  static const List<String> avatarSun = [
+    'x.xxxxxxxx.x',
+    'xxxxxxxxxxxx',
+    'xxxxxxxxxxxx',
+    'xxxxxxxxxxxx',
+    '.xxxx..xxxx.',
+    '.xxx....xxx.',
+    '.xxx....xxx.',
+    '.xxxxxxxxxx.',
+    'xxxxxxxxxxxx',
+    'xxxxxxxxxxxx',
+    '.xxxxxxxxxx.',
+    'x.x.xxxx.x.x',
+  ];
+
+  /// Все ступени аватара по порядку — от искры к почти-солнцу.
+  ///
+  /// Список, а не только функция: экран персонажа показывает по нему всю
+  /// лестницу впереди, и держать её порядок в двух местах было бы верным
+  /// способом однажды разойтись.
+  static const List<List<String>> avatarStages = [
+    avatarSpark,
+    avatarFlame,
+    avatarAura,
+    avatarCrown,
+    avatarCorona,
+    avatarSun,
+  ];
+
+  static List<String> avatar(int stage) =>
+      avatarStages[stage.clamp(0, avatarStages.length - 1)];
 
   // --- Мелочи интерфейса карты ---
 

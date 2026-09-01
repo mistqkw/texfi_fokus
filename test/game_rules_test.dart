@@ -321,4 +321,218 @@ void main() {
       }
     });
   });
+
+  group('ступени и звания персонажа', () {
+    test('ступень вида меняется ровно на объявленных уровнях', () {
+      // Таблица записана здесь заново, руками, а не выведена из
+      // `avatarStageLevels`: тест, считающий по той же формуле, что и код,
+      // не поймает изменение формулы — он его повторит.
+      const expected = <int, int>{
+        1: 0, 2: 0,
+        3: 1, 4: 1, 5: 1,
+        6: 2, 7: 2, 8: 2, 9: 2,
+        10: 3, 11: 3, 14: 3,
+        15: 4, 16: 4, 20: 4,
+        21: 5, 30: 5, 99: 5,
+      };
+      expected.forEach((level, stage) {
+        expect(
+          GameRules.avatarStageForLevel(level),
+          stage,
+          reason: 'уровень $level',
+        );
+      });
+    });
+
+    test('ступень никогда не откатывается назад', () {
+      var previous = 0;
+      for (var level = 1; level <= 60; level++) {
+        final stage = GameRules.avatarStageForLevel(level);
+        expect(stage, greaterThanOrEqualTo(previous), reason: 'уровень $level');
+        expect(stage, lessThan(GameRules.avatarStageCount));
+        previous = stage;
+      }
+    });
+
+    test('следующая ступень называется честно, а на последней — молчит', () {
+      expect(GameRules.nextAvatarStageLevel(1), 3);
+      expect(GameRules.nextAvatarStageLevel(3), 6);
+      expect(GameRules.nextAvatarStageLevel(9), 10);
+      expect(GameRules.nextAvatarStageLevel(14), 15);
+      expect(GameRules.nextAvatarStageLevel(20), 21);
+      // Дальше ступеней нет, и обещать их нечем.
+      expect(GameRules.nextAvatarStageLevel(21), isNull);
+      expect(GameRules.nextAvatarStageLevel(80), isNull);
+    });
+
+    test('звание меняется чаще, чем внешний вид', () {
+      // Смысл двух лестниц именно в этом: между двумя перерисовками аватара
+      // человек всё равно должен видеть, что продвинулся.
+      final stageChanges = <int>{};
+      final rankChanges = <int>{};
+      for (var level = 2; level <= 30; level++) {
+        if (GameRules.avatarStageForLevel(level) !=
+            GameRules.avatarStageForLevel(level - 1)) {
+          stageChanges.add(level);
+        }
+        if (GameRules.rankForLevel(level) != GameRules.rankForLevel(level - 1)) {
+          rankChanges.add(level);
+        }
+      }
+      expect(rankChanges.length, greaterThan(stageChanges.length));
+    });
+
+    test('звание по уровню — по объявленной таблице', () {
+      const expected = <int, int>{
+        1: 0, 2: 0,
+        3: 1, 4: 1,
+        5: 2, 7: 2,
+        8: 3, 10: 3,
+        11: 4, 14: 4,
+        15: 5, 19: 5,
+        20: 6, 26: 6,
+        27: 7, 50: 7,
+      };
+      expected.forEach((level, rank) {
+        expect(GameRules.rankForLevel(level), rank, reason: 'уровень $level');
+      });
+      expect(GameRules.rankCount, 8);
+    });
+  });
+
+  group('полоска HP на экране боя', () {
+    test('пустая сессия ничего не отнимает', () {
+      expect(
+        GameRules.previewHp(
+          kind: MapNodeKind.drifter,
+          currentHp: 40,
+          focusSeconds: 0,
+          mood: Mood.neutral,
+        ),
+        40,
+      );
+    });
+
+    test('HP убывает минута за минутой и не уходит ниже нуля', () {
+      int hpAfter(int minutes) => GameRules.previewHp(
+            kind: MapNodeKind.drifter,
+            currentHp: 25,
+            focusSeconds: minutes * 60,
+            mood: Mood.neutral,
+          );
+
+      expect(hpAfter(1), 24);
+      expect(hpAfter(10), 15);
+      expect(hpAfter(25), 0);
+      // Пересидел — полоска стоит на нуле, а не уходит в минус.
+      expect(hpAfter(90), 0);
+    });
+
+    test('показанное совпадает с тем, что будет записано', () {
+      // Главное требование к полоске: она обещает ровно тот урон, который
+      // доведённая до конца сессия и нанесёт. Полоска, живущая по своей
+      // формуле, — худший вид украшения: правдоподобное, но врущее.
+      for (final minutes in [1, 7, 25, 50]) {
+        for (final mood in Mood.values) {
+          for (final kind in MapNodeKind.values) {
+            final damage = GameRules.damageFor(
+              kind: kind,
+              focusSeconds: minutes * 60,
+              mood: mood,
+              completedFully: true,
+            );
+            expect(
+              GameRules.previewHp(
+                kind: kind,
+                currentHp: 500,
+                focusSeconds: minutes * 60,
+                mood: mood,
+              ),
+              500 - damage,
+              reason: '$kind, $mood, $minutes мин',
+            );
+          }
+        }
+      }
+    });
+
+    test('босса без full f0kus полоска почти не двигает', () {
+      final scratch = GameRules.previewHp(
+        kind: MapNodeKind.boss,
+        currentHp: 120,
+        focusSeconds: 40 * 60,
+        mood: Mood.neutral,
+      );
+      final real = GameRules.previewHp(
+        kind: MapNodeKind.boss,
+        currentHp: 120,
+        focusSeconds: 40 * 60,
+        mood: Mood.fullFokus,
+      );
+      // Разница должна быть видна сразу, а не «на пару процентов».
+      expect(120 - scratch, 10);
+      expect(120 - real, 80);
+    });
+
+    test('доля для полоски держится в границах 0..1', () {
+      for (final minutes in [0, 3, 30, 300]) {
+        final fraction = GameRules.previewHpFraction(
+          kind: MapNodeKind.drifter,
+          currentHp: 30,
+          maxHp: 30,
+          focusSeconds: minutes * 60,
+          mood: Mood.good,
+        );
+        expect(fraction, inInclusiveRange(0.0, 1.0));
+      }
+      // Вырожденный узел не роняет экран делением на ноль.
+      expect(
+        GameRules.previewHpFraction(
+          kind: MapNodeKind.drifter,
+          currentHp: 0,
+          maxHp: 0,
+          focusSeconds: 600,
+          mood: Mood.good,
+        ),
+        0,
+      );
+    });
+  });
+
+  group('состав миров', () {
+    test('первый мир остался тем же, что и до расширения', () {
+      // У людей с уже начатой партией узлы первого мира не должны сменить
+      // обитателей: индексы видов лежат в базе, и «просто переставить»
+      // означало бы, что вчерашний Морок сегодня стал кем-то другим.
+      expect(GameRules.speciesFor(1, 1), DrifterSpecies.loom);
+      expect(GameRules.speciesFor(1, 2), DrifterSpecies.buzz);
+      expect(GameRules.speciesFor(1, 3), DrifterSpecies.creep);
+    });
+
+    test('индексы первых трёх видов не сдвинулись', () {
+      // То же требование, но со стороны хранилища: в БД лежит именно индекс.
+      expect(DrifterSpecies.buzz.index, 0);
+      expect(DrifterSpecies.creep.index, 1);
+      expect(DrifterSpecies.loom.index, 2);
+      expect(DrifterSpecies.fromIndex(2), DrifterSpecies.loom);
+    });
+
+    test('на каждый узел каждого мира кто-то назначен', () {
+      for (var world = 1; world <= GameRules.worldCount; world++) {
+        for (var position = 1;
+            position <= GameRules.drifterNodesPerWorld;
+            position++) {
+          expect(
+            DrifterSpecies.values,
+            contains(GameRules.speciesFor(world, position)),
+          );
+        }
+      }
+      // Запрос за пределами реализованных миров не роняет карту.
+      expect(
+        DrifterSpecies.values,
+        contains(GameRules.speciesFor(99, 7)),
+      );
+    });
+  });
 }

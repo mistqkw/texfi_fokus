@@ -9,6 +9,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/recommendation.dart';
+import '../game/battle_screen.dart';
+import '../game/game_providers.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
@@ -58,8 +60,16 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
       // с выбором руки бандита пользователь при этом согласился.
       wasManualOverride: _technique != widget.initial.technique,
     );
+    // Ручная настройка ведёт туда же, куда и принятая рекомендация: сессия
+    // против противника остаётся сессией против противника, кто бы ни выбрал
+    // её длину.
+    final node =
+        ref.read(gameModeOnProvider) ? ref.read(currentNodeProvider) : null;
+
     Navigator.of(context).pushReplacement(
-      pixelDissolveRoute<void>(const TimerScreen()),
+      pixelDissolveRoute<void>(
+        node == null ? const TimerScreen() : BattleScreen(node: node),
+      ),
     );
   }
 

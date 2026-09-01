@@ -14,6 +14,12 @@ void main() {
     'buzz': GameSprites.drifterBuzz,
     'creep': GameSprites.drifterCreep,
     'loom': GameSprites.drifterLoom,
+    'tangle': GameSprites.drifterTangle,
+    'mote': GameSprites.drifterMote,
+    'husk': GameSprites.drifterHusk,
+    'siphon': GameSprites.drifterSiphon,
+    'knot': GameSprites.drifterKnot,
+    'veil': GameSprites.drifterVeil,
   };
 
   const bosses = <String, List<String>>{
@@ -27,6 +33,8 @@ void main() {
     'flame': GameSprites.avatarFlame,
     'aura': GameSprites.avatarAura,
     'crown': GameSprites.avatarCrown,
+    'corona': GameSprites.avatarCorona,
+    'sun': GameSprites.avatarSun,
   };
 
   const decor = <String, List<String>>{
@@ -126,6 +134,35 @@ void main() {
       allPairsDiffer(bosses);
     });
 
+    test('в каждом мире стоят три разных существа, и миры не повторяются',
+        () {
+      // Прямая проверка того, ради чего дриферов стало девять: пройдя первый
+      // мир, во втором человек должен встретить других, а не тех же самых.
+      final seen = <DrifterSpecies>{};
+      for (var world = 1; world <= GameRules.worldCount; world++) {
+        final inWorld = <DrifterSpecies>{};
+        for (var position = 1;
+            position <= GameRules.drifterNodesPerWorld;
+            position++) {
+          final species = GameRules.speciesFor(world, position);
+          expect(
+            inWorld.add(species),
+            isTrue,
+            reason: 'мир $world повторяет ${species.name} внутри себя',
+          );
+          expect(
+            seen.add(species),
+            isTrue,
+            reason: '${species.name} уже встречался в предыдущем мире',
+          );
+        }
+      }
+      expect(
+        seen,
+        hasLength(GameRules.worldCount * GameRules.drifterNodesPerWorld),
+      );
+    });
+
     test('дриферы занимают разные пропорции кадра', () {
       // Гудок широкий, Ползун низкий, Морок высокий и узкий: это должно
       // читаться по строкам и столбцам, а не только по деталям.
@@ -193,7 +230,7 @@ void main() {
     test('у каждой ступени аватара свой вид, и он растёт', () {
       final used = <String>{};
       var previous = 0;
-      for (var stage = 0; stage < 4; stage++) {
+      for (var stage = 0; stage < GameRules.avatarStageCount; stage++) {
         final sprite = GameSprites.avatar(stage);
         expect(used.add(sprite.join('/')), isTrue, reason: 'ступень $stage');
         // Огонёк должен именно расти: каждая ступень заметнее предыдущей.

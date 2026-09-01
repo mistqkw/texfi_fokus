@@ -44,6 +44,8 @@ class CharacterScreen extends ConsumerWidget {
             children: [
               _AvatarCard(progress: progress),
               AppSpacing.gapLg,
+              _StagesCard(progress: progress),
+              AppSpacing.gapLg,
               _StatsCard(progress: progress),
             ],
           ),
@@ -75,9 +77,17 @@ class _AvatarCard extends StatelessWidget {
             size: 132,
           ),
           AppSpacing.gapMd,
+          // Звание крупнее номера уровня: «Уголёк» говорит о продвижении
+          // больше, чем «5», и меняется достаточно часто, чтобы это было
+          // видно между двумя перерисовками аватара.
+          Text(
+            rankLabel(l10n, progress.rank),
+            style: context.text.headline.copyWith(color: colors.accent),
+          ),
+          AppSpacing.gapXs,
           Text(
             l10n.characterLevel(progress.level),
-            style: context.text.headline,
+            style: context.text.title,
           ),
           AppSpacing.gapXs,
           Text(
@@ -93,6 +103,120 @@ class _AvatarCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Лестница ступеней: как персонаж будет выглядеть дальше.
+///
+/// Показывается целиком, включая недостижимые пока ступени. Спрятать их было
+/// бы честнее «по-игровому», но экран персонажа на первом уровне — это ровно
+/// тот случай, когда всё вокруг равно нулю, и единственное, что может
+/// объяснить, зачем сюда возвращаться, — видимая дорога впереди. Ступени
+/// нарочно не сюрприз: сюрприз тут — встреча с существом на карте, а не
+/// собственный аватар.
+class _StagesCard extends StatelessWidget {
+  const _StagesCard({required this.progress});
+
+  final PlayerProgressEntity progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final nextLevel = progress.nextAvatarStageLevel;
+
+    return PixelCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.characterStagesTitle, style: context.text.sectionTitle),
+          AppSpacing.gapSm,
+          Text(l10n.characterStagesBody, style: context.text.caption),
+          AppSpacing.gapLg,
+          for (var stage = 0;
+              stage < GameRules.avatarStageCount;
+              stage++) ...[
+            if (stage > 0) const Divider(height: AppSpacing.lg),
+            _StageRow(
+              stage: stage,
+              unlockLevel: GameRules.avatarStageLevels[stage],
+              reached: progress.avatarStage >= stage,
+              current: progress.avatarStage == stage,
+            ),
+          ],
+          AppSpacing.gapLg,
+          Text(
+            nextLevel == null
+                ? l10n.characterFinalStage
+                : l10n.characterNextStage(nextLevel),
+            style: context.text.chartLabel.copyWith(color: colors.accent),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StageRow extends StatelessWidget {
+  const _StageRow({
+    required this.stage,
+    required this.unlockLevel,
+    required this.reached,
+    required this.current,
+  });
+
+  final int stage;
+  final int unlockLevel;
+
+  /// Ступень уже пройдена или идёт сейчас.
+  final bool reached;
+  final bool current;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+
+    // Недостижимая пока ступень приглушена, но показана целиком: силуэт
+    // будущего огонька — и есть то, ради чего на этот экран возвращаются.
+    final tone = current
+        ? colors.accent
+        : (reached ? colors.textSecondary : colors.textTertiary);
+
+    return Row(
+      children: [
+        PixelCreature(
+          rows: GameSprites.avatar(stage),
+          color: tone,
+          size: 40,
+          animate: current,
+        ),
+        AppSpacing.wGapMd,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                avatarStageLabel(l10n, stage),
+                style: context.text.body.copyWith(color: tone),
+              ),
+              AppSpacing.gapXs,
+              Text(
+                l10n.characterStageAtLevel(unlockLevel),
+                style: context.text.chartLabel.copyWith(
+                  color: colors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (current)
+          Text(
+            l10n.characterStageCurrent,
+            style: context.text.chartLabel.copyWith(color: colors.accent),
+          ),
+      ],
     );
   }
 }

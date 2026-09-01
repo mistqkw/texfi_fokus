@@ -24,10 +24,18 @@ enum MapNodeStatus {
           : MapNodeStatus.locked;
 }
 
-/// Разновидность обычного дрифера. Не окраска одного силуэта, а три разных
-/// существа: у каждого свой спрайт, свои пропорции и свой характер.
+/// Разновидность обычного дрифера. Не окраска одного силуэта, а девять разных
+/// существ: у каждого свой спрайт, свои пропорции и свой характер.
 ///
-/// Индекс хранится в БД — порядок менять нельзя.
+/// Девять, а не три, потому что миров три и каждому положен собственный
+/// набор. Повтор одной и той же тройки во всех мирах — самая заметная
+/// причина, по которой карта читается как заглушка: пройдя первый мир,
+/// человек во втором встречает ровно тех же противников под теми же именами,
+/// и «продвижение» перестаёт что-либо значить.
+///
+/// Индекс хранится в БД — порядок менять нельзя, только дописывать в конец.
+/// Первые три поэтому остались на своих местах: у людей, уже начавших партию,
+/// узлы первого мира не должны молча превратиться в других существ.
 enum DrifterSpecies {
   /// Гудок — широкий крылатый: мелкое тело, размах в весь кадр. Тот самый
   /// «звякнуло и утащило».
@@ -38,7 +46,32 @@ enum DrifterSpecies {
 
   /// Морок — высокий и узкий, с одним большим пустым глазом. Ничего не
   /// делает, просто стоит и смотрит.
-  loom;
+  loom,
+
+  // --- Мир 2 ---
+
+  /// Клубок — песочные часы из скрещённых нитей: чем дольше распутываешь,
+  /// тем ровнее он затягивается обратно.
+  tangle,
+
+  /// Мошкара — не одно существо, а горсть мелких пятен по углам кадра.
+  /// Каждое по отдельности ничего не весит.
+  mote,
+
+  /// Скорлупа — пустое кольцо: оболочка задачи, из которой давно вынули
+  /// содержимое.
+  husk,
+
+  // --- Мир 3 ---
+
+  /// Воронка — широкая сверху, сходится в тонкую струйку внизу.
+  siphon,
+
+  /// Узел — столб с двумя перекладинами. Стоит поперёк дороги и не двигается.
+  knot,
+
+  /// Полог — косая тяжёлая занавесь, сползающая через весь кадр наискось.
+  veil;
 
   static DrifterSpecies fromIndex(int index) =>
       index >= 0 && index < DrifterSpecies.values.length
@@ -250,18 +283,111 @@ abstract final class GameRules {
   /// ссылки и логи, и он не разъедется при смене нумерации.
   static String nodeId(int world, int position) => 'w${world}n$position';
 
-  /// Какое существо стоит на узле. Разные, а не одно и то же: три силуэта
-  /// чередуются так, чтобы соседние узлы не повторялись.
+  /// Состав каждого мира: своя тройка существ, ни одно не повторяется.
+  ///
+  /// Первый мир оставлен ровно в том порядке, в каком он раскладывался
+  /// прежней формулой `(world + position) % 3`, — иначе у людей с уже
+  /// начатой партией узлы сменили бы обитателей на ровном месте.
+  static const List<List<DrifterSpecies>> worldRoster = [
+    [DrifterSpecies.loom, DrifterSpecies.buzz, DrifterSpecies.creep],
+    [DrifterSpecies.tangle, DrifterSpecies.mote, DrifterSpecies.husk],
+    [DrifterSpecies.siphon, DrifterSpecies.knot, DrifterSpecies.veil],
+  ];
+
+  /// Какое существо стоит на узле. У каждого мира свой набор, внутри мира
+  /// повторов нет.
   static DrifterSpecies speciesFor(int world, int position) {
-    return DrifterSpecies.fromIndex((world + position) % 3);
+    final row = worldRoster[(world - 1).clamp(0, worldRoster.length - 1)];
+    return row[(position - 1) % row.length];
   }
 
-  /// Стадия аватара по уровню — четыре ступени, а не новая деталь на каждый
-  /// уровень: иначе изменения перестают читаться.
+  // --- Персонаж ---
+
+  /// Уровни, на которых у аватара появляется новая ступень внешнего вида.
+  ///
+  /// Ступени, а не деталь на каждый уровень: изменение раз в несколько
+  /// уровней читается как событие, а прибавка одной клетки каждый раз — как
+  /// шум. Шесть ступеней покрывают три десятка уровней — заведомо дальше,
+  /// чем человек уйдёт за первые месяцы, и рост при этом не упирается в
+  /// потолок на десятом.
+  static const List<int> avatarStageLevels = [1, 3, 6, 10, 15, 21];
+
+  static int get avatarStageCount => avatarStageLevels.length;
+
+  /// Стадия аватара по уровню, 0-based.
   static int avatarStageForLevel(int level) {
-    if (level >= 10) return 3;
-    if (level >= 6) return 2;
-    if (level >= 3) return 1;
-    return 0;
+    var stage = 0;
+    for (var i = 0; i < avatarStageLevels.length; i++) {
+      if (level >= avatarStageLevels[i]) stage = i;
+    }
+    return stage;
+  }
+
+  /// Уровень, на котором откроется следующая ступень. null — последняя.
+  static int? nextAvatarStageLevel(int level) {
+    for (final threshold in avatarStageLevels) {
+      if (level < threshold) return threshold;
+    }
+    return null;
+  }
+
+  /// Уровни, с которых начинается очередное звание.
+  ///
+  /// Званий больше, чем ступеней вида: текст меняется чаще, чем спрайт, и
+  /// поэтому подтверждает продвижение в те уровни, когда картинка ещё та же.
+  static const List<int> rankLevels = [1, 3, 5, 8, 11, 15, 20, 27];
+
+  static int get rankCount => rankLevels.length;
+
+  /// Звание по уровню, 0-based индекс в [rankLevels].
+  static int rankForLevel(int level) {
+    var rank = 0;
+    for (var i = 0; i < rankLevels.length; i++) {
+      if (level >= rankLevels[i]) rank = i;
+    }
+    return rank;
+  }
+
+  // --- Бой в реальном времени ---
+
+  /// Сколько HP останется у противника, если сессия закончится прямо сейчас
+  /// и будет доведена до конца.
+  ///
+  /// Нужна экрану боя: полоска должна убывать вместе с таймером, а не
+  /// прыгать одним скачком в конце. Считается тем же [damageFor], что и
+  /// настоящее начисление, — чтобы показанное и записанное не разъезжались.
+  /// Берётся вариант «довёл до конца»: полоска показывает, к чему человек
+  /// идёт, а не к чему придёт, если сдастся на этой секунде.
+  static int previewHp({
+    required MapNodeKind kind,
+    required int currentHp,
+    required int focusSeconds,
+    required Mood mood,
+  }) {
+    final damage = damageFor(
+      kind: kind,
+      focusSeconds: focusSeconds,
+      mood: mood,
+      completedFully: true,
+    );
+    return (currentHp - damage).clamp(0, currentHp);
+  }
+
+  /// Доля HP противника для полоски на экране боя, 0..1.
+  static double previewHpFraction({
+    required MapNodeKind kind,
+    required int currentHp,
+    required int maxHp,
+    required int focusSeconds,
+    required Mood mood,
+  }) {
+    if (maxHp <= 0) return 0;
+    final hp = previewHp(
+      kind: kind,
+      currentHp: currentHp,
+      focusSeconds: focusSeconds,
+      mood: mood,
+    );
+    return (hp / maxHp).clamp(0.0, 1.0);
   }
 }
