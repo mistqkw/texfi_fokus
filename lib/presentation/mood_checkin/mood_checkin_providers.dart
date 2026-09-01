@@ -5,8 +5,10 @@ import '../../data/providers/data_providers.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/mood_entry_entity.dart';
 import '../../domain/entities/recommendation.dart';
+import '../../domain/entities/session_guards.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/entities/task_entity.dart';
+import '../timer/session_guard_providers.dart';
 
 const _uuid = Uuid();
 
@@ -139,7 +141,20 @@ final tasksProvider = StreamProvider<List<TaskEntity>>((ref) {
 /// Рекомендация для текущего черновика. Пересчитывается при каждом входе на
 /// экран: бандит стохастический, и повторный запрос — это честная новая
 /// выборка, а не кеш.
-final recommendationProvider = FutureProvider.autoDispose<Recommendation>((ref) {
+final recommendationProvider =
+    FutureProvider.autoDispose<Recommendation>((ref) async {
   final draft = ref.watch(sessionDraftProvider);
-  return ref.watch(recommendationEngineProvider).recommend(draft.context);
+  final recommendation =
+      await ref.watch(recommendationEngineProvider).recommend(draft.context);
+
+  // Ночной кап применяется поверх движка, а не внутри него: это не вывод из
+  // статистики, а внешнее правило, и движку не за что учить его как знание
+  // о пользователе.
+  final capHour = ref.watch(effectiveNightCapHourProvider);
+  if (capHour == null) return recommendation;
+  return SessionGuards.capForNight(
+    recommendation,
+    hour: DateTime.now().hour,
+    capHour: capHour,
+  );
 });

@@ -653,4 +653,54 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sessionNoteHint => 'Кілька слів або стікер';
+
+  @override
+  String get guardShortBreakTitle => 'Одразу далі?';
+
+  @override
+  String get guardShortBreakBody =>
+      'Ти щойно завершив сесію. Справжня перерва зробить наступну кращою.';
+
+  @override
+  String get guardBurnoutTitle => 'Три перервані поспіль';
+
+  @override
+  String get guardBurnoutBody =>
+      'Можливо, сьогодні варто відпочити. Якщо не згоден — ніщо не заважає почати.';
+
+  @override
+  String get guardNightCapTitle => 'Пізно';
+
+  @override
+  String get guardNightCapBody =>
+      'Після нічної години пропонуємо коротше — незалежно від настрою та рекомендації рушія.';
+
+  @override
+  String get guardStartAnyway => 'Усе одно почати';
+
+  @override
+  String get guardTakeABreak => 'Не зараз';
+
+  @override
+  String get settingsBurnout => 'Темп';
+
+  @override
+  String get settingsShortBreakWarning => 'Попереджати про коротку перерву';
+
+  @override
+  String settingsShortBreakSubtitle(int count) {
+    return 'Попереджати, якщо старт раніше ніж за $count хв після попередньої сесії';
+  }
+
+  @override
+  String get settingsShortBreakOff => 'Вимкнено';
+
+  @override
+  String get settingsNightCap => 'Нічний софт-кеп';
+
+  @override
+  String get settingsNightCapSubtitle => 'Уночі не пропонувати довше за 25/5';
+
+  @override
+  String get settingsNightCapHour => 'Ніч починається о';
 }

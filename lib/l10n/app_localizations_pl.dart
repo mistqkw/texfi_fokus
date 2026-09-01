@@ -652,4 +652,54 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get sessionNoteHint => 'Kilka słów albo naklejka';
+
+  @override
+  String get guardShortBreakTitle => 'Od razu dalej?';
+
+  @override
+  String get guardShortBreakBody =>
+      'Właśnie skończyłeś sesję. Prawdziwa przerwa poprawi następną.';
+
+  @override
+  String get guardBurnoutTitle => 'Trzy przerwane z rzędu';
+
+  @override
+  String get guardBurnoutBody =>
+      'Może dziś warto odpocząć. Jeśli się nie zgadzasz, nic cię nie zatrzymuje.';
+
+  @override
+  String get guardNightCapTitle => 'Jest późno';
+
+  @override
+  String get guardNightCapBody =>
+      'Po nocnej godzinie proponujemy krócej — niezależnie od nastroju i rekomendacji silnika.';
+
+  @override
+  String get guardStartAnyway => 'Zacznij mimo to';
+
+  @override
+  String get guardTakeABreak => 'Nie teraz';
+
+  @override
+  String get settingsBurnout => 'Tempo';
+
+  @override
+  String get settingsShortBreakWarning => 'Ostrzeżenie o krótkiej przerwie';
+
+  @override
+  String settingsShortBreakSubtitle(int count) {
+    return 'Ostrzegaj, gdy start następuje w ciągu $count min od poprzedniej sesji';
+  }
+
+  @override
+  String get settingsShortBreakOff => 'Wyłączone';
+
+  @override
+  String get settingsNightCap => 'Nocny limit';
+
+  @override
+  String get settingsNightCapSubtitle => 'Nocą nie proponuj dłużej niż 25/5';
+
+  @override
+  String get settingsNightCapHour => 'Noc zaczyna się o';
 }

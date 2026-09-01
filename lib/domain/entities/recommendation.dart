@@ -203,6 +203,7 @@ class Recommendation {
     required this.confidence,
     required this.sampleSize,
     this.evidence = RecommendationEvidence.empty,
+    this.cappedForNight = false,
   });
 
   /// Предложение «как в технике по умолчанию», без правок длительностей.
@@ -241,13 +242,19 @@ class Recommendation {
   /// Подробная выкладка «почему именно это» для экрана рекомендации.
   final RecommendationEvidence evidence;
 
+  /// Предложение укорочено ночным софт-капом. Экран обязан сказать об этом
+  /// вслух: беззвучно подменённая рекомендация выглядит как сбой движка.
+  final bool cappedForNight;
+
   Recommendation copyWith({
+    FocusTechnique? technique,
     int? focusMinutes,
     int? breakMinutes,
     int? cycles,
+    bool? cappedForNight,
   }) {
     return Recommendation(
-      technique: technique,
+      technique: technique ?? this.technique,
       focusMinutes: focusMinutes ?? this.focusMinutes,
       breakMinutes: breakMinutes ?? this.breakMinutes,
       cycles: cycles ?? this.cycles,
@@ -255,6 +262,7 @@ class Recommendation {
       confidence: confidence,
       sampleSize: sampleSize,
       evidence: evidence,
+      cappedForNight: cappedForNight ?? this.cappedForNight,
     );
   }
 }

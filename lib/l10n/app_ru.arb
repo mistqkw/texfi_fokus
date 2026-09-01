@@ -209,5 +209,28 @@
   "interruptionTired": "Устал",
   "interruptionNoComment": "Не хочу говорить",
   "sessionNoteQuestion": "Как прошло?",
-  "sessionNoteHint": "Пара слов или стикер"
+  "sessionNoteHint": "Пара слов или стикер",
+
+  "guardShortBreakTitle": "Сразу дальше?",
+  "guardShortBreakBody": "Ты только что закончил сессию. Настоящий перерыв сделает следующую лучше.",
+  "guardBurnoutTitle": "Три прерванных подряд",
+  "guardBurnoutBody": "Возможно, стоит отдохнуть сегодня. Если не согласен — ничто не мешает начать.",
+  "guardNightCapTitle": "Поздно",
+  "guardNightCapBody": "После ночного часа предлагаем короче — независимо от настроения и рекомендации движка.",
+  "guardStartAnyway": "Всё равно начать",
+  "guardTakeABreak": "Не сейчас",
+  "settingsBurnout": "Темп",
+  "settingsShortBreakWarning": "Предупреждать о коротком перерыве",
+  "settingsShortBreakSubtitle": "Предупреждать, если старт раньше чем через {count} мин после прошлой сессии",
+  "@settingsShortBreakSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsShortBreakOff": "Выключено",
+  "settingsNightCap": "Ночной софт-кап",
+  "settingsNightCapSubtitle": "Ночью не предлагать длиннее 25/5",
+  "settingsNightCapHour": "Ночь начинается в"
 }

@@ -209,5 +209,28 @@
   "interruptionTired": "Втомився",
   "interruptionNoComment": "Не хочу казати",
   "sessionNoteQuestion": "Як пройшло?",
-  "sessionNoteHint": "Кілька слів або стікер"
+  "sessionNoteHint": "Кілька слів або стікер",
+
+  "guardShortBreakTitle": "Одразу далі?",
+  "guardShortBreakBody": "Ти щойно завершив сесію. Справжня перерва зробить наступну кращою.",
+  "guardBurnoutTitle": "Три перервані поспіль",
+  "guardBurnoutBody": "Можливо, сьогодні варто відпочити. Якщо не згоден — ніщо не заважає почати.",
+  "guardNightCapTitle": "Пізно",
+  "guardNightCapBody": "Після нічної години пропонуємо коротше — незалежно від настрою та рекомендації рушія.",
+  "guardStartAnyway": "Усе одно почати",
+  "guardTakeABreak": "Не зараз",
+  "settingsBurnout": "Темп",
+  "settingsShortBreakWarning": "Попереджати про коротку перерву",
+  "settingsShortBreakSubtitle": "Попереджати, якщо старт раніше ніж за {count} хв після попередньої сесії",
+  "@settingsShortBreakSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsShortBreakOff": "Вимкнено",
+  "settingsNightCap": "Нічний софт-кеп",
+  "settingsNightCapSubtitle": "Уночі не пропонувати довше за 25/5",
+  "settingsNightCapHour": "Ніч починається о"
 }

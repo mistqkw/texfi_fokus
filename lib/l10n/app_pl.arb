@@ -209,5 +209,28 @@
   "interruptionTired": "Zmęczenie",
   "interruptionNoComment": "Wolę nie mówić",
   "sessionNoteQuestion": "Jak poszło?",
-  "sessionNoteHint": "Kilka słów albo naklejka"
+  "sessionNoteHint": "Kilka słów albo naklejka",
+
+  "guardShortBreakTitle": "Od razu dalej?",
+  "guardShortBreakBody": "Właśnie skończyłeś sesję. Prawdziwa przerwa poprawi następną.",
+  "guardBurnoutTitle": "Trzy przerwane z rzędu",
+  "guardBurnoutBody": "Może dziś warto odpocząć. Jeśli się nie zgadzasz, nic cię nie zatrzymuje.",
+  "guardNightCapTitle": "Jest późno",
+  "guardNightCapBody": "Po nocnej godzinie proponujemy krócej — niezależnie od nastroju i rekomendacji silnika.",
+  "guardStartAnyway": "Zacznij mimo to",
+  "guardTakeABreak": "Nie teraz",
+  "settingsBurnout": "Tempo",
+  "settingsShortBreakWarning": "Ostrzeżenie o krótkiej przerwie",
+  "settingsShortBreakSubtitle": "Ostrzegaj, gdy start następuje w ciągu {count} min od poprzedniej sesji",
+  "@settingsShortBreakSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsShortBreakOff": "Wyłączone",
+  "settingsNightCap": "Nocny limit",
+  "settingsNightCapSubtitle": "Nocą nie proponuj dłużej niż 25/5",
+  "settingsNightCapHour": "Noc zaczyna się o"
 }

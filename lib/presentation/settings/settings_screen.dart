@@ -43,6 +43,28 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
+  /// Порог короткого перерыва перебирается по кругу тапом, без отдельного
+  /// экрана: значений всего четыре, и «выключено» среди них.
+  static const List<int> _shortBreakSteps = [0, 3, 5, 10, 15];
+
+  Future<void> _cycleShortBreak(WidgetRef ref) async {
+    final current = ref.read(shortBreakMinutesProvider);
+    final index = _shortBreakSteps.indexOf(current);
+    final next = _shortBreakSteps[(index + 1) % _shortBreakSteps.length];
+    Haptics.tap();
+    await ref.read(shortBreakMinutesProvider.notifier).set(next);
+  }
+
+  Future<void> _pickNightCapHour(BuildContext context, WidgetRef ref) async {
+    final current = ref.read(nightCapHourProvider);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: current, minute: 0),
+    );
+    if (picked == null) return;
+    await ref.read(nightCapHourProvider.notifier).set(picked.hour);
+  }
+
   Future<void> _pickSummaryTime(BuildContext context, WidgetRef ref) async {
     final current = ref.read(dailySummaryTimeProvider);
     final picked = await showTimePicker(
@@ -67,6 +89,9 @@ class SettingsScreen extends ConsumerWidget {
     final intensity = ref.watch(vibrationIntensityProvider);
     final notifications = ref.watch(notificationsEnabledProvider);
     final summaryTime = ref.watch(dailySummaryTimeProvider);
+    final shortBreak = ref.watch(shortBreakMinutesProvider);
+    final nightCap = ref.watch(nightCapEnabledProvider);
+    final nightCapHour = ref.watch(nightCapHourProvider);
 
     return PixelBackground(
       child: Scaffold(
@@ -208,6 +233,55 @@ class SettingsScreen extends ConsumerWidget {
                       style: context.text.counterMedium,
                     ),
                     onTap: () => _pickSummaryTime(context, ref),
+                  ),
+                ],
+              ),
+            ),
+            AppSpacing.gapXl,
+            PixelSectionHeader(title: l10n.settingsBurnout),
+            PixelCard(
+              child: Column(
+                children: [
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.hourglass,
+                      size: 20,
+                      color: context.colors.accent,
+                    ),
+                    title: l10n.settingsShortBreakWarning,
+                    subtitle: shortBreak == 0
+                        ? l10n.settingsShortBreakOff
+                        : l10n.settingsShortBreakSubtitle(shortBreak),
+                    trailing: Text(
+                      shortBreak == 0 ? '—' : '$shortBreak',
+                      style: context.text.counterMedium,
+                    ),
+                    onTap: () => _cycleShortBreak(ref),
+                  ),
+                  PixelSwitchTile(
+                    value: nightCap,
+                    title: l10n.settingsNightCap,
+                    subtitle: l10n.settingsNightCapSubtitle,
+                    onChanged: (value) {
+                      Haptics.tap();
+                      ref.read(nightCapEnabledProvider.notifier).set(value);
+                    },
+                  ),
+                  PixelOptionTile(
+                    enabled: nightCap,
+                    leading: PixelSprite(
+                      rows: PixelSprites.moodFace,
+                      size: 20,
+                      color: nightCap
+                          ? context.colors.accent
+                          : context.colors.textTertiary,
+                    ),
+                    title: l10n.settingsNightCapHour,
+                    trailing: Text(
+                      DurationFormat.timeOfDay(nightCapHour * 60),
+                      style: context.text.counterMedium,
+                    ),
+                    onTap: () => _pickNightCapHour(context, ref),
                   ),
                 ],
               ),
