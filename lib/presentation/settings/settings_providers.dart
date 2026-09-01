@@ -24,6 +24,37 @@ abstract final class PrefKeys {
   static const shortBreakMinutes = 'short_break_minutes';
   static const nightCapEnabled = 'night_cap_enabled';
   static const nightCapHour = 'night_cap_hour';
+  static const burnoutStreakThreshold = 'burnout_streak_threshold';
+  static const weekStartDay = 'week_start_day';
+  static const autoBackupEnabled = 'auto_backup_enabled';
+  static const lastAutoBackupAt = 'last_auto_backup_at';
+}
+
+/// С какого дня считается неделя. Хранится номером [DateTime.weekday], а не
+/// индексом в списке: 1 — понедельник, 7 — воскресенье, ровно как в Dart.
+enum WeekStartDay {
+  monday(DateTime.monday),
+  sunday(DateTime.sunday);
+
+  const WeekStartDay(this.weekday);
+
+  final int weekday;
+
+  static WeekStartDay fromWeekday(int? weekday) =>
+      weekday == DateTime.sunday ? WeekStartDay.sunday : WeekStartDay.monday;
+
+  /// Начало недели, в которую попадает [moment]. Время срезается: неделя —
+  /// это про даты, а не про часы.
+  DateTime startOf(DateTime moment) {
+    final day = DateTime(moment.year, moment.month, moment.day);
+    // Сдвиг всегда неотрицательный: `% 7` переводит «воскресенье как первый
+    // день» в 0..6, не давая уехать на неделю назад.
+    final shift = (day.weekday - weekday) % 7;
+    return day.subtract(Duration(days: shift));
+  }
+
+  /// Сколько пустых клеток нужно перед первым днём в сетке heatmap.
+  int leadingBlanksFor(DateTime firstDay) => (firstDay.weekday - weekday) % 7;
 }
 
 /// Все поддерживаемые языки. Порядок — как в списке настроек.
@@ -292,6 +323,73 @@ class NightCapHourNotifier extends StateNotifier<int> {
 final nightCapHourProvider =
     StateNotifierProvider<NightCapHourNotifier, int>((ref) {
   return NightCapHourNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+/// Сколько прерванных сессий подряд считать поводом остановиться.
+///
+/// Раньше число было зашито в [SessionGuards]. Вынесено в настройку потому,
+/// что «три подряд» — это утверждение о человеке, а не о технике: кому-то
+/// две уже сигнал, кому-то и четыре — обычный день с созвонами.
+class BurnoutStreakNotifier extends StateNotifier<int> {
+  BurnoutStreakNotifier(this._prefs)
+      : super((_prefs.getInt(PrefKeys.burnoutStreakThreshold) ??
+                SessionGuards.burnoutStreakThreshold)
+            .clamp(SessionGuards.minStreakThreshold,
+                SessionGuards.maxStreakThreshold));
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(int value) async {
+    final clamped = value.clamp(
+      SessionGuards.minStreakThreshold,
+      SessionGuards.maxStreakThreshold,
+    );
+    state = clamped;
+    await _prefs.setInt(PrefKeys.burnoutStreakThreshold, clamped);
+  }
+}
+
+final burnoutStreakThresholdProvider =
+    StateNotifierProvider<BurnoutStreakNotifier, int>((ref) {
+  return BurnoutStreakNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// --- Неделя ---
+
+class WeekStartNotifier extends StateNotifier<WeekStartDay> {
+  WeekStartNotifier(this._prefs)
+      : super(WeekStartDay.fromWeekday(_prefs.getInt(PrefKeys.weekStartDay)));
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(WeekStartDay day) async {
+    state = day;
+    await _prefs.setInt(PrefKeys.weekStartDay, day.weekday);
+  }
+}
+
+final weekStartProvider =
+    StateNotifierProvider<WeekStartNotifier, WeekStartDay>((ref) {
+  return WeekStartNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// --- Резервные копии ---
+
+class AutoBackupNotifier extends StateNotifier<bool> {
+  AutoBackupNotifier(this._prefs)
+      : super(_prefs.getBool(PrefKeys.autoBackupEnabled) ?? false);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await _prefs.setBool(PrefKeys.autoBackupEnabled, value);
+  }
+}
+
+final autoBackupEnabledProvider =
+    StateNotifierProvider<AutoBackupNotifier, bool>((ref) {
+  return AutoBackupNotifier(ref.watch(sharedPreferencesProvider));
 });
 
 // --- Онбординг ---

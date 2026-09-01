@@ -846,5 +846,150 @@
   "mapWorldIntroLabel": "New world",
   "mapWorld1Epigraph": "Nothing here is loud. That is the whole difficulty.",
   "mapWorld2Epigraph": "Everything here wants a turn. None of it is yours.",
-  "mapWorld3Epigraph": "The far end is out of sight. You walk it anyway."
+  "mapWorld3Epigraph": "The far end is out of sight. You walk it anyway.",
+  "techniqueCustomDesc": "Your own preset. It competes with the built-in techniques on equal terms and builds up its own stats.",
+  "@techniqueCustomDesc": {
+    "description": "TexFi f0kus polish pass 2: techniqueCustomDesc"
+  },
+  "settingsPresetsTitle": "My presets",
+  "@settingsPresetsTitle": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetsTitle"
+  },
+  "settingsPresetsHint": "Four built-in techniques don't fit everyone. A preset you add here is offered by the engine just like the built-in ones.",
+  "@settingsPresetsHint": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetsHint"
+  },
+  "settingsPresetsEmpty": "No presets yet. Add one if none of the four built-in rhythms is yours.",
+  "@settingsPresetsEmpty": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetsEmpty"
+  },
+  "settingsPresetAdd": "Add preset",
+  "@settingsPresetAdd": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetAdd"
+  },
+  "settingsPresetEdit": "Edit preset",
+  "@settingsPresetEdit": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetEdit"
+  },
+  "settingsPresetName": "Name",
+  "@settingsPresetName": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetName"
+  },
+  "settingsPresetNameHint": "For example: 35/7",
+  "@settingsPresetNameHint": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetNameHint"
+  },
+  "settingsPresetLimitReached": "Up to 5 presets. Each one is another option the engine has to learn, and they all share the same sessions.",
+  "@settingsPresetLimitReached": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetLimitReached"
+  },
+  "settingsPresetDelete": "Delete preset",
+  "@settingsPresetDelete": {
+    "description": "TexFi f0kus polish pass 2: settingsPresetDelete"
+  },
+  "settingsBurnoutStreakTitle": "Aborted sessions in a row",
+  "@settingsBurnoutStreakTitle": {
+    "description": "TexFi f0kus polish pass 2: settingsBurnoutStreakTitle"
+  },
+  "settingsBurnoutStreakHint": "After this many aborted sessions in a row the app suggests stopping for today. Two is a bad hour; five is a whole stubborn day.",
+  "@settingsBurnoutStreakHint": {
+    "description": "TexFi f0kus polish pass 2: settingsBurnoutStreakHint"
+  },
+  "settingsWeekStartTitle": "Week starts on",
+  "@settingsWeekStartTitle": {
+    "description": "TexFi f0kus polish pass 2: settingsWeekStartTitle"
+  },
+  "settingsWeekStartHint": "Affects the activity calendar and everything counted by weeks.",
+  "@settingsWeekStartHint": {
+    "description": "TexFi f0kus polish pass 2: settingsWeekStartHint"
+  },
+  "settingsWeekStartMonday": "Monday",
+  "@settingsWeekStartMonday": {
+    "description": "TexFi f0kus polish pass 2: settingsWeekStartMonday"
+  },
+  "settingsWeekStartSunday": "Sunday",
+  "@settingsWeekStartSunday": {
+    "description": "TexFi f0kus polish pass 2: settingsWeekStartSunday"
+  },
+  "settingsAutoBackupTitle": "Weekly backup",
+  "@settingsAutoBackupTitle": {
+    "description": "TexFi f0kus polish pass 2: settingsAutoBackupTitle"
+  },
+  "settingsAutoBackupHint": "Once a week, quietly save a copy of everything to the app's backups folder. No cloud — the file stays on this device.",
+  "@settingsAutoBackupHint": {
+    "description": "TexFi f0kus polish pass 2: settingsAutoBackupHint"
+  },
+  "settingsAutoBackupNever": "No copy made yet",
+  "@settingsAutoBackupNever": {
+    "description": "TexFi f0kus polish pass 2: settingsAutoBackupNever"
+  },
+  "statsSummaryEmpty": "No sessions in this period. The numbers below stay at zero until the first one.",
+  "@statsSummaryEmpty": {
+    "description": "TexFi f0kus polish pass 2: statsSummaryEmpty"
+  },
+  "statsActivityEmpty": "The calendar fills in as you go: one square per day, brighter with more time in focus.",
+  "@statsActivityEmpty": {
+    "description": "TexFi f0kus polish pass 2: statsActivityEmpty"
+  },
+  "statsHabitsEmpty": "No habits scheduled in this period — nothing to count yet.",
+  "@statsHabitsEmpty": {
+    "description": "TexFi f0kus polish pass 2: statsHabitsEmpty"
+  },
+  "characterStatsEmptyNew": "Nothing here yet. Numbers start moving after your first finished session.",
+  "@characterStatsEmptyNew": {
+    "description": "TexFi f0kus polish pass 2: characterStatsEmptyNew"
+  },
+  "characterStatsNoWins": "Sessions are happening, but none has been finished yet — only a session carried to the end counts as a win.",
+  "@characterStatsNoWins": {
+    "description": "TexFi f0kus polish pass 2: characterStatsNoWins"
+  },
+  "mapIntroTitle": "Where this leads",
+  "@mapIntroTitle": {
+    "description": "TexFi f0kus polish pass 2: mapIntroTitle"
+  },
+  "mapIntroBody": "Each finished session is one step along the trail. Worlds open one after another — nothing here needs to be bought or guessed.",
+  "@mapIntroBody": {
+    "description": "TexFi f0kus polish pass 2: mapIntroBody"
+  },
+  "mapPreparing": "Laying out the trail…",
+  "@mapPreparing": {
+    "description": "TexFi f0kus polish pass 2: mapPreparing"
+  },
+  "commonLoadError": "Couldn't load this. Try again — the data is on this device, so nothing is lost.",
+  "@commonLoadError": {
+    "description": "TexFi f0kus polish pass 2: commonLoadError"
+  },
+  "homeHabitsEmptyHint": "A habit is a daily goal plus what you owe yourself if you skip it.",
+  "@homeHabitsEmptyHint": {
+    "description": "TexFi f0kus polish pass 2: homeHabitsEmptyHint"
+  },
+  "planEmptyHint": "A plan is a short list for today, not for the whole week — three lines is already a plan.",
+  "@planEmptyHint": {
+    "description": "TexFi f0kus polish pass 2: planEmptyHint"
+  },
+  "commonUndo": "Undo",
+  "@commonUndo": {
+    "description": "TexFi f0kus polish pass 2: commonUndo"
+  },
+  "habitUndone": "Habit unmarked",
+  "@habitUndone": {
+    "description": "TexFi f0kus polish pass 2: habitUndone"
+  },
+  "habitsSearchHint": "Find a habit",
+  "@habitsSearchHint": {
+    "description": "TexFi f0kus polish pass 2: habitsSearchHint"
+  },
+  "habitsSearchNothing": "No habit matches that.",
+  "@habitsSearchNothing": {
+    "description": "TexFi f0kus polish pass 2: habitsSearchNothing"
+  },
+  "settingsBurnoutStreakValue": "{count, plural, one{{count} session} other{{count} sessions}}",
+  "@settingsBurnoutStreakValue": {
+    "description": "Number of aborted sessions in a row before the burnout warning",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

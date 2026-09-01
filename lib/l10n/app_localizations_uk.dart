@@ -1467,4 +1467,134 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get mapWorld3Epigraph => 'Дальнього кінця не видно. Однаково йдеш.';
+
+  @override
+  String get techniqueCustomDesc =>
+      'Твій власний пресет. Бере участь у рекомендаціях нарівні з вбудованими й накопичує власну статистику.';
+
+  @override
+  String get settingsPresetsTitle => 'Мої пресети';
+
+  @override
+  String get settingsPresetsHint =>
+      'Чотири вбудовані техніки підходять не всім. Створений тут пресет рушій пропонує нарівні з вбудованими.';
+
+  @override
+  String get settingsPresetsEmpty =>
+      'Пресетів поки немає. Створи свій, якщо жоден із чотирьох вбудованих ритмів не твій.';
+
+  @override
+  String get settingsPresetAdd => 'Додати пресет';
+
+  @override
+  String get settingsPresetEdit => 'Змінити пресет';
+
+  @override
+  String get settingsPresetName => 'Назва';
+
+  @override
+  String get settingsPresetNameHint => 'Наприклад: 35/7';
+
+  @override
+  String get settingsPresetLimitReached =>
+      'Не більше п\'яти пресетів. Кожен — ще один варіант, який рушію треба вивчити, а сесії в них спільні.';
+
+  @override
+  String get settingsPresetDelete => 'Видалити пресет';
+
+  @override
+  String get settingsBurnoutStreakTitle => 'Перерваних сесій поспіль';
+
+  @override
+  String get settingsBurnoutStreakHint =>
+      'Після стількох перерваних сесій поспіль застосунок запропонує зупинитися. Дві — невдала година, п\'ять — цілий упертий день.';
+
+  @override
+  String get settingsWeekStartTitle => 'Тиждень починається з';
+
+  @override
+  String get settingsWeekStartHint =>
+      'Впливає на календар активності та на все, що рахується по тижнях.';
+
+  @override
+  String get settingsWeekStartMonday => 'Понеділка';
+
+  @override
+  String get settingsWeekStartSunday => 'Неділі';
+
+  @override
+  String get settingsAutoBackupTitle => 'Копія раз на тиждень';
+
+  @override
+  String get settingsAutoBackupHint =>
+      'Раз на тиждень мовчки зберігати копію всього в теку backups застосунку. Без хмари — файл лишається на цьому пристрої.';
+
+  @override
+  String get settingsAutoBackupNever => 'Копія ще не робилася';
+
+  @override
+  String get statsSummaryEmpty =>
+      'За цей період сесій не було. Числа нижче лишаться нулями до першої.';
+
+  @override
+  String get statsActivityEmpty =>
+      'Календар заповнюється з часом: квадрат — день, яскравіший за більшого часу у фокусі.';
+
+  @override
+  String get statsHabitsEmpty =>
+      'У цьому періоді звичок не заплановано — рахувати поки нічого.';
+
+  @override
+  String get characterStatsEmptyNew =>
+      'Тут поки порожньо. Числа зрушать після першої доведеної до кінця сесії.';
+
+  @override
+  String get characterStatsNoWins =>
+      'Сесії відбуваються, але жодну ще не доведено до кінця — перемогою вважається лише досиджена сесія.';
+
+  @override
+  String get mapIntroTitle => 'Куди це веде';
+
+  @override
+  String get mapIntroBody =>
+      'Кожна доведена до кінця сесія — крок стежкою. Світи відкриваються один за одним; тут нічого купувати й ні про що гадати.';
+
+  @override
+  String get mapPreparing => 'Розкладаємо стежку…';
+
+  @override
+  String get commonLoadError =>
+      'Не вдалося завантажити. Спробуй ще раз — дані лежать на пристрої, нічого не втрачено.';
+
+  @override
+  String get homeHabitsEmptyHint =>
+      'Звичка — це денна ціль плюс те, що ти собі винен, якщо її пропустиш.';
+
+  @override
+  String get planEmptyHint =>
+      'План — це короткий список на сьогодні, а не на весь тиждень: три рядки вже план.';
+
+  @override
+  String get commonUndo => 'Скасувати';
+
+  @override
+  String get habitUndone => 'Позначку знято';
+
+  @override
+  String get habitsSearchHint => 'Знайти звичку';
+
+  @override
+  String get habitsSearchNothing => 'Жодна звичка не підходить.';
+
+  @override
+  String settingsBurnoutStreakValue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сесій',
+      few: '$count сесії',
+      one: '$count сесія',
+    );
+    return '$_temp0';
+  }
 }

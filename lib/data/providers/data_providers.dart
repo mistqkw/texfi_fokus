@@ -22,6 +22,7 @@ import '../repositories/planner_repository_impl.dart';
 import '../repositories/recommendation_weight_repository_impl.dart';
 import '../repositories/session_repository_impl.dart';
 import '../repositories/task_repository_impl.dart';
+import '../settings/custom_presets_store.dart';
 
 /// Переопределяется в `main()` уже загруженным экземпляром — так настройки
 /// доступны синхронно с первого кадра, без экрана загрузки.
@@ -86,6 +87,9 @@ final recommendationEngineProvider = Provider<RecommendationEngine>((ref) {
   return BanditRecommendationEngine(
     weights: ref.watch(recommendationWeightRepositoryProvider),
     sessions: ref.watch(sessionRepositoryProvider),
+    // Колбэком, а не значением: пресеты читаются в момент рекомендации, и
+    // заведённый минуту назад пресет участвует в выборе сразу.
+    presets: () => ref.read(customPresetsProvider),
   );
 });
 

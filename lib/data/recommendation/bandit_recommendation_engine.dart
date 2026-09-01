@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 
+import '../../domain/entities/custom_preset.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/recommendation.dart';
@@ -9,6 +10,7 @@ import '../../domain/entities/recommendation_engine.dart';
 import '../../domain/entities/recommendation_weight_entity.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/task_category.dart';
+import '../../domain/entities/technique_arm.dart';
 import '../../domain/repositories/recommendation_weight_repository.dart';
 import '../../domain/repositories/session_repository.dart';
 
@@ -36,15 +38,28 @@ class BanditRecommendationEngine implements RecommendationEngine {
   BanditRecommendationEngine({
     required this.weights,
     required this.sessions,
+    List<CustomPreset> Function()? presets,
     Random? random,
     DateTime Function()? clock,
-  })  : _random = random ?? Random(),
+  })  : _presets = presets ?? _noPresets,
+        _random = random ?? Random(),
         _clock = clock ?? DateTime.now;
+
+  static List<CustomPreset> _noPresets() => const [];
 
   final RecommendationWeightRepository weights;
   final SessionRepository sessions;
+
+  /// Пользовательские пресеты читаются на каждый вызов, а не запоминаются в
+  /// конструкторе: пользователь может завести пресет между двумя сессиями, и
+  /// движок обязан увидеть новую руку сразу, без пересоздания.
+  final List<CustomPreset> Function() _presets;
+
   final Random _random;
   final DateTime Function() _clock;
+
+  /// Все руки: встроенные плюс пользовательские.
+  List<TechniqueArm> get _arms => TechniqueArm.all(_presets());
 
   /// Пока сессий меньше этого числа, бандит молчит и работают дефолты:
   /// на трёх наблюдениях он бы уверенно выучил случайный шум.
@@ -90,18 +105,18 @@ class BanditRecommendationEngine implements RecommendationEngine {
     }
 
     final now = _clock();
+    final arms = _arms;
     final byKey = await weights.weightsForContexts(context.keyHierarchy);
-    final posteriors = _aggregate(context, byKey, now);
+    final posteriors = _aggregate(arms, context, byKey, now);
 
     // Epsilon-greedy поверх Thompson sampling: изредка берём случайную
     // технику целиком, чтобы не застрять в локальном оптимуме, если ранние
     // сессии случайно оказались удачными для одного варианта.
     if (_random.nextDouble() < epsilon) {
-      final technique =
-          FocusTechnique.values[_random.nextInt(FocusTechnique.values.length)];
-      final posterior = posteriors[technique]!;
-      return Recommendation.ofTechnique(
-        technique,
+      final arm = arms[_random.nextInt(arms.length)];
+      final posterior = posteriors[arm.key]!;
+      return Recommendation.ofArm(
+        arm,
         reason: RecommendationReason.exploration,
         confidence: posterior.mean,
         sampleSize: posterior.observations.round(),
@@ -109,19 +124,19 @@ class BanditRecommendationEngine implements RecommendationEngine {
       );
     }
 
-    FocusTechnique? best;
+    TechniqueArm? best;
     var bestSample = -1.0;
-    for (final technique in FocusTechnique.values) {
-      final posterior = posteriors[technique]!;
+    for (final arm in arms) {
+      final posterior = posteriors[arm.key]!;
       final sample = _sampleBeta(posterior.alpha, posterior.beta);
       if (sample > bestSample) {
         bestSample = sample;
-        best = technique;
+        best = arm;
       }
     }
 
-    final technique = best ?? FocusTechnique.pomodoro2505;
-    final posterior = posteriors[technique]!;
+    final arm = best ?? TechniqueArm.builtIn(FocusTechnique.pomodoro2505);
+    final posterior = posteriors[arm.key]!;
 
     // Если у победителя почти нет собственных наблюдений, честнее назвать
     // это исследованием, чем «выученным» выбором.
@@ -129,8 +144,8 @@ class BanditRecommendationEngine implements RecommendationEngine {
         ? RecommendationReason.exploration
         : RecommendationReason.learned;
 
-    return Recommendation.ofTechnique(
-      technique,
+    return Recommendation.ofArm(
+      arm,
       reason: reason,
       confidence: posterior.mean,
       sampleSize: posterior.observations.round(),
@@ -148,14 +163,18 @@ class BanditRecommendationEngine implements RecommendationEngine {
     for (var level = 0; level < keys.length; level++) {
       final key = keys[level];
       final existing = await weights.weightsForContext(key);
-      final current = existing
-          .where((w) => w.techniqueKey == session.technique.key)
-          .firstOrNull;
+      // Ключ берётся из сессии целиком, а не из enum: у сессии по
+      // пользовательскому пресету enum — лишь ближайшая подложка, и учить по
+      // ней значило бы вписывать чужие исходы в статистику встроенной
+      // техники.
+      final techniqueKey = session.techniqueKey;
+      final current =
+          existing.where((w) => w.techniqueKey == techniqueKey).firstOrNull;
 
       final base = current ??
           RecommendationWeightEntity.prior(
             contextKey: key,
-            techniqueKey: session.technique.key,
+            techniqueKey: techniqueKey,
             updatedAt: now,
           );
 
@@ -185,15 +204,16 @@ class BanditRecommendationEngine implements RecommendationEngine {
 
   /// Складывает наблюдения со всех уровней иерархии в одно бета-распределение
   /// на технику. Априорное Beta(1,1) добавляется один раз.
-  Map<FocusTechnique, _Posterior> _aggregate(
+  Map<String, _Posterior> _aggregate(
+    List<TechniqueArm> arms,
     RecommendationContext context,
     Map<String, List<RecommendationWeightEntity>> byKey,
     DateTime now,
   ) {
-    final result = <FocusTechnique, _Posterior>{};
+    final result = <String, _Posterior>{};
     final keys = context.keyHierarchy;
 
-    for (final technique in FocusTechnique.values) {
+    for (final arm in arms) {
       var alpha = 1.0;
       var beta = 1.0;
       var observations = 0.0;
@@ -207,7 +227,7 @@ class BanditRecommendationEngine implements RecommendationEngine {
           level++) {
         final weight = _levelWeights[level];
         final entry = byKey[keys[level]]
-            ?.where((w) => w.techniqueKey == technique.key)
+            ?.where((w) => w.techniqueKey == arm.key)
             .firstOrNull
             // Затухание считаем на чтении, а не только на записи: между
             // сессиями могли пройти месяцы, и старая запись не должна
@@ -235,7 +255,7 @@ class BanditRecommendationEngine implements RecommendationEngine {
         }
       }
 
-      result[technique] = _Posterior(
+      result[arm.key] = _Posterior(
         alpha: alpha < 1 ? 1 : alpha,
         beta: beta < 1 ? 1 : beta,
         observations: observations,

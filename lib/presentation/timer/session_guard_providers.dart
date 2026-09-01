@@ -7,9 +7,12 @@ import '../settings/settings_providers.dart';
 
 /// Последние сессии в порядке «свежие сверху». Лимита хватает и на серию
 /// прерываний, и на «когда закончилась предыдущая».
+/// Лимит берётся по максимально возможному порогу, а не по текущему: иначе
+/// пользователь, выставивший «пять подряд», получал бы ленту из трёх сессий,
+/// и предупреждение не сработало бы никогда.
 final recentSessionsProvider = StreamProvider<List<SessionEntity>>((ref) {
   return ref.watch(sessionRepositoryProvider).watchRecentSessions(
-        limit: SessionGuards.burnoutStreakThreshold,
+        limit: SessionGuards.maxStreakThreshold,
       );
 });
 
@@ -24,7 +27,10 @@ final lastSessionEndProvider = Provider<DateTime?>((ref) {
 final burnoutStreakProvider = Provider<bool>((ref) {
   final sessions = ref.watch(recentSessionsProvider).valueOrNull;
   if (sessions == null) return false;
-  return SessionGuards.isBurnoutStreak(sessions);
+  return SessionGuards.isBurnoutStreak(
+    sessions,
+    threshold: ref.watch(burnoutStreakThresholdProvider),
+  );
 });
 
 /// Час, после которого включается ночной кап, — или null, если кап выключен.

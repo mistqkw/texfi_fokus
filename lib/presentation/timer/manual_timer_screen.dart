@@ -7,8 +7,11 @@ import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
+import '../../data/settings/custom_presets_store.dart';
+import '../../domain/entities/custom_preset.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/recommendation.dart';
+import '../../domain/entities/technique_arm.dart';
 import '../game/battle_screen.dart';
 import '../game/game_providers.dart';
 import '../shared/enum_labels.dart';
@@ -38,6 +41,7 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
   late int _breakMinutes = widget.initial.breakMinutes;
   late int _cycles = widget.initial.cycles;
   late FocusTechnique _technique = widget.initial.technique;
+  late CustomPreset? _preset = widget.initial.preset;
   bool _soundOnEnd = true;
   bool _autoStartNext = true;
 
@@ -47,6 +51,7 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
 
     ref.read(timerPlanProvider.notifier).state = TimerPlan(
       technique: _technique,
+      preset: _preset,
       focusMinutes: _focusMinutes,
       breakMinutes: _breakMinutes,
       cycles: _cycles,
@@ -58,7 +63,10 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
       // Смена самой техники — это несогласие с советом, и движок учтёт
       // такой исход слабее. Поправленная длина той же техники — нет:
       // с выбором руки бандита пользователь при этом согласился.
-      wasManualOverride: _technique != widget.initial.technique,
+      // Сравниваем ключи, а не enum: переход между двумя пресетами с одной
+      // и той же ближайшей встроенной техникой — тоже смена руки.
+      wasManualOverride: (_preset?.key ?? _technique.key) !=
+          (widget.initial.preset?.key ?? widget.initial.technique.key),
     );
     // Ручная настройка ведёт туда же, куда и принятая рекомендация: сессия
     // против противника остаётся сессией против противника, кто бы ни выбрал
@@ -89,14 +97,16 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
           children: [
             PixelSectionHeader(title: l10n.recommendationTitle),
             _TechniquePicker(
-              selected: _technique,
-              onSelected: (technique) {
+              arms: TechniqueArm.all(ref.watch(customPresetsProvider)),
+              selectedKey: _preset?.key ?? _technique.key,
+              onSelected: (arm) {
                 Haptics.tap();
                 setState(() {
-                  _technique = technique;
-                  _focusMinutes = technique.focusMinutes;
-                  _breakMinutes = technique.breakMinutes;
-                  _cycles = technique.cycles;
+                  _technique = arm.technique;
+                  _preset = arm.preset;
+                  _focusMinutes = arm.focusMinutes;
+                  _breakMinutes = arm.breakMinutes;
+                  _cycles = arm.cycles;
                 });
               },
             ),
@@ -167,10 +177,17 @@ class _ManualTimerScreenState extends ConsumerState<ManualTimerScreen> {
 }
 
 class _TechniquePicker extends StatelessWidget {
-  const _TechniquePicker({required this.selected, required this.onSelected});
+  const _TechniquePicker({
+    required this.arms,
+    required this.selectedKey,
+    required this.onSelected,
+  });
 
-  final FocusTechnique selected;
-  final ValueChanged<FocusTechnique> onSelected;
+  /// Встроенные техники и пользовательские пресеты в одном списке — для
+  /// пользователя разницы между ними нет, и подчёркивать её незачем.
+  final List<TechniqueArm> arms;
+  final String selectedKey;
+  final ValueChanged<TechniqueArm> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -179,13 +196,13 @@ class _TechniquePicker extends StatelessWidget {
 
     return Column(
       children: [
-        for (final technique in FocusTechnique.values)
+        for (final arm in arms)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: PixelCard(
-              accent: technique == selected,
+              accent: arm.key == selectedKey,
               padding: const EdgeInsets.all(AppSpacing.md),
-              onTap: () => onSelected(technique),
+              onTap: () => onSelected(arm),
               child: Row(
                 children: [
                   Expanded(
@@ -193,23 +210,28 @@ class _TechniquePicker extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          technique.label(l10n),
+                          arm.preset?.name ?? arm.technique.label(l10n),
                           style: context.text.title.copyWith(
-                            color: technique == selected
+                            color: arm.key == selectedKey
                                 ? colors.accent
                                 : colors.textPrimary,
                           ),
+                          // Имя пресета пользователь пишет сам, и оно бывает
+                          // длинным: обрезаем в одну строку, чтобы карточка
+                          // не разъезжалась.
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         AppSpacing.gapXs,
                         Text(
-                          '${technique.focusMinutes}/${technique.breakMinutes}'
-                          ' × ${technique.cycles}',
+                          '${arm.focusMinutes}/${arm.breakMinutes}'
+                          ' \u00d7 ${arm.cycles}',
                           style: context.text.caption,
                         ),
                       ],
                     ),
                   ),
-                  if (technique == selected)
+                  if (arm.key == selectedKey)
                     PixelSprite(
                       rows: PixelSprites.check,
                       size: 18,

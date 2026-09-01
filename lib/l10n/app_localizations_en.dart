@@ -1469,4 +1469,133 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mapWorld3Epigraph =>
       'The far end is out of sight. You walk it anyway.';
+
+  @override
+  String get techniqueCustomDesc =>
+      'Your own preset. It competes with the built-in techniques on equal terms and builds up its own stats.';
+
+  @override
+  String get settingsPresetsTitle => 'My presets';
+
+  @override
+  String get settingsPresetsHint =>
+      'Four built-in techniques don\'t fit everyone. A preset you add here is offered by the engine just like the built-in ones.';
+
+  @override
+  String get settingsPresetsEmpty =>
+      'No presets yet. Add one if none of the four built-in rhythms is yours.';
+
+  @override
+  String get settingsPresetAdd => 'Add preset';
+
+  @override
+  String get settingsPresetEdit => 'Edit preset';
+
+  @override
+  String get settingsPresetName => 'Name';
+
+  @override
+  String get settingsPresetNameHint => 'For example: 35/7';
+
+  @override
+  String get settingsPresetLimitReached =>
+      'Up to 5 presets. Each one is another option the engine has to learn, and they all share the same sessions.';
+
+  @override
+  String get settingsPresetDelete => 'Delete preset';
+
+  @override
+  String get settingsBurnoutStreakTitle => 'Aborted sessions in a row';
+
+  @override
+  String get settingsBurnoutStreakHint =>
+      'After this many aborted sessions in a row the app suggests stopping for today. Two is a bad hour; five is a whole stubborn day.';
+
+  @override
+  String get settingsWeekStartTitle => 'Week starts on';
+
+  @override
+  String get settingsWeekStartHint =>
+      'Affects the activity calendar and everything counted by weeks.';
+
+  @override
+  String get settingsWeekStartMonday => 'Monday';
+
+  @override
+  String get settingsWeekStartSunday => 'Sunday';
+
+  @override
+  String get settingsAutoBackupTitle => 'Weekly backup';
+
+  @override
+  String get settingsAutoBackupHint =>
+      'Once a week, quietly save a copy of everything to the app\'s backups folder. No cloud — the file stays on this device.';
+
+  @override
+  String get settingsAutoBackupNever => 'No copy made yet';
+
+  @override
+  String get statsSummaryEmpty =>
+      'No sessions in this period. The numbers below stay at zero until the first one.';
+
+  @override
+  String get statsActivityEmpty =>
+      'The calendar fills in as you go: one square per day, brighter with more time in focus.';
+
+  @override
+  String get statsHabitsEmpty =>
+      'No habits scheduled in this period — nothing to count yet.';
+
+  @override
+  String get characterStatsEmptyNew =>
+      'Nothing here yet. Numbers start moving after your first finished session.';
+
+  @override
+  String get characterStatsNoWins =>
+      'Sessions are happening, but none has been finished yet — only a session carried to the end counts as a win.';
+
+  @override
+  String get mapIntroTitle => 'Where this leads';
+
+  @override
+  String get mapIntroBody =>
+      'Each finished session is one step along the trail. Worlds open one after another — nothing here needs to be bought or guessed.';
+
+  @override
+  String get mapPreparing => 'Laying out the trail…';
+
+  @override
+  String get commonLoadError =>
+      'Couldn\'t load this. Try again — the data is on this device, so nothing is lost.';
+
+  @override
+  String get homeHabitsEmptyHint =>
+      'A habit is a daily goal plus what you owe yourself if you skip it.';
+
+  @override
+  String get planEmptyHint =>
+      'A plan is a short list for today, not for the whole week — three lines is already a plan.';
+
+  @override
+  String get commonUndo => 'Undo';
+
+  @override
+  String get habitUndone => 'Habit unmarked';
+
+  @override
+  String get habitsSearchHint => 'Find a habit';
+
+  @override
+  String get habitsSearchNothing => 'No habit matches that.';
+
+  @override
+  String settingsBurnoutStreakValue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '$count session',
+    );
+    return '$_temp0';
+  }
 }
