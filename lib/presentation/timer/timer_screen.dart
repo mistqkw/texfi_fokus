@@ -11,17 +11,16 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
 import '../game/encounter_result_sheet.dart';
-import '../game/game_providers.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../planner/planner_providers.dart';
-import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/timer_dial.dart';
-import 'session_wrap_up_sheet.dart';
+import 'session_finish_flow.dart';
+import 'timer_alarm_sync.dart';
 import 'timer_providers.dart';
 
 /// Экран таймера. Центральный элемент — крутилка: она и показывает прогресс,
@@ -64,24 +63,11 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     super.dispose();
   }
 
-  /// Приводит системную очередь уведомлений в соответствие с состоянием
-  /// таймера. Пустой график (пауза, завершение) означает «снять всё».
-  Future<void> _syncAlarms(TimerState state) async {
-    final l10n = context.l10n;
-    final alarms = state.alarms;
-
-    if (alarms.isEmpty) {
-      await _notifications.cancelTimerAlarms();
-      return;
-    }
-
-    await _notifications.scheduleTimerAlarms(
-      alarms: alarms,
-      totalCycles: state.plan.cycles,
-      focusMinutes: state.plan.focusMinutes * state.plan.cycles,
-      copy: timerNotificationCopyFrom(l10n),
-    );
-  }
+  Future<void> _syncAlarms(TimerState state) => syncTimerAlarms(
+        notifications: _notifications,
+        l10n: context.l10n,
+        state: state,
+      );
 
   Future<void> _confirmStop() async {
     final l10n = context.l10n;
@@ -109,56 +95,23 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   /// Сессия закончилась — собираем всё, что пользователь готов рассказать, и
   /// сохраняем. Ни один из вопросов не обязателен: если лист просто закрыть,
   /// сигналом для обучения останется сам факт «дошёл / не дошёл».
+  ///
+  /// Сама последовательность живёт в [finishSession] и делится с экраном боя:
+  /// сессия должна сохраняться одинаково независимо от того, с какого экрана
+  /// её вели.
   Future<void> _handleFinish(TimerState state) async {
     if (_finishHandled) return;
     _finishHandled = true;
 
-    final l10n = context.l10n;
-    final wrapUp = await showModalBottomSheet<SessionWrapUp>(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      builder: (context) => SessionWrapUpSheet(
-        title: state.completedFully
-            ? l10n.timerDoneTitle
-            : l10n.timerAbortedTitle,
-        askInterruptionReason: !state.completedFully,
-      ),
-    );
-
-    await ref.read(saveSessionProvider)(
-      state: state,
-      rating: wrapUp?.rating,
-      interruptionReason: wrapUp?.reason,
-      note: wrapUp?.note,
-    );
-    if (!mounted) return;
-
-    // Игровой слой идёт строго после того, как сессия сохранена и скормлена
-    // движку рекомендаций: он надстройка, и его сбой не должен утащить с
-    // собой основную запись. Черновик ещё жив — из него берутся сложность и
-    // настроение, с которым сессия начиналась.
-    final draft = ref.read(sessionDraftProvider);
-    await ref.read(gameSessionRecorderProvider)(
-      focusSeconds: state.focusSeconds,
-      difficulty: draft.difficulty,
-      mood: draft.mood,
-      completedFully: state.completedFully,
-    );
-    if (!mounted) return;
-
-    // Вечерняя сводка собирается в момент планирования уведомления, поэтому
-    // после каждой сессии её пересобираем: иначе «сегодня две сессии» так и
-    // осталось бы вчерашним текстом.
-    await syncNotifications(ref, l10n);
-    if (!mounted) return;
+    final outcome = await finishSession(context, ref, state);
+    if (outcome == null || !mounted) return;
 
     // Победа, поражение или новый уровень — единственные события, ради
     // которых стоит задержать пользователя ещё одним экраном.
     await showEncounterResultIfAny(context, ref);
     if (!mounted) return;
 
-    if (wrapUp?.restart ?? false) {
+    if (outcome.restart) {
       // Черновик не сбрасываем: задача, настроение и категория те же — в
       // этом весь смысл быстрого повтора.
       Navigator.of(context).pushReplacement(

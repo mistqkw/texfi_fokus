@@ -18,6 +18,15 @@ class PlayerProgressEntity {
 
   int get avatarStage => GameRules.avatarStageForLevel(level);
 
+  /// Звание — короткая словесная ступень («искра», «уголёк»). Меняется чаще,
+  /// чем спрайт: между двумя перерисовками аватара человек всё равно должен
+  /// видеть, что продвинулся.
+  int get rank => GameRules.rankForLevel(level);
+
+  /// Уровень, на котором аватар изменится в следующий раз. null — дальше
+  /// ступеней нет.
+  int? get nextAvatarStageLevel => GameRules.nextAvatarStageLevel(level);
+
   PlayerProgressEntity copyWith({
     int? totalXp,
     int? drifterKills,
