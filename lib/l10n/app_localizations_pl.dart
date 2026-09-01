@@ -563,6 +563,28 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsVibrationIntensity => 'Siła wibracji';
 
   @override
+  String get settingsAlarmSound => 'Dźwięk zakończenia';
+
+  @override
+  String get settingsAlarmSoundHint =>
+      'Odtwarzany kanałem alarmu, więc słychać go w trybie cichym. Dotknij, aby posłuchać.';
+
+  @override
+  String get soundArcadeCoin => 'Moneta z automatu';
+
+  @override
+  String get soundLevelUp => 'Nowy poziom';
+
+  @override
+  String get soundAlarmBeep => 'Sygnał budzika';
+
+  @override
+  String get soundSoftChime => 'Łagodny dzwonek';
+
+  @override
+  String get soundPowerDown => 'Wyłączanie';
+
+  @override
   String get settingsLanguage => 'Język';
 
   @override

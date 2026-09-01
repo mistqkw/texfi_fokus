@@ -564,6 +564,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsVibrationIntensity => 'Інтенсивність вібрації';
 
   @override
+  String get settingsAlarmSound => 'Звук завершення';
+
+  @override
+  String get settingsAlarmSoundHint =>
+      'Лунає каналом будильника, тому чутно в беззвучному режимі. Торкніться, щоб прослухати.';
+
+  @override
+  String get soundArcadeCoin => 'Монетка';
+
+  @override
+  String get soundLevelUp => 'Новий рівень';
+
+  @override
+  String get soundAlarmBeep => 'Сигнал будильника';
+
+  @override
+  String get soundSoftChime => 'М\'який передзвін';
+
+  @override
+  String get soundPowerDown => 'Вимкнення';
+
+  @override
   String get settingsLanguage => 'Мова';
 
   @override
