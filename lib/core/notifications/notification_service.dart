@@ -7,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../../domain/entities/habit_entity.dart';
 import '../../domain/entities/timer_alarm.dart';
+import '../audio/alarm_sound.dart';
 
 /// Тексты уведомлений приходят из слоя локализации: сервис ничего не
 /// переводит сам, иначе строки пришлось бы дублировать вне ARB.
@@ -76,6 +77,36 @@ class TimerNotificationCopy {
   final String Function(int minutes) sessionDoneBody;
 }
 
+/// Чем именно конец сессии должен себя обозначить.
+///
+/// Собирается из настроек приложения и уходит в канал уведомления — то есть
+/// в систему. Раньше выбор звука доходил только до плеера внутри процесса, и
+/// поэтому переставал существовать вместе с процессом.
+class TimerAlarmSignal {
+  const TimerAlarmSignal({required this.sound, required this.vibrate});
+
+  /// Выбранный пресет. `null` — звук выключен в настройках.
+  final AlarmSound? sound;
+
+  final bool vibrate;
+
+  /// Идентификатор канала под это сочетание.
+  ///
+  /// В нём закодированы и звук, и вибрация, потому что на Android оба
+  /// свойства фиксируются в момент создания канала и после этого не
+  /// меняются ничем. Отсюда и весь подход: не «настроить канал под выбор
+  /// пользователя», а «завести по каналу на каждый выбор и выбирать нужный
+  /// в момент постановки будильника».
+  ///
+  /// Суффикс `a` — поколение схемы каналов. Если однажды придётся поменять
+  /// параметры (например, поток звука), у новых каналов должны быть новые
+  /// имена: старые к тому моменту уже созданы на устройствах и неизменяемы.
+  String get channelId {
+    final soundPart = sound?.id ?? 'silent';
+    return 'texfi_fokus_timer_a_${soundPart}_${vibrate ? 'vib' : 'novib'}';
+  }
+}
+
 /// Итог дня для вечернего уведомления. Собирается на стороне приложения:
 /// сервис уведомлений о сессиях и настроениях ничего не знает.
 class DailyDigest {
@@ -120,10 +151,18 @@ class NotificationService {
 
   static const String _channelId = 'texfi_fokus_habits';
 
-  /// У таймера свой канал: важность и поведение у него другие, а на Android
-  /// параметры канала после создания не меняются — подмешивать конец сессии
-  /// в канал напоминаний означало бы навсегда связать их настройки.
-  static const String _timerChannelId = 'texfi_fokus_timer';
+  /// Прежний канал таймера. Он создавался со звуком уведомления по умолчанию
+  /// и потоком `notification` — то есть глохнул вместе с уведомлениями и
+  /// никогда не играл выбранный пресет. Поменять его параметры нельзя (на
+  /// Android они фиксируются при создании), поэтому канал не переиспользуется,
+  /// а удаляется: иначе он остался бы висеть в системных настройках звука
+  /// пустой строчкой, которая ни на что не влияет.
+  static const String _legacyTimerChannelId = 'texfi_fokus_timer';
+
+  /// Каналы, созданные в этом запуске. Создание канала идемпотентно, но
+  /// это платформенный вызов — дёргать его на каждую постановку будильника
+  /// незачем.
+  final Set<String> _ensuredChannels = {};
 
   /// Идентификаторы уведомлений: у итога дня свой фиксированный, у привычек —
   /// производные от хеша id, смещённые, чтобы не столкнуться с ним.
@@ -383,15 +422,81 @@ class NotificationService {
 
   // --- Таймер ---
 
-  NotificationDetails _timerDetails(TimerNotificationCopy copy) {
+  /// Канал, по которому пойдёт конец сессии, и его звук.
+  ///
+  /// Это и есть то место, где выбор пользователя в настройках попадает в
+  /// систему: не в плеер приложения, а в канал, из которого Android возьмёт
+  /// звук сам — в том числе когда процесса приложения уже нет.
+  AndroidNotificationChannel _timerChannel(
+    TimerAlarmSignal signal,
+    TimerNotificationCopy copy,
+  ) {
+    final sound = signal.sound;
+    return AndroidNotificationChannel(
+      signal.channelId,
+      copy.channelName,
+      description: copy.channelDescription,
+      importance: Importance.max,
+      playSound: sound != null,
+      sound: sound == null
+          ? null
+          : RawResourceAndroidNotificationSound(sound.androidResourceName),
+      enableVibration: signal.vibrate,
+      // Тот же поток, что у будильника, и по той же причине, по которой
+      // приложение играет свой сигнал через `usage: alarm`: поток уведомлений
+      // глушится бесшумным режимом и почти любым «Не беспокоить», а конец
+      // сессии человек ставил специально и ждёт его.
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+    );
+  }
+
+  /// Создаёт канал, если он ещё не создан в этом запуске.
+  ///
+  /// Канал приходится создавать явно, а не полагаться на то, что плагин
+  /// заведёт его по `AndroidNotificationDetails`: `audioAttributesUsage` и
+  /// звук — свойства именно канала, и задать их можно только при создании.
+  Future<void> _ensureTimerChannel(
+    TimerAlarmSignal signal,
+    TimerNotificationCopy copy,
+  ) async {
+    if (!Platform.isAndroid) return;
+    final channel = _timerChannel(signal, copy);
+    if (!_ensuredChannels.add(channel.id)) return;
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return;
+      // Старый канал убираем один раз: он не чинится, а только мешается.
+      if (_ensuredChannels.length == 1) {
+        await android.deleteNotificationChannel(_legacyTimerChannelId);
+      }
+      await android.createNotificationChannel(channel);
+    } catch (error) {
+      debugPrint('_ensureTimerChannel failed: $error');
+    }
+  }
+
+  NotificationDetails _timerDetails(
+    TimerAlarmSignal signal,
+    TimerNotificationCopy copy,
+  ) {
+    final sound = signal.sound;
     return NotificationDetails(
       android: AndroidNotificationDetails(
-        _timerChannelId,
+        signal.channelId,
         copy.channelName,
         channelDescription: copy.channelDescription,
         importance: Importance.max,
         priority: Priority.max,
         category: AndroidNotificationCategory.alarm,
+        // Дублирует параметры канала. На Android 8+ решает канал, а на более
+        // старых версиях каналов нет вовсе, и звук берётся отсюда.
+        playSound: sound != null,
+        sound: sound == null
+            ? null
+            : RawResourceAndroidNotificationSound(sound.androidResourceName),
+        enableVibration: signal.vibrate,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
         // Уведомление должно дождаться пользователя. `autoCancel` снимает его
         // при нажатии — это и есть «открыл»; `timeoutAfter` намеренно не
         // задан, иначе система сама убрала бы его через N миллисекунд, и от
@@ -450,10 +555,15 @@ class NotificationService {
     required int totalCycles,
     required int focusMinutes,
     required TimerNotificationCopy copy,
+    required TimerAlarmSignal signal,
   }) async {
     if (!_canSchedule) return;
     await init();
     if (!_initialized) return;
+
+    // Канал под выбранный звук должен существовать до постановки будильника:
+    // именно из него система возьмёт сигнал, когда приложения уже не будет.
+    await _ensureTimerChannel(signal, copy);
 
     // Согласие на точные будильники спрашивается один раз за запуск и именно
     // здесь, а не на старте приложения: системный диалог посреди загрузочной
@@ -477,7 +587,7 @@ class NotificationService {
           text.title,
           text.body,
           now.add(alarm.after),
-          _timerDetails(copy),
+          _timerDetails(signal, copy),
           // Единственный режим, который переживает Doze без сдвига на
           // несколько минут. Разрешение спрашивается отдельно, а если его не
           // дали — плагин сам мягко откатится на неточное планирование.

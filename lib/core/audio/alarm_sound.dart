@@ -26,6 +26,18 @@ enum AlarmSound {
   /// префикс `assets/`.
   String get assetPath => 'audio/$fileName';
 
+  /// Имя того же файла как Android-ресурса `res/raw/<name>.mp3` (без
+  /// расширения — так его ждёт `RawResourceAndroidNotificationSound`).
+  ///
+  /// Копия в `res/raw/` существует не от лени: до flutter-ассетов система
+  /// дотянуться не может в принципе, а звук уведомления играет она — и тогда,
+  /// когда процесса приложения уже нет. Оба файла пишет один прогон
+  /// `tool/generate_sounds.py`, поэтому разъехаться они не могут.
+  ///
+  /// Имена пресетов сразу выбраны пригодными для ресурсов Android: нижний
+  /// регистр, подчёркивания, никаких дефисов.
+  String get androidResourceName => fileName.replaceAll('.mp3', '');
+
   static const AlarmSound fallback = AlarmSound.arcadeCoin;
 
   /// Разбор сохранённого значения. Неизвестный или отсутствующий ключ — не
