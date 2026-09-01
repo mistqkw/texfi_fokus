@@ -4,6 +4,7 @@ import '../../data/providers/data_providers.dart';
 import '../../data/repositories/habit_repository_impl.dart' show dayOf;
 import '../../domain/entities/habit_entity.dart';
 import '../../domain/entities/insight.dart';
+import '../game/game_providers.dart';
 
 /// Сегодняшний день, нормализованный к полуночи. Отдельный провайдер, чтобы
 /// его можно было подменить в тестах и инвалидировать при смене суток.
@@ -70,11 +71,17 @@ final toggleHabitProvider =
     Provider<Future<void> Function(String habitId, bool done)>((ref) {
   final repository = ref.watch(habitRepositoryProvider);
   final today = ref.watch(todayProvider);
-  return (habitId, done) => repository.setCompletion(
-        habitId: habitId,
-        day: today,
-        done: done,
-      );
+  return (habitId, done) async {
+    await repository.setCompletion(
+      habitId: habitId,
+      day: today,
+      done: done,
+    );
+    // Опыт начисляется только за закрытие цели. Снятие галочки его не
+    // отбирает: отменённая по ошибке отметка не должна стоить прогресса, а
+    // накрутить так можно разве что самого себя.
+    if (done) await ref.read(gameHabitRecorderProvider)();
+  };
 });
 
 /// Замораживает или снимает заморозку сегодняшнего дня.

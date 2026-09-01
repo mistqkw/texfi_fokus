@@ -890,6 +890,204 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Карта';
+
+  @override
+  String get gameSectionTitle => 'Ігровий режим';
+
+  @override
+  String get gameModeToggle => 'Грати, а не лише відмічати';
+
+  @override
+  String get gameModeSubtitle =>
+      'Сесії та звички лишаються такими самими — понад ними з\'являються карта, дрифери та рівні.';
+
+  @override
+  String get gameModeOffNote =>
+      'Вимкнення лише ховає гру. Рівень і поступ картою зберігаються, і ти повернешся на те саме місце.';
+
+  @override
+  String get gameReset => 'Почати гру спочатку';
+
+  @override
+  String get gameResetSubtitle =>
+      'Обнуляє досвід і карту. Сесій і звичок не торкається.';
+
+  @override
+  String get gameResetConfirm =>
+      'Почати спочатку? Рівень і карта обнуляться. Сесії, звички та статистика лишаться недоторканими.';
+
+  @override
+  String get gameResetDone => 'Карта починається спочатку.';
+
+  @override
+  String get mapTitle => 'Карта';
+
+  @override
+  String mapWorld(int world) {
+    return 'Світ $world';
+  }
+
+  @override
+  String get mapAllCleared =>
+      'Усі світи пройдено. Досвід за сесії й далі нараховується.';
+
+  @override
+  String get mapNodeLocked => 'Закритий';
+
+  @override
+  String get mapNodeCleared => 'Пройдений';
+
+  @override
+  String get mapNodeCurrent => 'Ти тут';
+
+  @override
+  String get mapBossNode => 'Бос';
+
+  @override
+  String get characterTitle => 'Персонаж';
+
+  @override
+  String characterLevel(int level) {
+    return 'Рівень $level';
+  }
+
+  @override
+  String characterXp(int current, int needed) {
+    return '$current / $needed XP';
+  }
+
+  @override
+  String characterToNextLevel(int xp) {
+    return '$xp XP до наступного рівня';
+  }
+
+  @override
+  String get characterDriftersDefeated => 'Дриферів здолано';
+
+  @override
+  String get characterBossesDefeated => 'Босів здолано';
+
+  @override
+  String get characterTotalXp => 'Досвіду зароблено';
+
+  @override
+  String get characterStage1 => 'Іскра';
+
+  @override
+  String get characterStage2 => 'Рівний вогник';
+
+  @override
+  String get characterStage3 => 'Вогник з аурою';
+
+  @override
+  String get characterStage4 => 'Вогник у короні';
+
+  @override
+  String get drifterBuzz => 'Гудок';
+
+  @override
+  String get drifterCreep => 'Повзун';
+
+  @override
+  String get drifterLoom => 'Морок';
+
+  @override
+  String get drifterBuzzFlavor =>
+      'Розмах крил більший за тіло. Дзенькне раз — і уваги немає.';
+
+  @override
+  String get drifterCreepFlavor =>
+      'Низький і багатоногий. Не налітає, а підбирається знизу.';
+
+  @override
+  String get drifterLoomFlavor =>
+      'Високий, вузький, з одним порожнім оком. Просто стоїть і дивиться.';
+
+  @override
+  String get bossScroll => 'Стрічка';
+
+  @override
+  String get bossChorus => 'Хор';
+
+  @override
+  String get bossHollow => 'Порожнеча';
+
+  @override
+  String get bossScrollFlavor =>
+      'Стрічка, згорнута сама в себе. У неї немає кінця — у цьому весь фокус.';
+
+  @override
+  String get bossChorusFlavor =>
+      'Не одна істота, а гроно голів, і говорять вони разом.';
+
+  @override
+  String get bossHollowFlavor => 'Важка рама навколо нічого. Тягне всередину.';
+
+  @override
+  String get encounterTitle => 'Проти тебе';
+
+  @override
+  String encounterHp(int current, int max) {
+    return '$current / $max HP';
+  }
+
+  @override
+  String get encounterWounded => 'Поранений — доверши.';
+
+  @override
+  String get encounterHealed => 'Поки тебе не було, він устиг відновитися.';
+
+  @override
+  String get encounterBossHint =>
+      'По-справжньому його пробивають лише сесії, розпочаті у full f0kus.';
+
+  @override
+  String encounterBossStamina(int current, int total) {
+    return 'Твоя витривалість: $current з $total';
+  }
+
+  @override
+  String get encounterBossStaminaHint =>
+      'Кожен покинутий f0kus-захід коштує одного очка.';
+
+  @override
+  String get encounterFokusMissing =>
+      'Обери full f0kus на чекіні, щоб битися на повну.';
+
+  @override
+  String gameXpGained(int xp) {
+    return '+$xp XP';
+  }
+
+  @override
+  String gameLevelUp(int level) {
+    return 'Рівень $level';
+  }
+
+  @override
+  String get gameLevelUpBody => 'Твій вогник змінився.';
+
+  @override
+  String get gameDrifterDefeated => 'Дрифера здолано';
+
+  @override
+  String get gameBossDefeated => 'Боса здолано';
+
+  @override
+  String get gameBossDefeatedBody => 'Дорога до наступного світу відкрита.';
+
+  @override
+  String get gamePlayerDefeated => 'Бос оговтався';
+
+  @override
+  String get gamePlayerDefeatedBody =>
+      'Він знову сповнений сил, і твоя витривалість теж. Спробуй ще раз, коли будеш готовий, — більше нічого не втрачено.';
+
+  @override
+  String get gameContinue => 'Далі';
+
+  @override
   String get settingsAccent => 'Акцентний колір';
 
   @override

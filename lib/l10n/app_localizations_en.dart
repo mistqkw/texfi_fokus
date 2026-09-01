@@ -893,6 +893,204 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Map';
+
+  @override
+  String get gameSectionTitle => 'Game mode';
+
+  @override
+  String get gameModeToggle => 'Play instead of just tracking';
+
+  @override
+  String get gameModeSubtitle =>
+      'Sessions and habits stay exactly as they are — a map, drifters and levels appear on top of them.';
+
+  @override
+  String get gameModeOffNote =>
+      'Turning it off only hides the game. Your level and map progress are kept, and you will come back to the same spot.';
+
+  @override
+  String get gameReset => 'Start the game over';
+
+  @override
+  String get gameResetSubtitle =>
+      'Clears XP and the map. Sessions and habits are not affected.';
+
+  @override
+  String get gameResetConfirm =>
+      'Start over? The level and the map go back to zero. Sessions, habits and statistics stay untouched.';
+
+  @override
+  String get gameResetDone => 'The map starts from the beginning.';
+
+  @override
+  String get mapTitle => 'Map';
+
+  @override
+  String mapWorld(int world) {
+    return 'World $world';
+  }
+
+  @override
+  String get mapAllCleared =>
+      'Every world is cleared. Sessions still bring XP.';
+
+  @override
+  String get mapNodeLocked => 'Locked';
+
+  @override
+  String get mapNodeCleared => 'Cleared';
+
+  @override
+  String get mapNodeCurrent => 'You are here';
+
+  @override
+  String get mapBossNode => 'Boss';
+
+  @override
+  String get characterTitle => 'Character';
+
+  @override
+  String characterLevel(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String characterXp(int current, int needed) {
+    return '$current / $needed XP';
+  }
+
+  @override
+  String characterToNextLevel(int xp) {
+    return '$xp XP to the next level';
+  }
+
+  @override
+  String get characterDriftersDefeated => 'Drifters defeated';
+
+  @override
+  String get characterBossesDefeated => 'Bosses defeated';
+
+  @override
+  String get characterTotalXp => 'XP earned';
+
+  @override
+  String get characterStage1 => 'A spark';
+
+  @override
+  String get characterStage2 => 'A steady flame';
+
+  @override
+  String get characterStage3 => 'A flame with a halo';
+
+  @override
+  String get characterStage4 => 'A crowned flame';
+
+  @override
+  String get drifterBuzz => 'Buzz';
+
+  @override
+  String get drifterCreep => 'Creep';
+
+  @override
+  String get drifterLoom => 'Loom';
+
+  @override
+  String get drifterBuzzFlavor =>
+      'Wide wings, tiny body. Pings once and carries your attention off.';
+
+  @override
+  String get drifterCreepFlavor =>
+      'Low and many-legged. Does not swoop — it creeps up from below.';
+
+  @override
+  String get drifterLoomFlavor =>
+      'Tall, narrow, one empty eye. Just stands there and watches.';
+
+  @override
+  String get bossScroll => 'The Scroll';
+
+  @override
+  String get bossChorus => 'The Chorus';
+
+  @override
+  String get bossHollow => 'The Hollow';
+
+  @override
+  String get bossScrollFlavor =>
+      'A ribbon coiled into itself. It has no end, that is the whole trick.';
+
+  @override
+  String get bossChorusFlavor =>
+      'Not one creature but a cluster of heads, all talking at once.';
+
+  @override
+  String get bossHollowFlavor =>
+      'A heavy frame around nothing at all. It pulls inward.';
+
+  @override
+  String get encounterTitle => 'Facing you';
+
+  @override
+  String encounterHp(int current, int max) {
+    return '$current / $max HP';
+  }
+
+  @override
+  String get encounterWounded => 'Wounded — finish it off.';
+
+  @override
+  String get encounterHealed => 'It had time to recover while you were away.';
+
+  @override
+  String get encounterBossHint =>
+      'Only sessions started in full f0kus really hurt this one.';
+
+  @override
+  String encounterBossStamina(int current, int total) {
+    return 'Your stamina: $current of $total';
+  }
+
+  @override
+  String get encounterBossStaminaHint => 'Each abandoned f0kus run costs one.';
+
+  @override
+  String get encounterFokusMissing =>
+      'Pick full f0kus at check-in to fight it properly.';
+
+  @override
+  String gameXpGained(int xp) {
+    return '+$xp XP';
+  }
+
+  @override
+  String gameLevelUp(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get gameLevelUpBody => 'Your flame has changed.';
+
+  @override
+  String get gameDrifterDefeated => 'Drifter defeated';
+
+  @override
+  String get gameBossDefeated => 'Boss defeated';
+
+  @override
+  String get gameBossDefeatedBody => 'The way to the next world is open.';
+
+  @override
+  String get gamePlayerDefeated => 'The boss caught its breath';
+
+  @override
+  String get gamePlayerDefeatedBody =>
+      'It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.';
+
+  @override
+  String get gameContinue => 'Onward';
+
+  @override
   String get settingsAccent => 'Accent colour';
 
   @override

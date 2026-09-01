@@ -10,6 +10,7 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/recommendation.dart';
+import '../game/encounter_card.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
@@ -95,6 +96,12 @@ class _RecommendationBody extends ConsumerWidget {
     return ListView(
       padding: AppSpacing.screen,
       children: [
+        // Кто стоит на текущем узле карты. Надстройка ровно в одну строку:
+        // сама рекомендация ниже не знает об игре ничего, движок считает то
+        // же самое, что и в обычном режиме, и в обычном режиме карточка
+        // просто схлопывается в пустоту.
+        const CurrentEncounterCard(compact: true),
+
         // Серия прерываний — не запрет, а повод посмотреть на день целиком,
         // поэтому это баннер над рекомендацией, а не заслонка перед ней.
         if (burnout) ...[

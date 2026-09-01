@@ -498,6 +498,127 @@
       }
     }
   },
+  "navMap": "Map",
+  "gameSectionTitle": "Game mode",
+  "gameModeToggle": "Play instead of just tracking",
+  "gameModeSubtitle": "Sessions and habits stay exactly as they are — a map, drifters and levels appear on top of them.",
+  "gameModeOffNote": "Turning it off only hides the game. Your level and map progress are kept, and you will come back to the same spot.",
+  "gameReset": "Start the game over",
+  "gameResetSubtitle": "Clears XP and the map. Sessions and habits are not affected.",
+  "gameResetConfirm": "Start over? The level and the map go back to zero. Sessions, habits and statistics stay untouched.",
+  "gameResetDone": "The map starts from the beginning.",
+  "mapTitle": "Map",
+  "mapWorld": "World {world}",
+  "@mapWorld": {
+    "placeholders": {
+      "world": {
+        "type": "int"
+      }
+    }
+  },
+  "mapAllCleared": "Every world is cleared. Sessions still bring XP.",
+  "mapNodeLocked": "Locked",
+  "mapNodeCleared": "Cleared",
+  "mapNodeCurrent": "You are here",
+  "mapBossNode": "Boss",
+  "characterTitle": "Character",
+  "characterLevel": "Level {level}",
+  "@characterLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "characterXp": "{current} / {needed} XP",
+  "@characterXp": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "needed": {
+        "type": "int"
+      }
+    }
+  },
+  "characterToNextLevel": "{xp} XP to the next level",
+  "@characterToNextLevel": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "characterDriftersDefeated": "Drifters defeated",
+  "characterBossesDefeated": "Bosses defeated",
+  "characterTotalXp": "XP earned",
+  "characterStage1": "A spark",
+  "characterStage2": "A steady flame",
+  "characterStage3": "A flame with a halo",
+  "characterStage4": "A crowned flame",
+  "drifterBuzz": "Buzz",
+  "drifterCreep": "Creep",
+  "drifterLoom": "Loom",
+  "drifterBuzzFlavor": "Wide wings, tiny body. Pings once and carries your attention off.",
+  "drifterCreepFlavor": "Low and many-legged. Does not swoop — it creeps up from below.",
+  "drifterLoomFlavor": "Tall, narrow, one empty eye. Just stands there and watches.",
+  "bossScroll": "The Scroll",
+  "bossChorus": "The Chorus",
+  "bossHollow": "The Hollow",
+  "bossScrollFlavor": "A ribbon coiled into itself. It has no end, that is the whole trick.",
+  "bossChorusFlavor": "Not one creature but a cluster of heads, all talking at once.",
+  "bossHollowFlavor": "A heavy frame around nothing at all. It pulls inward.",
+  "encounterTitle": "Facing you",
+  "encounterHp": "{current} / {max} HP",
+  "@encounterHp": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "encounterWounded": "Wounded — finish it off.",
+  "encounterHealed": "It had time to recover while you were away.",
+  "encounterBossHint": "Only sessions started in full f0kus really hurt this one.",
+  "encounterBossStamina": "Your stamina: {current} of {total}",
+  "@encounterBossStamina": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "encounterBossStaminaHint": "Each abandoned f0kus run costs one.",
+  "encounterFokusMissing": "Pick full f0kus at check-in to fight it properly.",
+  "gameXpGained": "+{xp} XP",
+  "@gameXpGained": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "gameLevelUp": "Level {level}",
+  "@gameLevelUp": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "gameLevelUpBody": "Your flame has changed.",
+  "gameDrifterDefeated": "Drifter defeated",
+  "gameBossDefeated": "Boss defeated",
+  "gameBossDefeatedBody": "The way to the next world is open.",
+  "gamePlayerDefeated": "The boss caught its breath",
+  "gamePlayerDefeatedBody": "It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.",
+  "gameContinue": "Onward",
 
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
