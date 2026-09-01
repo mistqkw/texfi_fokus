@@ -51,7 +51,7 @@ class _PixelCreatureState extends State<PixelCreature>
 
   late final AnimationController _dissolve = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 700),
+    duration: AppMotion.dissolve,
   );
 
   @override
@@ -69,9 +69,23 @@ class _PixelCreatureState extends State<PixelCreature>
       _dissolve.forward(from: 0).then((_) {
         if (mounted) widget.onDissolved?.call();
       });
-    } else if (!oldWidget.alive && widget.alive) {
+      return;
+    }
+    if (!oldWidget.alive && widget.alive) {
       _dissolve.value = 0;
-      if (widget.animate) _idle.repeat(reverse: true);
+    }
+
+    // «Дыхание» включается и гаснет вслед за [animate]. Через это же поле
+    // пауза таймера останавливает противника: на паузе он замирает, и
+    // остановка времени видна на экране, а не только в подписи кнопки.
+    final shouldIdle = widget.animate && widget.alive;
+    if (shouldIdle && !_idle.isAnimating) {
+      _idle.repeat(reverse: true);
+    } else if (!shouldIdle && _idle.isAnimating) {
+      _idle.stop();
+      // Возврат в «выдох»: замерший на полувдохе спрайт выглядит смещённым
+      // на клетку вниз, а не остановленным.
+      _idle.value = 0;
     }
   }
 
@@ -102,9 +116,13 @@ class _PixelCreatureState extends State<PixelCreature>
           return Transform.translate(
             offset: Offset(0, jitter),
             child: Opacity(
+              // При распаде спрайт не гасится целиком: гаснут отдельные
+              // клетки, и общая прозрачность только смазала бы порядок,
+              // ради которого эффект и сделан. Общее затухание включается
+              // на последней четверти — убрать оставшиеся одиночные клетки.
               opacity: widget.alive
                   ? (0.85 + 0.15 * _idle.value)
-                  : (1 - _dissolve.value).clamp(0.0, 1.0),
+                  : (1 - (_dissolve.value - 0.75) / 0.25).clamp(0.0, 1.0),
               child: CustomPaint(
                 painter: _CreaturePainter(
                   rows: widget.rows,
@@ -120,11 +138,46 @@ class _PixelCreatureState extends State<PixelCreature>
   }
 }
 
-/// Отрисовщик с распадом.
+/// Устойчивый псевдослучайный «шум» клетки, 0..1.
 ///
-/// Клетки исчезают не по порядку, а вразнобой — но вразнобой одинаково при
-/// каждом показе: порог берётся из координат клетки, а не из генератора
-/// случайных чисел. Иначе спрайт «кипел» бы на каждом кадре перерисовки.
+/// Не `Random`: порог обязан быть одним и тем же на каждом кадре, иначе
+/// спрайт «кипит» вместо того, чтобы рассыпаться.
+double _cellNoise(int x, int y) {
+  final n = math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+  return (n - n.floorToDouble()).abs();
+}
+
+/// Порог исчезновения одной клетки спрайта при распаде, 0..1.
+///
+/// Клетка гаснет, когда прогресс распада перевалил её порог. Порог задаётся
+/// в первую очередь **строкой**, и строки идут снизу вверх: существо
+/// осыпается, как будто из-под него выбили опору. Ровно эта очерёдность
+/// отличает «спрайт рассыпался» от «спрайт не загрузился» — случайная россыпь
+/// по всей площади читается как сбой отрисовки, а не как исход боя.
+///
+/// Внутри строки добавлен небольшой шум ([_cellNoise]), иначе строки уходили
+/// бы идеально ровными полосами — а это уже похоже на стирание, а не на
+/// осыпание.
+///
+/// Вынесено из отрисовщика отдельной функцией, потому что это единственная
+/// часть эффекта, у которой есть проверяемое поведение: порядок строк.
+double creatureCellDissolveThreshold(int x, int y, int rowCount) {
+  if (rowCount <= 1) return _cellNoise(x, y);
+
+  // 0 у нижней строки, 1 у верхней.
+  final rowShare = (rowCount - 1 - y) / (rowCount - 1);
+
+  // Шаг между строками. Разброс шума внутри строки берётся долей от этого
+  // шага, а не фиксированным числом: сетки в приложении бывают и 8×8, и
+  // 10×10, а на десяти строках шаг меньше — фиксированный разброс начал бы
+  // перекрывать соседние строки, и распад снова стал бы случайной россыпью.
+  const span = 0.78;
+  final step = span / (rowCount - 1);
+
+  return (rowShare * span + _cellNoise(x, y) * step * 0.8).clamp(0.0, 1.0);
+}
+
+/// Отрисовщик с распадом.
 class _CreaturePainter extends CustomPainter {
   const _CreaturePainter({
     required this.rows,
@@ -136,12 +189,6 @@ class _CreaturePainter extends CustomPainter {
   final Color color;
   final double dissolve;
 
-  /// Устойчивый псевдослучайный порог клетки, 0..1.
-  double _threshold(int x, int y) {
-    final n = math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
-    return (n - n.floorToDouble()).abs();
-  }
-
   @override
   void paint(Canvas canvas, Size size) {
     if (rows.isEmpty) return;
@@ -152,14 +199,16 @@ class _CreaturePainter extends CustomPainter {
       final row = rows[y];
       for (var x = 0; x < row.length; x++) {
         if (row[x] == '.') continue;
-        if (dissolve > 0 && _threshold(x, y) < dissolve) continue;
+        final threshold = creatureCellDissolveThreshold(x, y, rows.length);
+        if (dissolve > 0 && threshold < dissolve) continue;
 
-        // При распаде уцелевшие клетки разлетаются вверх и в стороны.
+        // Уцелевшие клетки слегка оседают и расходятся в стороны — но
+        // вниз, а не вверх: рассыпается то, что теряет опору.
         final drift = dissolve == 0
             ? Offset.zero
             : Offset(
-                (_threshold(x + 7, y) - 0.5) * cell * 4 * dissolve,
-                -dissolve * cell * 3,
+                (_cellNoise(x + 7, y) - 0.5) * cell * 1.5 * dissolve,
+                dissolve * cell * 1.2,
               );
 
         canvas.drawRect(
@@ -187,7 +236,7 @@ class _CreaturePainter extends CustomPainter {
 /// Плавный `LinearProgressIndicator` здесь смотрелся бы чужим ровно так же,
 /// как Material-иконка внутри пиксельной кнопки, поэтому шкала намеренно
 /// дискретна — видно, сколько «клеток» осталось.
-class PixelStatBar extends StatelessWidget {
+class PixelStatBar extends StatefulWidget {
   const PixelStatBar({
     super.key,
     required this.value,
@@ -195,6 +244,7 @@ class PixelStatBar extends StatelessWidget {
     this.segments = 20,
     this.height = 12,
     this.background,
+    this.flashOnDecrease = false,
   });
 
   /// 0..1.
@@ -204,27 +254,86 @@ class PixelStatBar extends StatelessWidget {
   final double height;
   final Color? background;
 
+  /// Отбивать ли убыль отдельным ударом: вспышка рамки и короткая тряска.
+  ///
+  /// Только для полосок, где убыль — это событие (HP противника). На шкале
+  /// опыта или недельной нормы то же движение было бы шумом: там значение
+  /// меняется само собой, а не в ответ на что-то.
+  final bool flashOnDecrease;
+
+  @override
+  State<PixelStatBar> createState() => _PixelStatBarState();
+}
+
+class _PixelStatBarState extends State<PixelStatBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _hit = AnimationController(
+    vsync: this,
+    duration: AppMotion.pop,
+  );
+
+  @override
+  void didUpdateWidget(PixelStatBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.flashOnDecrease) return;
+
+    // Реагируем на переход через границу сегмента, а не на любое изменение
+    // дроби: полоска дискретна, и вспышка на невидимой глазу убыли
+    // выглядела бы как случайное подёргивание.
+    final was = (oldWidget.value.clamp(0.0, 1.0) * oldWidget.segments).round();
+    final now = (widget.value.clamp(0.0, 1.0) * widget.segments).round();
+    if (now < was) _hit.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _hit.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filled = (value.clamp(0.0, 1.0) * segments).round();
+    final filled = (widget.value.clamp(0.0, 1.0) * widget.segments).round();
 
-    return Container(
-      height: height,
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: background ?? colors.surfaceVariant,
-        border: Border.all(color: colors.divider, width: AppRadius.pixelBorder),
-      ),
+    return AnimatedBuilder(
+      animation: _hit,
+      builder: (context, child) {
+        // Один короткий удар: вспышка гаснет к концу, а не пульсирует.
+        final t = _hit.value;
+        final punch = t == 0 ? 0.0 : math.sin(t * math.pi);
+
+        return Transform.translate(
+          // Тряска ровно на два пикселя и только по горизонтали: полоска
+          // не должна уезжать из строки, в которой стоит.
+          offset: Offset(punch * 2 * (t < 0.5 ? 1 : -1), 0),
+          child: Container(
+            height: widget.height,
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: widget.background ?? colors.surfaceVariant,
+              border: Border.all(
+                color: Color.lerp(
+                  colors.divider,
+                  widget.color,
+                  punch,
+                )!,
+                width: AppRadius.pixelBorder,
+              ),
+            ),
+            child: child,
+          ),
+        );
+      },
       child: Row(
         children: [
-          for (var i = 0; i < segments; i++)
+          for (var i = 0; i < widget.segments; i++)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.5),
                 child: AnimatedContainer(
                   duration: AppMotion.fast,
-                  color: i < filled ? color : Colors.transparent,
+                  color: i < filled ? widget.color : Colors.transparent,
                 ),
               ),
             ),
@@ -243,6 +352,7 @@ class PixelStatRow extends StatelessWidget {
     required this.color,
     this.trailing,
     this.segments = 20,
+    this.flashOnDecrease = false,
   });
 
   final String label;
@@ -250,6 +360,9 @@ class PixelStatRow extends StatelessWidget {
   final Color color;
   final String? trailing;
   final int segments;
+
+  /// См. [PixelStatBar.flashOnDecrease].
+  final bool flashOnDecrease;
 
   @override
   Widget build(BuildContext context) {
@@ -265,8 +378,62 @@ class PixelStatRow extends StatelessWidget {
           ],
         ),
         AppSpacing.gapXs,
-        PixelStatBar(value: value, color: color, segments: segments),
+        PixelStatBar(
+          value: value,
+          color: color,
+          segments: segments,
+          flashOnDecrease: flashOnDecrease,
+        ),
       ],
+    );
+  }
+}
+
+/// Число, которое накручивается от нуля до итогового значения.
+///
+/// Опыт, появившийся уже готовой цифрой, читается как надпись на экране;
+/// та же цифра, набранная на глазах, читается как начисление. Разница
+/// целиком в том, видно ли событие в момент, когда оно происходит.
+///
+/// Счётчик идёт целыми числами: дробный опыт не существует, и промежуточные
+/// «12.4» выдали бы, что это просто интерполяция.
+class PixelCountUp extends StatelessWidget {
+  const PixelCountUp({
+    super.key,
+    required this.value,
+    required this.builder,
+    this.duration = AppMotion.count,
+    this.delay = Duration.zero,
+  });
+
+  /// Итоговое значение.
+  final int value;
+
+  /// Как показать промежуточное число. Строку собирает вызывающий: у опыта
+  /// это «+12 XP» со своим склонением, и счётчик не должен об этом знать.
+  final Widget Function(BuildContext context, int current) builder;
+
+  final Duration duration;
+
+  /// Пауза перед началом накрутки — чтобы счётчик не стартовал раньше, чем
+  /// экран результата успел появиться.
+  final Duration delay;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: duration + delay,
+      // Быстро в начале, с замедлением к финальному числу: так последняя
+      // цифра успевает прочитаться, а не мелькает.
+      curve: Interval(
+        duration.inMicroseconds == 0
+            ? 0
+            : delay.inMicroseconds / (duration + delay).inMicroseconds,
+        1,
+        curve: AppMotion.standard,
+      ),
+      builder: (context, t, _) => builder(context, (value * t).round()),
     );
   }
 }
