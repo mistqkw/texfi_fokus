@@ -169,7 +169,7 @@ class _PixelBlocks extends StatelessWidget {
 /// Каждый уровень настроения имеет свою маску, поэтому переключатель
 /// выглядит как ретро-спрайт, а не как эмодзи. Рисуется общим
 /// [PixelSprite] — тем же, что и иконки нижней навигации.
-class _MoodFace extends StatelessWidget {
+class _MoodFace extends StatefulWidget {
   const _MoodFace({required this.mood, required this.color});
 
   final Mood mood;
@@ -219,12 +219,71 @@ class _MoodFace extends StatelessWidget {
     ],
   };
 
+  /// Промежуточный кадр перехода: глаза закрыты, рот — одна черта.
+  ///
+  /// Кроссфейд между двумя спрайтами дал бы на пару кадров полупрозрачную
+  /// кашу из обоих лиц — то есть ровно то, чего в пиксель-арте не бывает.
+  /// Ретро-спрайты переключаются кадрами, поэтому смена состояния идёт
+  /// через «моргание»: лицо закрывается и открывается уже новым.
+  static const List<String> _blink = [
+    '........',
+    '........',
+    '.xx..xx.',
+    '........',
+    '........',
+    '..xxxx..',
+    '........',
+    '........',
+  ];
+
+  @override
+  State<_MoodFace> createState() => _MoodFaceState();
+}
+
+class _MoodFaceState extends State<_MoodFace>
+    with SingleTickerProviderStateMixin {
+  /// Длительность совпадает с [AppMotion.pop] — тем же, чем отбивается
+  /// нажатие. Вибро-отклик даётся в момент смены состояния (см.
+  /// [_MoodSwitcherState._selectFromOffset]), а этот контроллер стартует в
+  /// том же кадре из `didUpdateWidget`: рука и глаз получают подтверждение
+  /// одновременно, а не с разбегом в пару кадров.
+  late final AnimationController _swap = AnimationController(
+    vsync: this,
+    duration: AppMotion.pop,
+  );
+
+  @override
+  void didUpdateWidget(_MoodFace oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mood != widget.mood) _swap.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _swap.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 96,
       child: Center(
-        child: PixelSprite(rows: _sprites[mood]!, color: color, size: 96),
+        child: AnimatedBuilder(
+          animation: _swap,
+          builder: (context, _) {
+            // Три кадра, а не плавная кривая: закрыт — закрыт — открыт.
+            // Спрайт всегда нарисован целиком и всегда непрозрачен.
+            final blinking = _swap.isAnimating && _swap.value < 0.45;
+            return PixelSprite(
+              rows: blinking
+                  ? _MoodFace._blink
+                  : _MoodFace._sprites[widget.mood]!,
+              color: widget.color,
+              size: 96,
+            );
+          },
+        ),
       ),
     );
   }

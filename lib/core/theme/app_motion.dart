@@ -14,6 +14,24 @@ abstract final class AppMotion {
   /// Переход между экранами с pixel-dissolve.
   static const Duration route = Duration(milliseconds: 260);
 
+  /// Короткий удар подтверждения: вспышка полоски HP при уроне, «поп»
+  /// чекбокса, просадка кнопки. Всё, что обязано успеть до того, как палец
+  /// оторвался от экрана.
+  static const Duration pop = Duration(milliseconds: 180);
+
+  /// Распад спрайта побеждённого противника: построчно снизу вверх.
+  /// Дольше [flourish] осознанно — это единственный момент, ради которого
+  /// стоит задержать взгляд, и он случается раз в сессию.
+  static const Duration dissolve = Duration(milliseconds: 900);
+
+  /// Накрутка числа опыта. Достаточно, чтобы цифру было видно растущей,
+  /// и мало, чтобы её не пришлось ждать.
+  static const Duration count = Duration(milliseconds: 700);
+
+  /// Появление редкого события во весь экран — повышение уровня, новый мир.
+  /// Единственная длительность в наборе, которая не обязана быть незаметной.
+  static const Duration reveal = Duration(milliseconds: 420);
+
   /// Пиксельные анимации не сглаживаем по времени сильнее, чем нужно:
   /// «ступенчатость» — часть стиля.
   static const Curve standard = Curves.easeOutCubic;

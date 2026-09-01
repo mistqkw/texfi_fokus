@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
+import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
@@ -73,7 +74,9 @@ class SessionPhotoViewer extends StatelessWidget {
   static Future<void> open(BuildContext context, String path) {
     Haptics.tap();
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => SessionPhotoViewer(path: path)),
+      // Тот же pixel-dissolve, что и на всех остальных переходах: экран
+      // просмотра — не исключение из общего визуального языка.
+      pixelDissolveRoute<void>(SessionPhotoViewer(path: path)),
     );
   }
 
