@@ -30,6 +30,7 @@ import 'game_labels.dart';
 import 'game_providers.dart';
 import 'game_sprites.dart';
 import 'game_widgets.dart';
+import 'level_up_overlay.dart';
 
 /// Экран боя: та же сессия, что и на обычном таймере, но показанная как
 /// столкновение с конкретным существом.
@@ -150,6 +151,13 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     }
 
     setState(() => _outcome = outcome);
+
+    // Повышение уровня показывается поверх разбора, а не вместо него: сначала
+    // человек видит, чем кончился заход, и только потом — что этот заход
+    // изменил в нём самом. Порядок обратный читался бы как награда,
+    // упавшая непонятно за что.
+    final level = outcome.encounter.leveledUpTo;
+    if (level != null && mounted) await LevelUpOverlay.show(context, level);
   }
 
   void _leave() {
@@ -300,6 +308,11 @@ class _BattleBody extends ConsumerWidget {
             // прочитано хоть одно описание.
             size: node.isBoss ? 168 : 132,
             alive: hp > 0,
+            // На паузе противник перестаёт «дышать». Это единственный
+            // честный способ показать, что остановилось именно время, а не
+            // просто перестала уменьшаться цифра: пока существо шевелится,
+            // экран выглядит идущим.
+            animate: state.running,
           ),
         ),
         // Запас под именем нарочно щедрый: у части силуэтов закрашена нижняя
@@ -326,6 +339,9 @@ class _BattleBody extends ConsumerWidget {
                 value: hpFraction,
                 color: tone,
                 trailing: l10n.encounterHp(hp, node.maxHp),
+                // Урон отбивается вспышкой: полоска, молча уехавшая на
+                // сегмент, не читается как попадание.
+                flashOnDecrease: true,
               ),
               AppSpacing.gapSm,
               Text(l10n.battleProgressHint, style: context.text.caption),
@@ -511,14 +527,20 @@ class _ResultBody extends StatelessWidget {
         if (encounter.xpGained > 0) ...[
           AppSpacing.gapXl,
           Center(
-            child: Text(
-              l10n.battleXpLine(encounter.xpGained),
-              textAlign: TextAlign.center,
-              style: context.text.counterMedium.copyWith(color: colors.accent),
+            child: PixelCountUp(
+              value: encounter.xpGained,
+              delay: AppMotion.normal,
+              builder: (context, current) => Text(
+                l10n.battleXpLine(current),
+                textAlign: TextAlign.center,
+                style: context.text.counterMedium.copyWith(
+                  color: colors.accent,
+                ),
+              ),
             ),
           )
               .animate()
-              .fadeIn(duration: AppMotion.slow, delay: AppMotion.normal)
+              .fadeIn(duration: AppMotion.normal, delay: AppMotion.normal)
               .slideY(begin: 0.4, end: 0, curve: AppMotion.snap),
         ],
 
