@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   file_selector_windows
+  screen_brightness_windows
   sqlite3_flutter_libs
 )
 

@@ -14,6 +14,23 @@
          API 33+ как раз для будильников и таймеров. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Приложение раздаётся .apk через GitHub Releases, магазина у него нет:
+         обновиться можно только скачав пакет и отдав его системному
+         установщику. Само оно ничего не устанавливает — разрешение лишь
+         позволяет показать штатный диалог установки, а согласие на установку
+         из этого источника Android спрашивает отдельно и каждый раз сам.
+
+         Для Google Play это разрешение пришлось бы убрать (политика магазина
+         запрещает самообновление в обход него) — но туда приложение и не
+         публикуется.
+
+         Файл установщику отдаётся через FileProvider, объявленный самим
+         open_filex (авторитет `${applicationId}.fileProvider.com.crazecoder.openfile`,
+         пути — в его `@xml/filepaths`, куда входит cache-path, то есть ровно
+         то, что возвращает getTemporaryDirectory()). Свой провайдер здесь не
+         объявляется намеренно: второй с тем же именем ломает слияние
+         манифестов, а нужды в нём нет. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:label="TexFi f0kus"

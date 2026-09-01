@@ -516,5 +516,19 @@
   "historyDeleteTitle": "Usunąć tę sesję?",
   "historyDeleteBody": "Zniknie z historii i przestanie liczyć się do statystyk. Dołączone zdjęcie też zostanie usunięte z urządzenia. Nie da się cofnąć.",
   "historyDeleted": "Sesja usunięta.",
-  "historyMinutes": "{minutes} min"
+  "historyMinutes": "{minutes} min",
+  "updateSectionTitle": "Aktualizacje",
+  "updateCheckButton": "Sprawdź aktualizacje",
+  "updateChecking": "Sprawdzanie…",
+  "updateUpToDate": "Masz najnowszą wersję.",
+  "updateAvailable": "Dostępna aktualizacja v{version}",
+  "updateDownloadButton": "Pobierz i zainstaluj",
+  "updateDownloading": "Pobieranie… {percent}%",
+  "updateInstallExplainerTitle": "Zaraz rozpocznie się instalacja",
+  "updateInstallExplainerBody": "Android poprosi o zgodę na instalację z tego źródła. To normalne dla aplikacji spoza Google Play — f0kus jest rozpowszechniany jako plik .apk przez GitHub.",
+  "updateInstallExplainerOk": "Rozumiem",
+  "updateFailed": "Nie udało się pobrać aktualizacji. Spróbuj później.",
+  "updateNoApk": "To wydanie nie ma jeszcze pakietu do instalacji.",
+  "timerQuietMode": "Tryb cichy",
+  "timerQuietModeHint": "Dotknij ekranu, aby wrócić"
 }

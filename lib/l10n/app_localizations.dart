@@ -2573,6 +2573,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} min'**
   String historyMinutes(int minutes);
+
+  /// No description provided for @updateSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
+  String get updateSectionTitle;
+
+  /// No description provided for @updateCheckButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get updateCheckButton;
+
+  /// No description provided for @updateChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get updateChecking;
+
+  /// No description provided for @updateUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the latest version.'**
+  String get updateUpToDate;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available v{version}'**
+  String updateAvailable(String version);
+
+  /// No description provided for @updateDownloadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and install'**
+  String get updateDownloadButton;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading… {percent}%'**
+  String updateDownloading(int percent);
+
+  /// No description provided for @updateInstallExplainerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About to install'**
+  String get updateInstallExplainerTitle;
+
+  /// No description provided for @updateInstallExplainerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Android will ask for permission to install from this source. That is normal for apps that do not come from Google Play — f0kus is distributed as an .apk from GitHub.'**
+  String get updateInstallExplainerBody;
+
+  /// No description provided for @updateInstallExplainerOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get updateInstallExplainerOk;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not download the update. Try again later.'**
+  String get updateFailed;
+
+  /// No description provided for @updateNoApk.
+  ///
+  /// In en, this message translates to:
+  /// **'This release has no package to install yet.'**
+  String get updateNoApk;
+
+  /// No description provided for @timerQuietMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet mode'**
+  String get timerQuietMode;
+
+  /// No description provided for @timerQuietModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap anywhere to return'**
+  String get timerQuietModeHint;
 }
 
 class _AppLocalizationsDelegate

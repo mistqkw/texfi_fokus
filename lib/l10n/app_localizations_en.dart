@@ -1407,4 +1407,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String historyMinutes(int minutes) {
     return '$minutes min';
   }
+
+  @override
+  String get updateSectionTitle => 'Updates';
+
+  @override
+  String get updateCheckButton => 'Check for updates';
+
+  @override
+  String get updateChecking => 'Checking…';
+
+  @override
+  String get updateUpToDate => 'You have the latest version.';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Update available v$version';
+  }
+
+  @override
+  String get updateDownloadButton => 'Download and install';
+
+  @override
+  String updateDownloading(int percent) {
+    return 'Downloading… $percent%';
+  }
+
+  @override
+  String get updateInstallExplainerTitle => 'About to install';
+
+  @override
+  String get updateInstallExplainerBody =>
+      'Android will ask for permission to install from this source. That is normal for apps that do not come from Google Play — f0kus is distributed as an .apk from GitHub.';
+
+  @override
+  String get updateInstallExplainerOk => 'Got it';
+
+  @override
+  String get updateFailed => 'Could not download the update. Try again later.';
+
+  @override
+  String get updateNoApk => 'This release has no package to install yet.';
+
+  @override
+  String get timerQuietMode => 'Quiet mode';
+
+  @override
+  String get timerQuietModeHint => 'Tap anywhere to return';
 }
