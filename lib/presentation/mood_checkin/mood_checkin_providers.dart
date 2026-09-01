@@ -22,6 +22,7 @@ class SessionDraft {
     this.category = TaskCategory.other,
     this.difficulty = TaskDifficulty.medium,
     this.moodEntryId,
+    this.photoPath,
   });
 
   final Mood mood;
@@ -32,6 +33,10 @@ class SessionDraft {
 
   /// Id записанной отметки настроения — к ней потом привяжется сессия.
   final String? moodEntryId;
+
+  /// Уже скопированный в документы приложения снимок. null — обычный случай:
+  /// фото полностью необязательно и ни на что в сессии не влияет.
+  final String? photoPath;
 
   bool get isValid => taskTitle.trim().isNotEmpty;
 
@@ -49,6 +54,8 @@ class SessionDraft {
     TaskCategory? category,
     TaskDifficulty? difficulty,
     String? moodEntryId,
+    String? photoPath,
+    bool clearPhoto = false,
   }) {
     return SessionDraft(
       mood: mood ?? this.mood,
@@ -57,6 +64,7 @@ class SessionDraft {
       category: category ?? this.category,
       difficulty: difficulty ?? this.difficulty,
       moodEntryId: moodEntryId ?? this.moodEntryId,
+      photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
     );
   }
 }
@@ -90,6 +98,10 @@ class SessionDraftNotifier extends StateNotifier<SessionDraft> {
 
   void setDifficulty(TaskDifficulty difficulty) =>
       state = state.copyWith(difficulty: difficulty);
+
+  void setPhoto(String path) => state = state.copyWith(photoPath: path);
+
+  void clearPhoto() => state = state.copyWith(clearPhoto: true);
 
   /// Записывает отметку настроения. Делается сразу после переключателя, ещё
   /// до выбора задачи: даже если пользователь передумает и закроет экран,

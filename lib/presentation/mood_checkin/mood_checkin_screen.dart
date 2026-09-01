@@ -19,6 +19,7 @@ import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
 import '../timer/recommendation_screen.dart';
 import 'mood_checkin_providers.dart';
+import 'session_photo_field.dart';
 
 /// Check-in перед сессией: настроение, затем задача. Два шага на одном
 /// экране — переключатель наверху остаётся виден, когда выбираешь задачу,
@@ -199,6 +200,12 @@ class _MoodCheckinScreenState extends ConsumerState<MoodCheckinScreen> {
                     .setDifficulty(difficulty);
               },
             ),
+            AppSpacing.gapXl,
+            // Фото идёт последним из необязательного: оно ни на
+            // рекомендацию, ни на игровой слой не влияет, и вставлять его
+            // между задачей и сложностью значило бы разрывать то, что
+            // действительно нужно заполнить.
+            const SessionPhotoField(),
             AppSpacing.gapXxl,
             PixelButton(label: l10n.moodContinue, onPressed: _continue),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers/data_providers.dart';
+import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/statistics.dart';
 import '../home/home_providers.dart';
 
@@ -86,5 +87,26 @@ final statsInterruptionProvider =
   return ref.watch(sessionRepositoryProvider).watchInterruptionStats(
         ref.watch(statsFromProvider),
         ref.watch(todayProvider),
+      );
+});
+
+/// Сессии выбранного периода — лента истории под графиками.
+///
+/// Живой поток, а не разовый запрос: удалённая сессия должна исчезать из
+/// списка сразу, а не после перезахода на вкладку.
+///
+/// Отбор идёт по уже загруженной ленте последних сессий, а не отдельным
+/// запросом с диапазоном: этот же поток слушают защитные проверки перед
+/// стартом, и две подписки на одни и те же строки означали бы два разных
+/// представления об истории.
+final statsSessionsProvider = StreamProvider<List<SessionEntity>>((ref) {
+  final from = ref.watch(statsFromProvider);
+  return ref
+      .watch(sessionRepositoryProvider)
+      .watchRecentSessions(limit: 200)
+      .map(
+        (sessions) => sessions
+            .where((session) => !session.startedAt.isBefore(from))
+            .toList(),
       );
 });

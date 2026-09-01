@@ -4,6 +4,13 @@ import '../entities/statistics.dart';
 abstract class SessionRepository {
   Future<void> addSession(SessionEntity session);
 
+  /// Убирает сессию из истории вместе с прикреплённым файлом фото.
+  ///
+  /// Удаление именно здесь, а не в интерфейсе: экран, который забыл бы
+  /// стереть картинку, оставил бы на устройстве файл, на который больше никто
+  /// не ссылается и который поэтому уже никогда не будет удалён.
+  Future<void> deleteSession(String id);
+
   Stream<List<SessionEntity>> watchRecentSessions({int limit = 20});
 
   Future<List<SessionEntity>> sessionsInRange(DateTime from, DateTime to);

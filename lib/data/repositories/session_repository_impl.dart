@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../core/photos/session_photo_store.dart';
 import '../../domain/entities/focus_technique.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/session_entity.dart';
@@ -10,9 +11,14 @@ import '../local/database.dart';
 import 'habit_repository_impl.dart' show dayOf;
 
 class SessionRepositoryImpl implements SessionRepository {
-  SessionRepositoryImpl(this._db);
+  SessionRepositoryImpl(this._db, {SessionPhotoStore? photos})
+      : _photos = photos ?? FileSessionPhotoStore();
 
   final AppDatabase _db;
+
+  /// Файлы прикреплённых фото. Подменяется в тестах: проверять, что мусор не
+  /// копится, нужно без обращения к настоящему диску.
+  final SessionPhotoStore _photos;
 
   SessionEntity _toEntity(Session row) {
     return SessionEntity(
@@ -37,6 +43,7 @@ class SessionRepositoryImpl implements SessionRepository {
       interruptionReason:
           InterruptionReason.fromKey(row.interruptionReason),
       sessionNote: row.sessionNote,
+      photoPath: row.photoPath,
     );
   }
 
@@ -64,9 +71,22 @@ class SessionRepositoryImpl implements SessionRepository {
             wasManualOverride: Value(session.wasManualOverride),
             interruptionReason: Value(session.interruptionReason?.key),
             sessionNote: Value(session.sessionNote),
+            photoPath: Value(session.photoPath),
           ),
           mode: InsertMode.insertOrReplace,
         );
+  }
+
+  @override
+  Future<void> deleteSession(String id) async {
+    final row = await (_db.select(_db.sessions)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (row == null) return;
+
+    // Сначала файл, потом строка. В обратном порядке сбой удаления файла
+    // оставил бы картинку без единственной записи, которая о ней знает.
+    await _photos.delete(row.photoPath);
+    await (_db.delete(_db.sessions)..where((t) => t.id.equals(id))).go();
   }
 
   @override

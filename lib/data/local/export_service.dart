@@ -5,15 +5,22 @@ import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/photos/session_photo_store.dart';
 import 'database.dart';
 
 /// Экспорт всей базы в один JSON-файл. Для офлайн-приложения без облака это
 /// единственная страховка от потери данных — и единственный способ
 /// перенести историю на другое устройство.
 class ExportService {
-  ExportService(this._db);
+  ExportService(this._db, {SessionPhotoStore? photos})
+      : _photos = photos ?? FileSessionPhotoStore();
 
   final AppDatabase _db;
+
+  /// Нужен только на импорте «заменить»: стирая историю, надо стереть и
+  /// прикреплённые к ней картинки, иначе на устройстве останется каталог
+  /// файлов, на которые уже ничто не ссылается.
+  final SessionPhotoStore _photos;
 
   /// Версия формата. Импорт по ней понимает, как читать файл, не гадая по
   /// содержимому.
@@ -136,10 +143,28 @@ class ExportService {
       tasks: tasks.length,
     );
 
+    // Пути к фото, которые вот-вот исчезнут вместе с историей. Собираются до
+    // транзакции: внутри неё строк уже не будет, а удалять файлы под
+    // транзакцией и вовсе незачем — они не откатываются.
+    final wipedPhotoPaths = merge
+        ? const <String>[]
+        : (await _db.select(_db.sessions).get())
+            .map((row) => row.photoPath)
+            .whereType<String>()
+            .toList();
+
     // Всё одной транзакцией: наполовину импортированная база хуже, чем
     // не импортированная вовсе.
     await _db.transaction(() async {
       if (!merge) {
+        // Файлы фото удаляются до строк: после `delete` путей уже не узнать.
+        // Пути из чужого бэкапа при этом никого не трогают — они указывают на
+        // файлы другого устройства, которых здесь просто нет, и удаление
+        // отсутствующего файла ошибкой не считается.
+        for (final path in wipedPhotoPaths) {
+          await _photos.delete(path);
+        }
+
         await _db.delete(_db.habitCompletions).go();
         await _db.delete(_db.habitFreezes).go();
         await _db.delete(_db.habits).go();

@@ -377,6 +377,9 @@ final saveSessionProvider = Provider<
       interruptionReason:
           state.completedFully ? null : interruptionReason,
       sessionNote: (note ?? '').trim().isEmpty ? null : note!.trim(),
+      // Фото прикладывалось до старта и просто едет с сессией в историю:
+      // ни на рекомендацию, ни на игровой слой оно не влияет.
+      photoPath: draft.photoPath,
     );
 
     await ref.read(sessionRepositoryProvider).addSession(session);

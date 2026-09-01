@@ -10,12 +10,15 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
+import '../../data/providers/data_providers.dart';
+import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/statistics.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_heatmap.dart';
 import '../shared/pixel_shadow.dart';
+import '../shared/session_photo.dart';
 import 'statistics_providers.dart';
 
 class StatisticsScreen extends ConsumerWidget {
@@ -52,6 +55,8 @@ class StatisticsScreen extends ConsumerWidget {
             _PunishmentSection(),
             AppSpacing.gapXl,
             _InterruptionSection(),
+            AppSpacing.gapXl,
+            _HistorySection(),
           ],
         ),
       ),
@@ -664,6 +669,145 @@ class _InterruptionSection extends ConsumerWidget {
                 ),
         ),
       ],
+    );
+  }
+}
+
+/// Лента последних сессий за выбранный период.
+///
+/// Появилась вместе с фото: снимок нужно где-то показывать, а до сих пор
+/// история сессий нигде не отображалась — статистика сводила их в графики, и
+/// отдельную сессию увидеть было негде. Лента закрывает и это: «что именно я
+/// делал на той неделе» — вопрос, на который графики по определению не
+/// отвечают.
+class _HistorySection extends ConsumerWidget {
+  const _HistorySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final sessions = ref.watch(statsSessionsProvider).valueOrNull ?? const [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l10n.historyTitle, style: context.text.sectionTitle),
+        AppSpacing.gapMd,
+        if (sessions.isEmpty)
+          PixelCard(
+            child: Text(
+              l10n.historyEmpty,
+              style: context.text.body,
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          for (final session in sessions)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: _SessionTile(session: session),
+            ),
+      ],
+    );
+  }
+}
+
+class _SessionTile extends ConsumerWidget {
+  const _SessionTile({required this.session});
+
+  final SessionEntity session;
+
+  /// Удаление подтверждается и объясняет последствия целиком, включая
+  /// удаление файла: молча стереть с устройства картинку, которую человек
+  /// снимал сам, было бы неприятным сюрпризом.
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    Haptics.tap();
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.historyDeleteTitle),
+        content: Text(l10n.historyDeleteBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.historyDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref.read(sessionRepositoryProvider).deleteSession(session.id);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.historyDeleted)));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final date = MaterialLocalizations.of(context).formatMediumDate(
+      session.startedAt,
+    );
+
+    return PixelCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          // Превью только если фото есть. Без него строка выглядит ровно так
+          // же, как выглядела бы без всей этой функции.
+          if (session.hasPhoto) ...[
+            SessionPhotoThumbnail(
+              path: session.photoPath!,
+              onTap: () => SessionPhotoViewer.open(context, session.photoPath!),
+            ),
+            AppSpacing.wGapMd,
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  session.taskTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.body,
+                ),
+                AppSpacing.gapXs,
+                Text(
+                  '$date · ${l10n.historyMinutes(session.actualFocusMinutes)}'
+                  ' · ${session.category.label(l10n)}',
+                  style: context.text.caption,
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.wGapSm,
+          // Прерванная сессия помечается, но не осуждается: точка цветом
+          // предупреждения, без слова «провал».
+          Container(
+            width: 8,
+            height: 8,
+            color: session.outcome == SessionOutcome.completed
+                ? colors.success
+                : colors.warning,
+          ),
+          IconButton(
+            tooltip: l10n.historyDelete,
+            icon: Icon(Icons.close, size: 18, color: colors.textTertiary),
+            onPressed: () => _confirmDelete(context, ref),
+          ),
+        ],
+      ),
     );
   }
 }

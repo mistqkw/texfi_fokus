@@ -164,6 +164,11 @@ void main() {
     expect(session.interruptionReason, isNull);
     expect(session.sessionNote, isNull);
 
+    // v6: у сессии, записанной задолго до фото, поле просто пустое. Это
+    // «фото не прикладывали», а не потеря данных, и обязательным оно не
+    // стало ни на одну старую строку.
+    expect(session.photoPath, isNull);
+
     // Соседние таблицы миграцию тоже переживают.
     expect(await db.select(db.habitCompletions).get(), hasLength(1));
 
@@ -217,11 +222,13 @@ void main() {
             endedAt: DateTime(2026, 2, 1, 10),
             contextKey: 'good|work|hard|morning|5',
             sessionNote: const Value('🔥 пошло'),
+            photoPath: const Value('/photos/desk.jpg'),
           ),
         );
 
     final stored = await db.select(db.sessions).getSingle();
     expect(stored.sessionNote, '🔥 пошло');
+    expect(stored.photoPath, '/photos/desk.jpg');
 
     await db.into(db.habitFreezes).insert(
           HabitFreezesCompanion.insert(
@@ -250,6 +257,9 @@ void main() {
     expect(sessionColumns, contains('actual_focus_seconds'));
     expect(sessionColumns, contains('context_key'));
     expect(sessionColumns, isNot(contains('xp')));
+    // Фото приезжает одной добавленной колонкой и ничем больше: таблица не
+    // пересоздавалась, история сессий на месте.
+    expect(sessionColumns, contains('photo_path'));
 
     final weightColumns = await columnsOf('recommendation_weights');
     expect(weightColumns, isNot(contains('xp')));

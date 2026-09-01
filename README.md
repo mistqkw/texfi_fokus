@@ -37,12 +37,14 @@
 - 🔥 **Streaks that don't lie** — an unfinished day doesn't break the streak until the day is actually over
 - 🗒 **Plan for the day** — two or three tasks in rough order, offered first at the next check-in, each with an optional checklist of up to five steps you tick off while the timer runs
 - 🔁 **One more like this** — restart a finished session with the same settings, without going through the check-in again
-- 📊 **Statistics** — a pixel-art contribution heatmap, focus minutes per day, a breakdown by task category, habit completion rates, how often each penalty actually bit, why sessions broke off, and the most useful chart of all: which mood you actually finish sessions in
+- ✨ **A character that visibly grows** — eight rank titles from *a spark* to *a small sun*, and six drawn stages the spark passes through on the way. The whole ladder is on screen from level one, dimmed but visible: what you will look like at level 21 is not a surprise to be unlocked, it is the reason to come back
+- 🖼 **A photo of what you actually worked on** — optionally attach a shot of the notebook, the screen, the desk to a session. It is stored on the device, shown as a small preview beside the task in history, opens full-size on a tap, and is deleted from disk together with the session. Skip it and nothing about the app changes
+- 📊 **Statistics** — a pixel-art contribution heatmap, focus minutes per day, a breakdown by task category, habit completion rates, how often each penalty actually bit, why sessions broke off, a plain list of the sessions themselves, and the most useful chart of all: which mood you actually finish sessions in
 - 🔔 **Local reminders** — per-habit reminders plus an end-of-day summary: what's still open, and on a productive day the sessions, focus time and dominant mood behind it
 - 💾 **Export and import JSON** — everything you've logged, in one file, and back again on a new device — merging with what's there or replacing it, after a warning that says plainly which one wipes your history
 - 🌍 **Languages** — English, Русский, Polski, Українська, following the system by default
 - 🎨 **Two themes, five accents** — pixel-art in the dark (black, grey, `#4a7dfb`) and a warm orange-and-beige light theme, with a preset accent tone you can swap without the palette losing its footing
-- 🎮 **An optional game on top** — switch the tracker into game mode and the same sessions become a fight. Drifters (creatures that pull your attention away) stand on a map of worlds with a boss at the end of each; a session's minutes are damage, finished habits and sessions are XP, and your character levels up through four visual stages. Bosses only take real damage from sessions started in **full f0kus** — and if you abandon enough of those, the boss heals and says so plainly instead of quietly rolling your progress back. Turning game mode off hides all of it and keeps every point of it
+- 🎮 **An optional game on top** — offered as a plain choice on first run and switchable in Settings ever after. In game mode the same sessions become a fight: nine drifters, three to a world, each with its own name, silhouette and one-line description, stand on a map of three named worlds with a boss at the end of each. A session against one opens a **battle screen** where the creature fills the screen and its HP bar drains in step with your focus time, so the damage is something you watch happen rather than read about afterwards. Bosses only take real damage from sessions started in **full f0kus**, and the screen says up front what running out of stamina costs — the boss heals to full — instead of quietly rolling your progress back. Stop early and the drifter simply held its ground: no scolding, and the XP you earned is still yours. Turning game mode off hides all of it and keeps every point of it
 - 🔕 **A timer end you can't miss** — the completion notification is handed to the system when the session starts, not fired by a live timer, so it survives the app being closed or the screen locked; it waits in the tray instead of auto-dismissing, and the vibration goes straight to the motor so silent mode can't swallow it
 - 📴 **Fully offline** — no account, no cloud, no telemetry. The data never leaves the device
 
@@ -93,6 +95,7 @@ deterministic pixel speckle so the dark theme reads as a surface rather than a v
 - **fl_chart** — bar and pie charts, restyled square to match the pixel language
 - **flutter_local_notifications + timezone** — scheduled habit reminders
 - **vibration** — custom haptic patterns, with the built-in `HapticFeedback` as the fallback wherever there's no motor
+- **image_picker** — the camera and gallery behind the optional session photo. The picked file is copied into the app's own documents directory and never leaves the device; on platforms without an implementation the button simply isn't shown
 - **Bundled fonts** — Press Start 2P and Inter ship in `assets/fonts` rather than being fetched at runtime. The app is offline-only; when the download quietly failed, Flutter fell back to the system font and every heading and counter stopped being pixel-art at once
 
 ## Project structure
@@ -103,6 +106,7 @@ lib/
     constants/      app identity constants
     haptics/        vibration vocabulary (per-mood patterns, dial ticks)
     notifications/  local notification scheduling
+    photos/         session photo storage and picking (copy in, delete out)
     theme/          palettes, typography, spacing, radii, motion, transitions
     utils/          duration formatting
   data/
@@ -117,16 +121,20 @@ lib/
                     engine interface
     repositories/   abstract repository interfaces
   presentation/
-    onboarding/     first run: concept, theme, first habit, notifications
+    onboarding/     first run: concept, theme, first habit, notifications,
+                    tracker-or-game choice (new installs only)
     home/           streak, today's habits, focus summary
     mood_checkin/   the four-state mood switch and task pick
     planner/        day plan and the per-task checklist editor
     timer/          recommendation, manual setup, the dial screen,
-                    session wrap-up (rating, interruption reason, note)
+                    session wrap-up (rating, interruption reason, note),
+                    the shared session-finish flow and alarm sync
     habits/         habit list and editor (punishment, reward, frequency)
-    statistics/     heatmap, charts, mood-vs-outcome, penalties, interruptions
-    game/           the optional RPG layer: map, character, encounter UI,
-                    drifter and boss sprites, game providers
+    statistics/     heatmap, charts, mood-vs-outcome, penalties,
+                    interruptions, session history with photo previews
+    game/           the optional RPG layer: map, character and its stage
+                    ladder, the battle screen, encounter UI, nine drifter
+                    and three boss sprites, game providers
     settings/       theme, accent, haptics, language, notifications,
                     pace guards, game mode, export and import
     shared/         pixel widget kit, app shell, notification sync

@@ -2888,6 +2888,17 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2910,6 +2921,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     wasManualOverride,
     interruptionReason,
     sessionNote,
+    photoPath,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3092,6 +3104,12 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         ),
       );
     }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
     return context;
   }
 
@@ -3181,6 +3199,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.string,
         data['${effectivePrefix}session_note'],
       ),
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
     );
   }
 
@@ -3241,6 +3263,14 @@ class Session extends DataClass implements Insertable<Session> {
 
   /// Короткая заметка «как прошло». null — пропустили.
   final String? sessionNote;
+
+  /// Путь к прикреплённому фото — тетрадь, экран, стол. null — фото не
+  /// прикладывали, и это обычный случай.
+  ///
+  /// Хранится путь, а не сам файл: картинка в BLOB раздула бы базу, которую
+  /// приложение экспортирует и импортирует целиком. Файл лежит в документах
+  /// приложения и никуда не уходит — принцип «всё локально» сохраняется.
+  final String? photoPath;
   const Session({
     required this.id,
     this.taskId,
@@ -3262,6 +3292,7 @@ class Session extends DataClass implements Insertable<Session> {
     required this.wasManualOverride,
     this.interruptionReason,
     this.sessionNote,
+    this.photoPath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3293,6 +3324,9 @@ class Session extends DataClass implements Insertable<Session> {
     }
     if (!nullToAbsent || sessionNote != null) {
       map['session_note'] = Variable<String>(sessionNote);
+    }
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
     }
     return map;
   }
@@ -3327,6 +3361,9 @@ class Session extends DataClass implements Insertable<Session> {
       sessionNote: sessionNote == null && nullToAbsent
           ? const Value.absent()
           : Value(sessionNote),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
     );
   }
 
@@ -3362,6 +3399,7 @@ class Session extends DataClass implements Insertable<Session> {
         json['interruptionReason'],
       ),
       sessionNote: serializer.fromJson<String?>(json['sessionNote']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
     );
   }
   @override
@@ -3388,6 +3426,7 @@ class Session extends DataClass implements Insertable<Session> {
       'wasManualOverride': serializer.toJson<bool>(wasManualOverride),
       'interruptionReason': serializer.toJson<String?>(interruptionReason),
       'sessionNote': serializer.toJson<String?>(sessionNote),
+      'photoPath': serializer.toJson<String?>(photoPath),
     };
   }
 
@@ -3412,6 +3451,7 @@ class Session extends DataClass implements Insertable<Session> {
     bool? wasManualOverride,
     Value<String?> interruptionReason = const Value.absent(),
     Value<String?> sessionNote = const Value.absent(),
+    Value<String?> photoPath = const Value.absent(),
   }) => Session(
     id: id ?? this.id,
     taskId: taskId.present ? taskId.value : this.taskId,
@@ -3435,6 +3475,7 @@ class Session extends DataClass implements Insertable<Session> {
         ? interruptionReason.value
         : this.interruptionReason,
     sessionNote: sessionNote.present ? sessionNote.value : this.sessionNote,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
   );
   Session copyWithCompanion(SessionsCompanion data) {
     return Session(
@@ -3478,6 +3519,7 @@ class Session extends DataClass implements Insertable<Session> {
       sessionNote: data.sessionNote.present
           ? data.sessionNote.value
           : this.sessionNote,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
     );
   }
 
@@ -3503,13 +3545,14 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('wasRecommended: $wasRecommended, ')
           ..write('wasManualOverride: $wasManualOverride, ')
           ..write('interruptionReason: $interruptionReason, ')
-          ..write('sessionNote: $sessionNote')
+          ..write('sessionNote: $sessionNote, ')
+          ..write('photoPath: $photoPath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     taskId,
     taskTitle,
@@ -3530,7 +3573,8 @@ class Session extends DataClass implements Insertable<Session> {
     wasManualOverride,
     interruptionReason,
     sessionNote,
-  );
+    photoPath,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3554,7 +3598,8 @@ class Session extends DataClass implements Insertable<Session> {
           other.wasRecommended == this.wasRecommended &&
           other.wasManualOverride == this.wasManualOverride &&
           other.interruptionReason == this.interruptionReason &&
-          other.sessionNote == this.sessionNote);
+          other.sessionNote == this.sessionNote &&
+          other.photoPath == this.photoPath);
 }
 
 class SessionsCompanion extends UpdateCompanion<Session> {
@@ -3578,6 +3623,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<bool> wasManualOverride;
   final Value<String?> interruptionReason;
   final Value<String?> sessionNote;
+  final Value<String?> photoPath;
   final Value<int> rowid;
   const SessionsCompanion({
     this.id = const Value.absent(),
@@ -3600,6 +3646,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.wasManualOverride = const Value.absent(),
     this.interruptionReason = const Value.absent(),
     this.sessionNote = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SessionsCompanion.insert({
@@ -3623,6 +3670,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.wasManualOverride = const Value.absent(),
     this.interruptionReason = const Value.absent(),
     this.sessionNote = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        taskTitle = Value(taskTitle),
@@ -3659,6 +3707,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<bool>? wasManualOverride,
     Expression<String>? interruptionReason,
     Expression<String>? sessionNote,
+    Expression<String>? photoPath,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3685,6 +3734,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (wasManualOverride != null) 'was_manual_override': wasManualOverride,
       if (interruptionReason != null) 'interruption_reason': interruptionReason,
       if (sessionNote != null) 'session_note': sessionNote,
+      if (photoPath != null) 'photo_path': photoPath,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3710,6 +3760,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<bool>? wasManualOverride,
     Value<String?>? interruptionReason,
     Value<String?>? sessionNote,
+    Value<String?>? photoPath,
     Value<int>? rowid,
   }) {
     return SessionsCompanion(
@@ -3733,6 +3784,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       wasManualOverride: wasManualOverride ?? this.wasManualOverride,
       interruptionReason: interruptionReason ?? this.interruptionReason,
       sessionNote: sessionNote ?? this.sessionNote,
+      photoPath: photoPath ?? this.photoPath,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3800,6 +3852,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (sessionNote.present) {
       map['session_note'] = Variable<String>(sessionNote.value);
     }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3829,6 +3884,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('wasManualOverride: $wasManualOverride, ')
           ..write('interruptionReason: $interruptionReason, ')
           ..write('sessionNote: $sessionNote, ')
+          ..write('photoPath: $photoPath, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7127,6 +7183,7 @@ typedef $$SessionsTableCreateCompanionBuilder =
       Value<bool> wasManualOverride,
       Value<String?> interruptionReason,
       Value<String?> sessionNote,
+      Value<String?> photoPath,
       Value<int> rowid,
     });
 typedef $$SessionsTableUpdateCompanionBuilder =
@@ -7151,6 +7208,7 @@ typedef $$SessionsTableUpdateCompanionBuilder =
       Value<bool> wasManualOverride,
       Value<String?> interruptionReason,
       Value<String?> sessionNote,
+      Value<String?> photoPath,
       Value<int> rowid,
     });
 
@@ -7260,6 +7318,11 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get sessionNote => $composableBuilder(
     column: $table.sessionNote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -7372,6 +7435,11 @@ class $$SessionsTableOrderingComposer
     column: $table.sessionNote,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SessionsTableAnnotationComposer
@@ -7462,6 +7530,9 @@ class $$SessionsTableAnnotationComposer
     column: $table.sessionNote,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
 }
 
 class $$SessionsTableTableManager
@@ -7512,6 +7583,7 @@ class $$SessionsTableTableManager
                 Value<bool> wasManualOverride = const Value.absent(),
                 Value<String?> interruptionReason = const Value.absent(),
                 Value<String?> sessionNote = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion(
                 id: id,
@@ -7534,6 +7606,7 @@ class $$SessionsTableTableManager
                 wasManualOverride: wasManualOverride,
                 interruptionReason: interruptionReason,
                 sessionNote: sessionNote,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7558,6 +7631,7 @@ class $$SessionsTableTableManager
                 Value<bool> wasManualOverride = const Value.absent(),
                 Value<String?> interruptionReason = const Value.absent(),
                 Value<String?> sessionNote = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion.insert(
                 id: id,
@@ -7580,6 +7654,7 @@ class $$SessionsTableTableManager
                 wasManualOverride: wasManualOverride,
                 interruptionReason: interruptionReason,
                 sessionNote: sessionNote,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
