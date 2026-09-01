@@ -15,7 +15,11 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/update/update_service.dart';
 import '../../core/utils/duration_format.dart';
+import '../../data/local/backup_scheduler.dart';
 import '../../data/providers/data_providers.dart';
+import '../../data/settings/custom_presets_store.dart';
+import '../../domain/entities/custom_preset.dart';
+import '../../domain/entities/session_guards.dart';
 import '../game/character_screen.dart';
 import '../game/game_providers.dart';
 import '../game/game_sprites.dart';
@@ -66,6 +70,18 @@ class SettingsScreen extends ConsumerWidget {
     final next = _shortBreakSteps[(index + 1) % _shortBreakSteps.length];
     Haptics.tap();
     await ref.read(shortBreakMinutesProvider.notifier).set(next);
+  }
+
+  /// Порог серии прерываний перебирается тапом, как и короткий перерыв
+  /// рядом: значений всего четыре, и отдельный слайдер ради них был бы
+  /// тяжелее самого выбора.
+  Future<void> _cycleBurnoutStreak(WidgetRef ref) async {
+    final current = ref.read(burnoutStreakThresholdProvider);
+    final next = current >= SessionGuards.maxStreakThreshold
+        ? SessionGuards.minStreakThreshold
+        : current + 1;
+    Haptics.tap();
+    await ref.read(burnoutStreakThresholdProvider.notifier).set(next);
   }
 
   Future<void> _pickNightCapHour(BuildContext context, WidgetRef ref) async {
@@ -159,6 +175,10 @@ class SettingsScreen extends ConsumerWidget {
     final shortBreak = ref.watch(shortBreakMinutesProvider);
     final nightCap = ref.watch(nightCapEnabledProvider);
     final nightCapHour = ref.watch(nightCapHourProvider);
+    final burnoutStreak = ref.watch(burnoutStreakThresholdProvider);
+    final weekStart = ref.watch(weekStartDayProvider);
+    final autoBackup = ref.watch(autoBackupEnabledProvider);
+    final lastBackup = ref.watch(lastAutoBackupProvider);
 
     return PixelBackground(
       child: Scaffold(
@@ -390,6 +410,20 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     onTap: () => _cycleShortBreak(ref),
                   ),
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.repeat,
+                      size: 20,
+                      color: context.colors.accent,
+                    ),
+                    title: l10n.settingsBurnoutStreakTitle,
+                    subtitle: l10n.settingsBurnoutStreakHint,
+                    trailing: Text(
+                      '$burnoutStreak',
+                      style: context.text.counterMedium,
+                    ),
+                    onTap: () => _cycleBurnoutStreak(ref),
+                  ),
                   PixelSwitchTile(
                     value: nightCap,
                     title: l10n.settingsNightCap,
@@ -442,9 +476,62 @@ class SettingsScreen extends ConsumerWidget {
                     subtitle: l10n.settingsImportSubtitle,
                     onTap: () => _import(context, ref),
                   ),
+                  PixelSwitchTile(
+                    value: autoBackup,
+                    title: l10n.settingsAutoBackupTitle,
+                    subtitle: l10n.settingsAutoBackupHint,
+                    onChanged: (value) {
+                      Haptics.tap();
+                      ref.read(autoBackupEnabledProvider.notifier).set(value);
+                    },
+                  ),
+                  // Дата последней копии — под тумблером: обещание «раз в
+                  // неделю» без единого подтверждения проверить нечем.
+                  if (autoBackup)
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.sm),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          lastBackup == null
+                              ? l10n.settingsAutoBackupNever
+                              : MaterialLocalizations.of(context)
+                                  .formatShortDate(lastBackup),
+                          style: context.text.caption,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
+            AppSpacing.gapXl,
+            PixelSectionHeader(title: l10n.settingsWeekStartTitle),
+            PixelCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.settingsWeekStartHint,
+                    style: context.text.caption,
+                  ),
+                  AppSpacing.gapMd,
+                  for (final day in WeekStartDay.values)
+                    PixelRadioTile<WeekStartDay>(
+                      value: day,
+                      groupValue: weekStart,
+                      title: day == WeekStartDay.monday
+                          ? l10n.settingsWeekStartMonday
+                          : l10n.settingsWeekStartSunday,
+                      onChanged: (value) {
+                        Haptics.tap();
+                        ref.read(weekStartDayProvider.notifier).set(value);
+                      },
+                    ),
+                ],
+              ),
+            ),
+            AppSpacing.gapXl,
+            const _PresetsSection(),
             // Блок обновлений сам исчезает там, где обновиться нельзя:
             // заголовок секции поэтому тоже под тем же условием, иначе на
             // десктопе остался бы висеть заголовок без содержимого.
@@ -733,6 +820,270 @@ class _GameModeSection extends ConsumerWidget {
           ),
         ),
         AppSpacing.gapXl,
+      ],
+    );
+  }
+}
+
+/// Блок пользовательских пресетов длительностей.
+///
+/// Стоит рядом с блоком защиты от выгорания и настройками недели, а не в
+/// «данных»: всё это — про то, как приложение считает и предлагает работу,
+/// а не про файлы.
+class _PresetsSection extends ConsumerWidget {
+  const _PresetsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    final presets = ref.watch(customPresetsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PixelSectionHeader(title: l10n.settingsPresetsTitle),
+        PixelCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.settingsPresetsHint, style: context.text.caption),
+              AppSpacing.gapMd,
+              if (presets.isEmpty)
+                Text(l10n.settingsPresetsEmpty, style: context.text.body)
+              else
+                for (final preset in presets)
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.hourglass,
+                      size: 20,
+                      color: colors.accent,
+                    ),
+                    title: preset.name,
+                    subtitle: '${preset.focusMinutes}/${preset.breakMinutes}'
+                        ' × ${preset.cycles}',
+                    trailing: IconButton(
+                      tooltip: l10n.settingsPresetDelete,
+                      icon: PixelSprite(
+                        rows: PixelSprites.trash,
+                        size: 16,
+                        color: colors.textTertiary,
+                      ),
+                      onPressed: () {
+                        Haptics.tap();
+                        ref
+                            .read(customPresetsProvider.notifier)
+                            .remove(preset.id);
+                      },
+                    ),
+                    onTap: () => _editPreset(context, ref, preset),
+                  ),
+              AppSpacing.gapMd,
+              PixelButton(
+                label: l10n.settingsPresetAdd,
+                onPressed: presets.length >= CustomPreset.maxPresets
+                    ? null
+                    : () => _editPreset(context, ref, null),
+              ),
+              if (presets.length >= CustomPreset.maxPresets) ...[
+                AppSpacing.gapSm,
+                Text(
+                  l10n.settingsPresetLimitReached,
+                  style: context.text.caption,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// [existing] null — заводим новый пресет.
+  Future<void> _editPreset(
+    BuildContext context,
+    WidgetRef ref,
+    CustomPreset? existing,
+  ) async {
+    final result = await showModalBottomSheet<CustomPreset>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _PresetEditor(preset: existing),
+    );
+    if (result == null) return;
+
+    final notifier = ref.read(customPresetsProvider.notifier);
+    if (existing == null) {
+      await notifier.add(result);
+    } else {
+      await notifier.update(result);
+    }
+  }
+}
+
+class _PresetEditor extends StatefulWidget {
+  const _PresetEditor({this.preset});
+
+  final CustomPreset? preset;
+
+  @override
+  State<_PresetEditor> createState() => _PresetEditorState();
+}
+
+class _PresetEditorState extends State<_PresetEditor> {
+  late final TextEditingController _name =
+      TextEditingController(text: widget.preset?.name ?? '');
+  late int _focus = widget.preset?.focusMinutes ?? 35;
+  late int _break = widget.preset?.breakMinutes ?? 7;
+  late int _cycles = widget.preset?.cycles ?? 3;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final name = _name.text.trim();
+    Navigator.of(context).pop(
+      CustomPreset(
+        id: widget.preset?.id ?? CustomPresetsNotifier.newId(),
+        // Пустое имя — не повод отказывать: подставляем сами длительности,
+        // они описывают пресет не хуже придуманного названия.
+        name: name.isEmpty ? '$_focus/$_break' : name,
+        focusMinutes: _focus,
+        breakMinutes: _break,
+        cycles: _cycles,
+      ).normalized(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: AppSpacing.page,
+        right: AppSpacing.page,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.page,
+        top: AppSpacing.page,
+      ),
+      child: PixelCard(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              widget.preset == null
+                  ? l10n.settingsPresetAdd
+                  : l10n.settingsPresetEdit,
+              style: context.text.title,
+            ),
+            AppSpacing.gapLg,
+            TextField(
+              controller: _name,
+              maxLength: 24,
+              decoration: InputDecoration(
+                labelText: l10n.settingsPresetName,
+                hintText: l10n.settingsPresetNameHint,
+              ),
+            ),
+            AppSpacing.gapMd,
+            _PresetStepper(
+              label: l10n.recommendationFocusLength,
+              value: _focus,
+              min: CustomPreset.minFocusMinutes,
+              max: CustomPreset.maxFocusMinutes,
+              step: 5,
+              onChanged: (v) => setState(() => _focus = v),
+            ),
+            AppSpacing.gapSm,
+            _PresetStepper(
+              label: l10n.recommendationBreakLength,
+              value: _break,
+              min: 0,
+              max: CustomPreset.maxBreakMinutes,
+              step: 1,
+              onChanged: (v) => setState(() => _break = v),
+            ),
+            AppSpacing.gapSm,
+            _PresetStepper(
+              label: l10n.recommendationCycles,
+              value: _cycles,
+              min: 1,
+              max: CustomPreset.maxCycles,
+              step: 1,
+              onChanged: (v) => setState(() => _cycles = v),
+            ),
+            AppSpacing.gapXl,
+            PixelButton(label: l10n.commonSave, onPressed: _save),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PresetStepper extends StatelessWidget {
+  const _PresetStepper({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.step,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final int min;
+  final int max;
+  final int step;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Row(
+      children: [
+        Expanded(child: Text(label, style: context.text.body)),
+        IconButton(
+          icon: PixelSprite(
+            rows: PixelSprites.minus,
+            size: 14,
+            color: value > min ? colors.accent : colors.textTertiary,
+          ),
+          onPressed: value <= min
+              ? null
+              : () {
+                  Haptics.tap();
+                  onChanged((value - step).clamp(min, max));
+                },
+        ),
+        SizedBox(
+          width: 48,
+          child: Text(
+            '$value',
+            textAlign: TextAlign.center,
+            style: context.text.counterMedium,
+          ),
+        ),
+        IconButton(
+          icon: PixelSprite(
+            rows: PixelSprites.plus,
+            size: 14,
+            color: value < max ? colors.accent : colors.textTertiary,
+          ),
+          onPressed: value >= max
+              ? null
+              : () {
+                  Haptics.tap();
+                  onChanged((value + step).clamp(min, max));
+                },
+        ),
       ],
     );
   }
