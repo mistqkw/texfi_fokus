@@ -44,6 +44,11 @@ abstract class GameRepository {
     required TaskDifficulty difficulty,
     required Mood mood,
     required bool completedFully,
+
+    /// Разовая надбавка поверх посчитанного опыта сессии. Ограничивается
+    /// потолком внутри реализации и не участвует ни в уроне, ни в весах
+    /// движка рекомендаций.
+    int bonusXp,
   });
 
   /// Опыт за закрытую привычку. Урона противнику не наносит: привычка — это

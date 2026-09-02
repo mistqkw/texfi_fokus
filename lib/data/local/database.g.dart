@@ -5025,6 +5025,19 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _goldenMeta = const VerificationMeta('golden');
+  @override
+  late final GeneratedColumn<bool> golden = GeneratedColumn<bool>(
+    'golden',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("golden" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _lastFoughtAtMeta = const VerificationMeta(
     'lastFoughtAt',
   );
@@ -5047,6 +5060,7 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
     maxHp,
     currentHp,
     playerHp,
+    golden,
     lastFoughtAt,
   ];
   @override
@@ -5126,6 +5140,12 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
         playerHp.isAcceptableOrUnknown(data['player_hp']!, _playerHpMeta),
       );
     }
+    if (data.containsKey('golden')) {
+      context.handle(
+        _goldenMeta,
+        golden.isAcceptableOrUnknown(data['golden']!, _goldenMeta),
+      );
+    }
     if (data.containsKey('last_fought_at')) {
       context.handle(
         _lastFoughtAtMeta,
@@ -5180,6 +5200,10 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
         DriftSqlType.int,
         data['${effectivePrefix}player_hp'],
       )!,
+      golden: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}golden'],
+      )!,
       lastFoughtAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_fought_at'],
@@ -5218,6 +5242,14 @@ class MapNode extends DataClass implements Insertable<MapNode> {
   /// Запас персонажа на текущем заходе к боссу.
   final int playerHp;
 
+  /// Редкая окраска дрифера. Решается один раз — в тот момент, когда узел
+  /// становится текущим, — и с тех пор хранится: цвет противника не должен
+  /// меняться между запусками приложения.
+  ///
+  /// Колонка, а не вычисление на лету: детерминированная формула от id узла
+  /// дала бы одну и ту же карту всем и превратила бы редкость в расписание.
+  final bool golden;
+
   /// Когда по узлу били в последний раз — от этого зависит, успел ли
   /// недобитый дрифер восстановиться.
   final DateTime? lastFoughtAt;
@@ -5231,6 +5263,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     required this.maxHp,
     required this.currentHp,
     required this.playerHp,
+    required this.golden,
     this.lastFoughtAt,
   });
   @override
@@ -5245,6 +5278,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     map['max_hp'] = Variable<int>(maxHp);
     map['current_hp'] = Variable<int>(currentHp);
     map['player_hp'] = Variable<int>(playerHp);
+    map['golden'] = Variable<bool>(golden);
     if (!nullToAbsent || lastFoughtAt != null) {
       map['last_fought_at'] = Variable<DateTime>(lastFoughtAt);
     }
@@ -5262,6 +5296,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       maxHp: Value(maxHp),
       currentHp: Value(currentHp),
       playerHp: Value(playerHp),
+      golden: Value(golden),
       lastFoughtAt: lastFoughtAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastFoughtAt),
@@ -5283,6 +5318,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       maxHp: serializer.fromJson<int>(json['maxHp']),
       currentHp: serializer.fromJson<int>(json['currentHp']),
       playerHp: serializer.fromJson<int>(json['playerHp']),
+      golden: serializer.fromJson<bool>(json['golden']),
       lastFoughtAt: serializer.fromJson<DateTime?>(json['lastFoughtAt']),
     );
   }
@@ -5299,6 +5335,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       'maxHp': serializer.toJson<int>(maxHp),
       'currentHp': serializer.toJson<int>(currentHp),
       'playerHp': serializer.toJson<int>(playerHp),
+      'golden': serializer.toJson<bool>(golden),
       'lastFoughtAt': serializer.toJson<DateTime?>(lastFoughtAt),
     };
   }
@@ -5313,6 +5350,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     int? maxHp,
     int? currentHp,
     int? playerHp,
+    bool? golden,
     Value<DateTime?> lastFoughtAt = const Value.absent(),
   }) => MapNode(
     id: id ?? this.id,
@@ -5324,6 +5362,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     maxHp: maxHp ?? this.maxHp,
     currentHp: currentHp ?? this.currentHp,
     playerHp: playerHp ?? this.playerHp,
+    golden: golden ?? this.golden,
     lastFoughtAt: lastFoughtAt.present ? lastFoughtAt.value : this.lastFoughtAt,
   );
   MapNode copyWithCompanion(MapNodesCompanion data) {
@@ -5337,6 +5376,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       maxHp: data.maxHp.present ? data.maxHp.value : this.maxHp,
       currentHp: data.currentHp.present ? data.currentHp.value : this.currentHp,
       playerHp: data.playerHp.present ? data.playerHp.value : this.playerHp,
+      golden: data.golden.present ? data.golden.value : this.golden,
       lastFoughtAt: data.lastFoughtAt.present
           ? data.lastFoughtAt.value
           : this.lastFoughtAt,
@@ -5355,6 +5395,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
           ..write('maxHp: $maxHp, ')
           ..write('currentHp: $currentHp, ')
           ..write('playerHp: $playerHp, ')
+          ..write('golden: $golden, ')
           ..write('lastFoughtAt: $lastFoughtAt')
           ..write(')'))
         .toString();
@@ -5371,6 +5412,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     maxHp,
     currentHp,
     playerHp,
+    golden,
     lastFoughtAt,
   );
   @override
@@ -5386,6 +5428,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
           other.maxHp == this.maxHp &&
           other.currentHp == this.currentHp &&
           other.playerHp == this.playerHp &&
+          other.golden == this.golden &&
           other.lastFoughtAt == this.lastFoughtAt);
 }
 
@@ -5399,6 +5442,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
   final Value<int> maxHp;
   final Value<int> currentHp;
   final Value<int> playerHp;
+  final Value<bool> golden;
   final Value<DateTime?> lastFoughtAt;
   final Value<int> rowid;
   const MapNodesCompanion({
@@ -5411,6 +5455,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     this.maxHp = const Value.absent(),
     this.currentHp = const Value.absent(),
     this.playerHp = const Value.absent(),
+    this.golden = const Value.absent(),
     this.lastFoughtAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5424,6 +5469,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     required int maxHp,
     required int currentHp,
     this.playerHp = const Value.absent(),
+    this.golden = const Value.absent(),
     this.lastFoughtAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5443,6 +5489,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     Expression<int>? maxHp,
     Expression<int>? currentHp,
     Expression<int>? playerHp,
+    Expression<bool>? golden,
     Expression<DateTime>? lastFoughtAt,
     Expression<int>? rowid,
   }) {
@@ -5456,6 +5503,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
       if (maxHp != null) 'max_hp': maxHp,
       if (currentHp != null) 'current_hp': currentHp,
       if (playerHp != null) 'player_hp': playerHp,
+      if (golden != null) 'golden': golden,
       if (lastFoughtAt != null) 'last_fought_at': lastFoughtAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5471,6 +5519,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     Value<int>? maxHp,
     Value<int>? currentHp,
     Value<int>? playerHp,
+    Value<bool>? golden,
     Value<DateTime?>? lastFoughtAt,
     Value<int>? rowid,
   }) {
@@ -5484,6 +5533,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
       maxHp: maxHp ?? this.maxHp,
       currentHp: currentHp ?? this.currentHp,
       playerHp: playerHp ?? this.playerHp,
+      golden: golden ?? this.golden,
       lastFoughtAt: lastFoughtAt ?? this.lastFoughtAt,
       rowid: rowid ?? this.rowid,
     );
@@ -5519,6 +5569,9 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     if (playerHp.present) {
       map['player_hp'] = Variable<int>(playerHp.value);
     }
+    if (golden.present) {
+      map['golden'] = Variable<bool>(golden.value);
+    }
     if (lastFoughtAt.present) {
       map['last_fought_at'] = Variable<DateTime>(lastFoughtAt.value);
     }
@@ -5540,6 +5593,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
           ..write('maxHp: $maxHp, ')
           ..write('currentHp: $currentHp, ')
           ..write('playerHp: $playerHp, ')
+          ..write('golden: $golden, ')
           ..write('lastFoughtAt: $lastFoughtAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8295,6 +8349,7 @@ typedef $$MapNodesTableCreateCompanionBuilder =
       required int maxHp,
       required int currentHp,
       Value<int> playerHp,
+      Value<bool> golden,
       Value<DateTime?> lastFoughtAt,
       Value<int> rowid,
     });
@@ -8309,6 +8364,7 @@ typedef $$MapNodesTableUpdateCompanionBuilder =
       Value<int> maxHp,
       Value<int> currentHp,
       Value<int> playerHp,
+      Value<bool> golden,
       Value<DateTime?> lastFoughtAt,
       Value<int> rowid,
     });
@@ -8364,6 +8420,11 @@ class $$MapNodesTableFilterComposer
 
   ColumnFilters<int> get playerHp => $composableBuilder(
     column: $table.playerHp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get golden => $composableBuilder(
+    column: $table.golden,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8427,6 +8488,11 @@ class $$MapNodesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get golden => $composableBuilder(
+    column: $table.golden,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastFoughtAt => $composableBuilder(
     column: $table.lastFoughtAt,
     builder: (column) => ColumnOrderings(column),
@@ -8468,6 +8534,9 @@ class $$MapNodesTableAnnotationComposer
 
   GeneratedColumn<int> get playerHp =>
       $composableBuilder(column: $table.playerHp, builder: (column) => column);
+
+  GeneratedColumn<bool> get golden =>
+      $composableBuilder(column: $table.golden, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastFoughtAt => $composableBuilder(
     column: $table.lastFoughtAt,
@@ -8512,6 +8581,7 @@ class $$MapNodesTableTableManager
                 Value<int> maxHp = const Value.absent(),
                 Value<int> currentHp = const Value.absent(),
                 Value<int> playerHp = const Value.absent(),
+                Value<bool> golden = const Value.absent(),
                 Value<DateTime?> lastFoughtAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MapNodesCompanion(
@@ -8524,6 +8594,7 @@ class $$MapNodesTableTableManager
                 maxHp: maxHp,
                 currentHp: currentHp,
                 playerHp: playerHp,
+                golden: golden,
                 lastFoughtAt: lastFoughtAt,
                 rowid: rowid,
               ),
@@ -8538,6 +8609,7 @@ class $$MapNodesTableTableManager
                 required int maxHp,
                 required int currentHp,
                 Value<int> playerHp = const Value.absent(),
+                Value<bool> golden = const Value.absent(),
                 Value<DateTime?> lastFoughtAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MapNodesCompanion.insert(
@@ -8550,6 +8622,7 @@ class $$MapNodesTableTableManager
                 maxHp: maxHp,
                 currentHp: currentHp,
                 playerHp: playerHp,
+                golden: golden,
                 lastFoughtAt: lastFoughtAt,
                 rowid: rowid,
               ),

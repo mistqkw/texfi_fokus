@@ -52,6 +52,7 @@ class MapNodeEntity {
     required this.maxHp,
     required this.currentHp,
     required this.playerHp,
+    this.golden = false,
     this.lastFoughtAt,
   });
 
@@ -76,6 +77,10 @@ class MapNodeEntity {
   /// Запас персонажа на текущем заходе к боссу. У обычных узлов не
   /// расходуется: дрифер сдачи не даёт.
   final int playerHp;
+
+  /// Редкая окраска этого узла. Чисто внешняя разница плюс небольшая
+  /// надбавка к опыту за победу — на HP, урон и порядок узлов не влияет.
+  final bool golden;
 
   final DateTime? lastFoughtAt;
 
@@ -107,6 +112,7 @@ class MapNodeEntity {
       maxHp: maxHp ?? this.maxHp,
       currentHp: currentHp ?? this.currentHp,
       playerHp: playerHp ?? this.playerHp,
+      golden: golden,
       lastFoughtAt: lastFoughtAt ?? this.lastFoughtAt,
     );
   }

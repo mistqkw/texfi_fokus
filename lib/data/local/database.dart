@@ -33,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -82,6 +82,16 @@ class AppDatabase extends _$AppDatabase {
           // честное «фото не прикладывали», а не потеря данных.
           if (from < 6) {
             await m.addColumn(sessions, sessions.photoPath);
+          }
+
+          // v7: редкая окраска узла карты. Одна колонка со значением по
+          // умолчанию: у уже начатых партий текущий узел остаётся обычным,
+          // а решение принимается при открытии следующего.
+          // Нижняя граница обязательна: карта, созданная выше на этой же
+          // миграции (`from < 5`), приходит уже с колонкой, и добавлять её
+          // второй раз — ошибка SQLite, а не безобидный повтор.
+          if (from >= 5 && from < 7) {
+            await m.addColumn(mapNodes, mapNodes.golden);
           }
         },
       );
