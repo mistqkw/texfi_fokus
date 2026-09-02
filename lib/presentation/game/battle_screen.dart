@@ -291,7 +291,9 @@ class _BattleBody extends ConsumerWidget {
       mood: mood,
     );
 
-    final tone = node.isBoss ? colors.danger : colors.accent;
+    final tone = node.isBoss
+        ? colors.danger
+        : (node.golden ? AppColorsExt.rareGold : colors.accent);
     final isFocus = state.phase == TimerPhase.focus;
 
     return ListView(

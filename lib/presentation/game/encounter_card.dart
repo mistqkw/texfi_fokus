@@ -54,11 +54,15 @@ class EncounterCard extends ConsumerWidget {
 
     // Босс — тревожный тон, обычный дрифер — акцентный. Цвет здесь не
     // украшение: он единственный, что отличает «ещё один» от «этот».
-    final tone = node.isBoss ? colors.danger : colors.accent;
+    final tone = node.isBoss
+        ? colors.danger
+        : (node.golden ? AppColorsExt.rareGold : colors.accent);
 
     return PixelCard(
       accent: !node.isBoss,
-      borderColor: node.isBoss ? colors.danger : null,
+      borderColor: node.isBoss
+          ? colors.danger
+          : (node.golden ? AppColorsExt.rareGold : null),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

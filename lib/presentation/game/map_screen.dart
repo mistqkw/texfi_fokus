@@ -441,7 +441,9 @@ class _MapNodeTileState extends ConsumerState<_MapNodeTile>
     // Три состояния читаются в первую очередь цветом и яркостью, и только
     // во вторую — значком: пройденный узел приглушён, текущий горит.
     final tone = switch (node.status) {
-      MapNodeStatus.current => node.isBoss ? colors.danger : colors.accent,
+      MapNodeStatus.current => node.isBoss
+          ? colors.danger
+          : (node.golden ? AppColorsExt.rareGold : colors.accent),
       MapNodeStatus.completed => colors.textTertiary,
       MapNodeStatus.locked => colors.divider,
     };

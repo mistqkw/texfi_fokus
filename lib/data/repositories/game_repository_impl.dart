@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drift/drift.dart';
 
 import '../../domain/entities/game_entities.dart';
@@ -17,14 +19,19 @@ import '../local/tables/game_tables.dart';
 /// обычном трекере ни одной цифры — а лучший способ это гарантировать —
 /// просто не иметь такой возможности.
 class GameRepositoryImpl implements GameRepository {
-  GameRepositoryImpl(this._db, {DateTime Function()? now})
-      : _now = now ?? DateTime.now;
+  GameRepositoryImpl(this._db, {DateTime Function()? now, Random? random})
+      : _now = now ?? DateTime.now,
+        _random = random ?? Random();
 
   final AppDatabase _db;
 
   /// Подменяется в тестах: восстановление недобитого дрифера завязано на
   /// «сколько прошло», и ждать двое суток в тесте невозможно.
   final DateTime Function() _now;
+
+  /// Подменяется в тестах: редкая окраска дрифера — бросок кости, и
+  /// проверить обе ветки на настоящем генераторе нельзя.
+  final Random _random;
 
   // --- Настройки режима ---
 
@@ -94,6 +101,7 @@ class GameRepositoryImpl implements GameRepository {
         maxHp: row.maxHp,
         currentHp: row.currentHp,
         playerHp: row.playerHp,
+        golden: row.golden,
         lastFoughtAt: row.lastFoughtAt,
       );
 
@@ -164,6 +172,14 @@ class GameRepositoryImpl implements GameRepository {
             maxHp: hp,
             currentHp: hp,
             playerHp: Value(isBoss ? GameRules.bossPlayerHp : 0),
+            // Бросок делается только для узла, который сразу становится
+            // текущим. Остальные решат свою окраску в момент открытия —
+            // иначе вся карта определилась бы в первую секунду игры.
+            golden: Value(
+              world == 1 &&
+                  position == 1 &&
+                  GameRules.rollGolden(_random, kind: kind),
+            ),
           ),
         );
       }
@@ -211,8 +227,19 @@ class GameRepositoryImpl implements GameRepository {
     // после последнего босса воскрешал бы её начало.
     if (MapNodeStatus.fromIndex(next.status) == MapNodeStatus.completed) return;
 
-    await (_db.update(_db.mapNodes)..where((t) => t.id.equals(nextId)))
-        .write(MapNodesCompanion(status: Value(MapNodeStatus.current.index)));
+    await (_db.update(_db.mapNodes)..where((t) => t.id.equals(nextId))).write(
+      MapNodesCompanion(
+        status: Value(MapNodeStatus.current.index),
+        // Окраска решается здесь, один раз на узел: пока узел текущий, она
+        // уже записана и от перезапуска приложения не меняется.
+        golden: Value(
+          GameRules.rollGolden(
+            _random,
+            kind: MapNodeKind.fromIndex(next.kind),
+          ),
+        ),
+      ),
+    );
   }
 
   // --- Заходы ---
@@ -223,16 +250,24 @@ class GameRepositoryImpl implements GameRepository {
     required TaskDifficulty difficulty,
     required Mood mood,
     required bool completedFully,
+    int bonusXp = 0,
   }) async {
     if (!await isEnabled()) return const EncounterResult.none();
     await ensureInitialized();
 
-    final xp = GameRules.xpForSession(
+    final baseXp = GameRules.xpForSession(
       focusSeconds: focusSeconds,
       difficulty: difficulty,
       mood: mood,
       completedFully: completedFully,
     );
+
+    // Надбавка потолком ограничена здесь, а не у вызывающего: репозиторий —
+    // последнее место, где ещё можно гарантировать, что «бонус» останется
+    // бонусом. И даётся она только поверх непустой сессии: нулевая сессия
+    // ничего не заработала, и надбавлять не к чему.
+    final xp =
+        baseXp <= 0 ? 0 : baseXp + bonusXp.clamp(0, GameRules.unstoppableBonusXp);
 
     final node = await currentNode();
     if (node == null) {
@@ -274,7 +309,14 @@ class GameRepositoryImpl implements GameRepository {
     final hpAfter = (healedHp - damage).clamp(0, node.maxHp);
     final playerHpAfter = (node.playerHp - playerDamage).clamp(0, 99);
 
-    final levelUp = await _awardXp(xp);
+    // Надбавка за редкого дрифера — ровно за победу над ним и один раз.
+    // Плоская, поэтому она не масштабируется вместе с длиной сессии и не
+    // превращается в способ фармить опыт.
+    final goldenBonus =
+        node.golden && !node.isBoss && hpAfter <= 0 ? GameRules.goldenBonusXp : 0;
+    final totalXp = xp + goldenBonus;
+
+    final levelUp = await _awardXp(totalXp);
 
     // Персонаж выдохся раньше босса: тот приходит в себя целиком, бой
     // начинается заново. Это не скрытый штраф — интерфейс обязан объяснить
@@ -288,7 +330,7 @@ class GameRepositoryImpl implements GameRepository {
       await _writeNode(reset);
       return EncounterResult(
         outcome: EncounterOutcome.playerDefeated,
-        xpGained: xp,
+        xpGained: totalXp,
         damageDealt: damage,
         node: reset,
         leveledUpTo: levelUp,
@@ -308,7 +350,7 @@ class GameRepositoryImpl implements GameRepository {
         outcome: node.isBoss
             ? EncounterOutcome.bossDefeated
             : EncounterOutcome.drifterDefeated,
-        xpGained: xp,
+        xpGained: totalXp,
         damageDealt: damage,
         node: done,
         leveledUpTo: levelUp,
@@ -323,7 +365,7 @@ class GameRepositoryImpl implements GameRepository {
     await _writeNode(wounded);
     return EncounterResult(
       outcome: EncounterOutcome.damaged,
-      xpGained: xp,
+      xpGained: totalXp,
       damageDealt: damage,
       node: wounded,
       leveledUpTo: levelUp,
