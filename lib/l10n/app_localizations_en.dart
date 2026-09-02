@@ -220,6 +220,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Slide or tap to switch. Each state has its own vibration.';
 
   @override
+  String get moodLateNightNote =>
+      'The nights have been long lately. Take care of yourself.';
+
+  @override
   String get moodPickTaskTitle => 'What are you working on?';
 
   @override

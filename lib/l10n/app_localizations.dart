@@ -474,6 +474,12 @@ abstract class AppLocalizations {
   /// **'Slide or tap to switch. Each state has its own vibration.'**
   String get moodHint;
 
+  /// No description provided for @moodLateNightNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The nights have been long lately. Take care of yourself.'**
+  String get moodLateNightNote;
+
   /// No description provided for @moodPickTaskTitle.
   ///
   /// In en, this message translates to:

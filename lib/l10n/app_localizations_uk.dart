@@ -220,6 +220,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'Проведи пальцем або натисни. У кожного стану своя вібрація.';
 
   @override
+  String get moodLateNightNote =>
+      'Ночі останнім часом виходять довгі. Бережи себе.';
+
+  @override
   String get moodPickTaskTitle => 'Над чим працюєш?';
 
   @override

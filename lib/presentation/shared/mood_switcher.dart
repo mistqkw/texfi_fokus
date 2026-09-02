@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../core/haptics/haptics.dart';
@@ -6,6 +9,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
+import '../../domain/entities/game_rules.dart';
 import '../../domain/entities/mood.dart';
 import 'pixel_sprite.dart';
 
@@ -23,6 +27,10 @@ class MoodSwitcher extends StatefulWidget {
     required this.value,
     required this.onChanged,
     required this.labels,
+    this.unstoppable = false,
+    this.onUnstoppable,
+    this.note,
+    this.random,
   });
 
   final Mood value;
@@ -31,6 +39,24 @@ class MoodSwitcher extends StatefulWidget {
   /// Подписи для четырёх состояний, в порядке [Mood.values].
   final List<String> labels;
 
+  /// Редкий отклик поверх [Mood.fullFokus]. Хранится снаружи, в черновике
+  /// сессии, а не в состоянии виджета: от него зависит надбавка к опыту, и
+  /// пережить перестроение экрана он обязан.
+  ///
+  /// Пятым значением [Mood] это намеренно не сделано: в БД лежат индексы, а
+  /// движок рекомендаций считает по четырём категориям, и пятая пробила бы
+  /// дыру и там, и там ради одной детали.
+  final bool unstoppable;
+
+  /// Виджет об этом только сообщает — решение записать принимает экран.
+  final VoidCallback? onUnstoppable;
+
+  /// Необязательная строка под спрайтом. Пусто в обычном случае.
+  final String? note;
+
+  /// Подменяется в тестах: вероятность редкого отклика иначе не проверить.
+  final Random? random;
+
   @override
   State<MoodSwitcher> createState() => _MoodSwitcherState();
 }
@@ -38,12 +64,51 @@ class MoodSwitcher extends StatefulWidget {
 class _MoodSwitcherState extends State<MoodSwitcher> {
   static const double _trackHeight = 64;
 
+  /// Сколько ещё держать после того, как система признала нажатие долгим.
+  /// В сумме с её собственными полусекундой выходит больше двух секунд:
+  /// случайно столько не держат.
+  static const Duration _holdExtra = Duration(milliseconds: 1600);
+
+  Timer? _hold;
+
+  late final Random _random = widget.random ?? Random();
+
+  @override
+  void dispose() {
+    _hold?.cancel();
+    super.dispose();
+  }
+
+  void _startHold(double dx, double width) {
+    _hold?.cancel();
+    // Держать нужно именно крайнее правое положение и именно на нём —
+    // остальная дорожка ведёт себя как всегда.
+    final slot = (dx / (width / Mood.values.length))
+        .floor()
+        .clamp(0, Mood.values.length - 1);
+    if (slot != Mood.values.length - 1) return;
+
+    _hold = Timer(_holdExtra, () {
+      if (!mounted) return;
+      if (widget.value != Mood.fullFokus || widget.unstoppable) return;
+      if (!GameRules.rollUnstoppable(_random)) return;
+      Haptics.moodUnstoppable();
+      widget.onUnstoppable?.call();
+    });
+  }
+
+  void _cancelHold() {
+    _hold?.cancel();
+    _hold = null;
+  }
+
   void _selectFromOffset(double dx, double width) {
     final slot = (dx / (width / Mood.values.length))
         .floor()
         .clamp(0, Mood.values.length - 1);
     final mood = Mood.values[slot];
     if (mood == widget.value) return;
+    _cancelHold();
     Haptics.mood(mood.index);
     widget.onChanged(mood);
   }
@@ -51,15 +116,33 @@ class _MoodSwitcherState extends State<MoodSwitcher> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final activeColor = colors.moodByIndex(widget.value.index);
+    final secret = widget.unstoppable && widget.value == Mood.fullFokus;
+    final activeColor =
+        secret ? AppColorsExt.rareGold : colors.moodByIndex(widget.value.index);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _MoodFace(mood: widget.value, color: activeColor),
+        _MoodFace(
+          mood: widget.value,
+          color: activeColor,
+          unstoppable: secret,
+        ),
+        if (widget.note != null) ...[
+          AppSpacing.gapSm,
+          Text(
+            widget.note!,
+            textAlign: TextAlign.center,
+            style: context.text.chartLabel.copyWith(
+              color: colors.textTertiary,
+            ),
+          ),
+        ],
         AppSpacing.gapLg,
         Text(
-          widget.labels[widget.value.index],
+          secret
+              ? _MoodFace.unstoppableLabel
+              : widget.labels[widget.value.index],
           textAlign: TextAlign.center,
           style: context.text.headline.copyWith(color: activeColor),
         ),
@@ -76,6 +159,10 @@ class _MoodSwitcherState extends State<MoodSwitcher> {
                   _selectFromOffset(details.localPosition.dx, width),
               onHorizontalDragUpdate: (details) =>
                   _selectFromOffset(details.localPosition.dx, width),
+              onLongPressStart: (details) =>
+                  _startHold(details.localPosition.dx, width),
+              onLongPressEnd: (_) => _cancelHold(),
+              onLongPressCancel: _cancelHold,
               child: SizedBox(
                 height: _trackHeight,
                 child: Stack(
@@ -170,10 +257,22 @@ class _PixelBlocks extends StatelessWidget {
 /// выглядит как ретро-спрайт, а не как эмодзи. Рисуется общим
 /// [PixelSprite] — тем же, что и иконки нижней навигации.
 class _MoodFace extends StatefulWidget {
-  const _MoodFace({required this.mood, required this.color});
+  const _MoodFace({
+    required this.mood,
+    required this.color,
+    this.unstoppable = false,
+  });
 
   final Mood mood;
   final Color color;
+  final bool unstoppable;
+
+  /// Подпись состояния сверх full f0kus.
+  ///
+  /// Не в словарях: строка одна на все четыре языка и намеренно набрана
+  /// так же, как имя приложения, — нулём вместо буквы. Переводить её было
+  /// бы примерно так же уместно, как переводить «f0kus».
+  static const String unstoppableLabel = 'UNST0PPABLE';
 
   /// 8 строк по 8 символов: '.' — пусто, 'x' — пиксель.
   static const Map<Mood, List<String>> _sprites = {
@@ -219,6 +318,24 @@ class _MoodFace extends StatefulWidget {
     ],
   };
 
+  /// Состояние сверх full f0kus: та же голова, но кадр ей уже мал —
+  /// рога вверх, оскал во всю ширину и лучи по краям. Нарочно «буйнее»
+  /// остальных четырёх: оно и должно выглядеть как перебор.
+  static const List<String> _unstoppable = [
+    'x.x.xx.x.x.x',
+    '.xxxxxxxxxx.',
+    'xxx.xxxx.xxx',
+    'xx.x.xx.x.xx',
+    'xxxxxxxxxxxx',
+    'x.xxxxxxxx.x',
+    'xx.x.xx.x.xx',
+    'xxxxxxxxxxxx',
+    '.xxxxxxxxxx.',
+    'x.x.xxxx.x.x',
+    '.x..xxxx..x.',
+    'x..x.xx.x..x',
+  ];
+
   /// Промежуточный кадр перехода: глаза закрыты, рот — одна черта.
   ///
   /// Кроссфейд между двумя спрайтами дал бы на пару кадров полупрозрачную
@@ -255,7 +372,10 @@ class _MoodFaceState extends State<_MoodFace>
   @override
   void didUpdateWidget(_MoodFace oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.mood != widget.mood) _swap.forward(from: 0);
+    if (oldWidget.mood != widget.mood ||
+        oldWidget.unstoppable != widget.unstoppable) {
+      _swap.forward(from: 0);
+    }
   }
 
   @override
@@ -275,10 +395,11 @@ class _MoodFaceState extends State<_MoodFace>
             // Три кадра, а не плавная кривая: закрыт — закрыт — открыт.
             // Спрайт всегда нарисован целиком и всегда непрозрачен.
             final blinking = _swap.isAnimating && _swap.value < 0.45;
+            final rows = widget.unstoppable
+                ? _MoodFace._unstoppable
+                : _MoodFace._sprites[widget.mood]!;
             return PixelSprite(
-              rows: blinking
-                  ? _MoodFace._blink
-                  : _MoodFace._sprites[widget.mood]!,
+              rows: blinking ? _MoodFace._blink : rows,
               color: widget.color,
               size: 96,
             );

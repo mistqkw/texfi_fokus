@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_l10n_ext.dart';
 import '../../domain/entities/game_entities.dart';
+import '../../domain/entities/game_rules.dart';
 import '../game/game_providers.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../shared/notification_sync.dart';
@@ -69,6 +70,10 @@ Future<SessionFinishOutcome?> finishSession(
     difficulty: draft.difficulty,
     mood: draft.mood,
     completedFully: state.completedFully,
+    // Редкий отклик переключателя настроения — разовая надбавка поверх уже
+    // посчитанного опыта. В самой записи сессии его нет: там обычный
+    // full f0kus, и движок рекомендаций учится ровно на нём.
+    bonusXp: draft.unstoppable ? GameRules.unstoppableBonusXp : 0,
   );
 
   if (!context.mounted) return null;
