@@ -7,7 +7,9 @@ import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/game_entities.dart';
+import '../../domain/entities/game_rules.dart';
 import '../../l10n/app_localizations.dart';
+import '../shared/enum_labels.dart';
 import '../shared/pixel_button.dart';
 import 'game_labels.dart';
 import 'game_providers.dart';
@@ -121,6 +123,24 @@ class EncounterResultSheet extends StatelessWidget {
                   color: colors.accent,
                 ),
               ),
+
+              // Откуда взялась надбавка. Прибавка к опыту без названной
+              // причины читается как ошибка подсчёта — а причина здесь
+              // ровно одна, и назвать её стоит одной строкой.
+              if (result.resonated && result.node != null) ...[
+                AppSpacing.gapXs,
+                Text(
+                  l10n.resultResonance(
+                    GameRules.affinityOf(result.node!.world)
+                        .label(l10n)
+                        .toLowerCase(),
+                  ),
+                  textAlign: TextAlign.center,
+                  style: context.text.chartLabel.copyWith(
+                    color: colors.textTertiary,
+                  ),
+                ),
+              ],
             ],
             AppSpacing.gapXl,
             PixelButton(

@@ -33,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   /// Миграции только добавляют — существующие данные тестировщиков и первых
   /// пользователей переживают обновление. Пересоздание таблиц здесь
@@ -92,6 +92,17 @@ class AppDatabase extends _$AppDatabase {
           // второй раз — ошибка SQLite, а не безобидный повтор.
           if (from >= 5 && from < 7) {
             await m.addColumn(mapNodes, mapNodes.golden);
+          }
+
+          // v8: счётчик брошенных заходов на узел. Он нужен только для одной
+          // строки текста при следующей встрече с тем же дрифером, и у уже
+          // начатых партий честно начинается с нуля: восстановить, сколько
+          // раз человек уходил с этого узла до обновления, неоткуда, а
+          // выдумывать число, на которое приложение потом сошлётся вслух,
+          // хуже, чем промолчать.
+          // Та же нижняя граница, что и у `golden`, и по той же причине.
+          if (from >= 5 && from < 8) {
+            await m.addColumn(mapNodes, mapNodes.abandonedCount);
           }
         },
       );

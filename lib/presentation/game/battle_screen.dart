@@ -295,6 +295,7 @@ class _BattleBody extends ConsumerWidget {
         ? colors.danger
         : (node.golden ? AppColorsExt.rareGold : colors.accent);
     final isFocus = state.phase == TimerPhase.focus;
+    final flavor = node.flavor(l10n);
 
     return ListView(
       padding: AppSpacing.screen,
@@ -325,12 +326,17 @@ class _BattleBody extends ConsumerWidget {
           textAlign: TextAlign.center,
           style: context.text.headline.copyWith(color: tone),
         ),
-        AppSpacing.gapXs,
-        Text(
-          node.flavor(l10n),
-          textAlign: TextAlign.center,
-          style: context.text.caption.copyWith(color: colors.textSecondary),
-        ),
+        // Описания может не быть — у босса мира, которому его ещё не
+        // написали. Тогда здесь просто ничего не стоит: пустая строка на
+        // экране боя выглядела бы дырой в вёрстке.
+        if (flavor != null) ...[
+          AppSpacing.gapXs,
+          Text(
+            flavor,
+            textAlign: TextAlign.center,
+            style: context.text.caption.copyWith(color: colors.textSecondary),
+          ),
+        ],
         AppSpacing.gapLg,
         PixelCard(
           child: Column(

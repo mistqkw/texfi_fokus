@@ -11,6 +11,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/game_entities.dart';
 import '../../domain/entities/game_rules.dart';
+import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_spinner.dart';
@@ -22,6 +23,7 @@ import 'game_providers.dart';
 import 'game_sprites.dart';
 import 'game_widgets.dart';
 import 'world_intro_overlay.dart';
+import 'world_style.dart';
 
 /// Карта продвижения: путь из миров, в конце каждого — босс.
 ///
@@ -203,6 +205,13 @@ class _WorldSection extends StatelessWidget {
     // карты в том, что впереди неизвестность, а не оглавление.
     final revealed = nodes.any((n) => n.status != MapNodeStatus.locked);
 
+    // Оттенок мира. У неоткрытого мира он приглушён до общего серого: цвет
+    // — это уже что-то сказанное о месте, и говорить это заранее значило бы
+    // приоткрыть ровно то, что карта держит закрытым.
+    final tint = revealed
+        ? WorldStyle.tint(colors, world)
+        : colors.divider;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
@@ -219,7 +228,7 @@ class _WorldSection extends StatelessWidget {
                   Text(
                     l10n.mapWorld(world),
                     style: context.text.chartLabel.copyWith(
-                      color: colors.textTertiary,
+                      color: revealed ? tint : colors.textTertiary,
                     ),
                   ),
                   Text(
@@ -235,11 +244,27 @@ class _WorldSection extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                  child: Container(height: 2, color: colors.divider),
+                  child: Container(height: 2, color: tint),
                 ),
               ),
             ],
           ),
+
+          // С чем мир перекликается. Только у открытого мира и только одной
+          // строкой в третьестепенном стиле: это подсказка, а не задание, и
+          // человек, который её не прочтёт, ничего не потеряет.
+          if (revealed) ...[
+            AppSpacing.gapXs,
+            Text(
+              l10n.mapWorldAffinity(
+                GameRules.affinityOf(world).label(l10n).toLowerCase(),
+              ),
+              style: context.text.chartLabel.copyWith(
+                color: colors.textTertiary,
+              ),
+            ),
+          ],
+
           AppSpacing.gapLg,
           LayoutBuilder(
             builder: (context, constraints) {
@@ -260,6 +285,11 @@ class _WorldSection extends StatelessWidget {
                 height: _step * nodes.length,
                 child: Stack(
                   children: [
+                    // Фон мира лежит под тропой и под узлами: он текстура,
+                    // а не слой поверх содержимого. У неоткрытого мира его
+                    // нет вовсе — там ещё нечему дышать.
+                    if (revealed)
+                      Positioned.fill(child: WorldAtmosphere(world: world)),
                     Positioned.fill(
                       // Тропа гаснет за последним пройденным узлом: дорога
                       // впереди ещё не протоптана. Прирост дорисовывается
@@ -284,7 +314,10 @@ class _WorldSection extends StatelessWidget {
                           painter: _TrailPainter(
                             points: points,
                             clearedUpTo: cleared,
-                            activeColor: colors.accent,
+                            // Пройденная тропа окрашена в тон мира, а не
+                            // в общий акцент: цвет здесь — единственное, что
+                            // отличает «где я иду» от «где я шёл».
+                            activeColor: tint,
                             idleColor: colors.divider,
                           ),
                         ),

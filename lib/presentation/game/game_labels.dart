@@ -34,16 +34,26 @@ extension DrifterSpeciesLabel on DrifterSpecies {
 /// Босс определяется миром, а не отдельным перечислением: у каждого мира он
 /// ровно один, и заводить под это enum значило бы держать два списка в
 /// согласии вручную.
+///
+/// Мир, которому ещё не написали своего босса, получает нейтральное «босс»,
+/// а не имя чужого. `_ =>` с последним из написанных был бы удобнее ровно до
+/// того дня, когда кто-нибудь добавит четвёртый мир в `GameRules.worlds`: с
+/// этого момента его босс молча звался бы Пустотой, и заметить это можно
+/// было бы только глазами, на экране.
 String bossLabel(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.bossScroll,
       2 => l10n.bossChorus,
-      _ => l10n.bossHollow,
+      3 => l10n.bossHollow,
+      _ => l10n.mapBossNode,
     };
 
-String bossFlavor(AppLocalizations l10n, int world) => switch (world) {
+/// Описание босса. null — миру ещё не написали своего; интерфейс в этом
+/// случае показывает узел без описания, а не чужое.
+String? bossFlavor(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.bossScrollFlavor,
       2 => l10n.bossChorusFlavor,
-      _ => l10n.bossHollowFlavor,
+      3 => l10n.bossHollowFlavor,
+      _ => null,
     };
 
 /// Имя мира.
@@ -52,17 +62,21 @@ String bossFlavor(AppLocalizations l10n, int world) => switch (world) {
 /// а не место. Короткое имя стоит ровно столько же места на экране и при этом
 /// задаёт тон тому, что внутри, — тем же способом, каким описание задаёт тон
 /// каждому дриферу.
+/// Мир без написанного имени называется своим номером — честное «Мир 4»
+/// вместо чужого «Длинный зал».
 String worldName(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.mapWorld1Name,
       2 => l10n.mapWorld2Name,
-      _ => l10n.mapWorld3Name,
+      3 => l10n.mapWorld3Name,
+      _ => l10n.mapWorld(world),
     };
 
 extension MapNodeLabel on MapNodeEntity {
   String title(AppLocalizations l10n) =>
       isBoss ? bossLabel(l10n, world) : species.label(l10n);
 
-  String flavor(AppLocalizations l10n) =>
+  /// null — описания нет: так бывает только у босса ещё не написанного мира.
+  String? flavor(AppLocalizations l10n) =>
       isBoss ? bossFlavor(l10n, world) : species.flavor(l10n);
 }
 

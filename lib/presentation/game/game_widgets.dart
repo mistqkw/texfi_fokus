@@ -369,12 +369,29 @@ class PixelStatRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Подпись сжимается, цифры — нет.
+        //
+        // Раньше оба текста стояли в Row без ограничений, и на узком экране
+        // пара «Уровень 8» + «120 / 250 XP» просто вылезала за карточку —
+        // в отладочной сборке это исключение, в собранной — жёлтая полоска
+        // поверх экрана персонажа. Обрезать здесь можно только имя: цифры
+        // справа — это и есть содержание строки, и «120 / 2…» не значит
+        // ничего.
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: context.text.chartLabel),
-            if (trailing != null)
+            Flexible(
+              child: Text(
+                label,
+                style: context.text.chartLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (trailing != null) ...[
+              AppSpacing.wGapSm,
               Text(trailing!, style: context.text.chartLabel),
+            ],
           ],
         ),
         AppSpacing.gapXs,

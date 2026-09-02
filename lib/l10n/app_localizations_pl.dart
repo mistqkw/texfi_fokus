@@ -1601,4 +1601,63 @@ class AppLocalizationsPl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String mapWorldAffinity(String category) {
+    return 'Ciąży ku: $category';
+  }
+
+  @override
+  String get mapWorldAffinityHint =>
+      'Sesje z tej kategorii zostawiają tu trochę więcej. Wszystko inne działa tak samo.';
+
+  @override
+  String encounterMemoryNoticed(int count) {
+    return 'Podejść tutaj przerwanych w połowie: $count. Wciąż stoi.';
+  }
+
+  @override
+  String encounterMemoryDeep(int count) {
+    return 'Już $count. Z tym zadaniem jest coś innego, niż mówi plan.';
+  }
+
+  @override
+  String resultResonance(String category) {
+    return 'Ten świat ciąży ku: $category — mała premia.';
+  }
+
+  @override
+  String get loreTitle => 'Strzępy';
+
+  @override
+  String get loreBody =>
+      'Każdy świat ma coś napisane na odwrocie. Znajduje się, gdy tego na końcu już nie ma.';
+
+  @override
+  String get loreEmpty =>
+      'Na razie nic. Pierwszy strzęp jest za pierwszym bossem.';
+
+  @override
+  String get loreLocked => 'Jeszcze nieznaleziony';
+
+  @override
+  String loreScrap(int number) {
+    return 'Strzęp $number';
+  }
+
+  @override
+  String get loreFragment1 =>
+      'Na podłodze cichego pokoju: „Zostawiłem drzwi otwarte na minutę. Wróciłem — minuty nie ma”.';
+
+  @override
+  String get loreFragment2 =>
+      'To samo pismo, już w polu: „Nie przychodzą z zewnątrz. To, co odłożyłem i nie podniosłem”.';
+
+  @override
+  String get loreFragment3 =>
+      'Na drugim końcu sali: „Sala to ten sam pokój. Idę nim, odkąd usiadłem”.';
+
+  @override
+  String get loreFragment4 =>
+      'Ostatni strzęp, w ogóle bez pisma: „Teraz jest cicho. Cicho nie zostanie. W porządku — drogę powrotną znasz”.';
 }

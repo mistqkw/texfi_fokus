@@ -102,6 +102,7 @@ class GameRepositoryImpl implements GameRepository {
         currentHp: row.currentHp,
         playerHp: row.playerHp,
         golden: row.golden,
+        abandonedCount: row.abandonedCount,
         lastFoughtAt: row.lastFoughtAt,
       );
 
@@ -204,6 +205,7 @@ class GameRepositoryImpl implements GameRepository {
         maxHp: Value(node.maxHp),
         currentHp: Value(node.currentHp),
         playerHp: Value(node.playerHp),
+        abandonedCount: Value(node.abandonedCount),
         lastFoughtAt: Value(node.lastFoughtAt),
       ),
     );
@@ -250,6 +252,7 @@ class GameRepositoryImpl implements GameRepository {
     required TaskDifficulty difficulty,
     required Mood mood,
     required bool completedFully,
+    TaskCategory category = TaskCategory.other,
     int bonusXp = 0,
   }) async {
     if (!await isEnabled()) return const EncounterResult.none();
@@ -309,12 +312,21 @@ class GameRepositoryImpl implements GameRepository {
     final hpAfter = (healedHp - damage).clamp(0, node.maxHp);
     final playerHpAfter = (node.playerHp - playerDamage).clamp(0, 99);
 
+    // Перекличка мира с категорией задачи. Читает уже сделанный выбор и
+    // ничего за пользователя не решает: категория пришла из черновика
+    // сессии, туда её положил он сам, а движок рекомендаций об этой
+    // надбавке вообще не знает — она живёт только в игровом слое.
+    final resonates =
+        GameRules.resonates(world: node.world, category: category);
+    final resonanceBonus =
+        resonates && xp > 0 ? GameRules.resonanceBonusXp : 0;
+
     // Надбавка за редкого дрифера — ровно за победу над ним и один раз.
     // Плоская, поэтому она не масштабируется вместе с длиной сессии и не
     // превращается в способ фармить опыт.
     final goldenBonus =
         node.golden && !node.isBoss && hpAfter <= 0 ? GameRules.goldenBonusXp : 0;
-    final totalXp = xp + goldenBonus;
+    final totalXp = xp + goldenBonus + resonanceBonus;
 
     final levelUp = await _awardXp(totalXp);
 
@@ -334,6 +346,7 @@ class GameRepositoryImpl implements GameRepository {
         damageDealt: damage,
         node: reset,
         leveledUpTo: levelUp,
+        resonated: resonanceBonus > 0,
       );
     }
 
@@ -354,12 +367,22 @@ class GameRepositoryImpl implements GameRepository {
         damageDealt: damage,
         node: done,
         leveledUpTo: levelUp,
+        resonated: resonanceBonus > 0,
       );
     }
+
+    // Заход оборвался, а противник устоял — дрифер это запоминает.
+    // Только дрифер: босс и без того начинает бой заново, и второй счётчик
+    // про одно и то же ничего бы не добавил. И только счётчик: ни HP, ни
+    // урон, ни опыт от него не зависят.
+    final abandoned = !completedFully && !node.isBoss
+        ? node.abandonedCount + 1
+        : node.abandonedCount;
 
     final wounded = node.copyWith(
       currentHp: hpAfter,
       playerHp: playerHpAfter,
+      abandonedCount: abandoned,
       lastFoughtAt: now,
     );
     await _writeNode(wounded);
@@ -369,6 +392,7 @@ class GameRepositoryImpl implements GameRepository {
       damageDealt: damage,
       node: wounded,
       leveledUpTo: levelUp,
+      resonated: resonanceBonus > 0,
     );
   }
 

@@ -5038,6 +5038,18 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _abandonedCountMeta = const VerificationMeta(
+    'abandonedCount',
+  );
+  @override
+  late final GeneratedColumn<int> abandonedCount = GeneratedColumn<int>(
+    'abandoned_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _lastFoughtAtMeta = const VerificationMeta(
     'lastFoughtAt',
   );
@@ -5061,6 +5073,7 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
     currentHp,
     playerHp,
     golden,
+    abandonedCount,
     lastFoughtAt,
   ];
   @override
@@ -5146,6 +5159,15 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
         golden.isAcceptableOrUnknown(data['golden']!, _goldenMeta),
       );
     }
+    if (data.containsKey('abandoned_count')) {
+      context.handle(
+        _abandonedCountMeta,
+        abandonedCount.isAcceptableOrUnknown(
+          data['abandoned_count']!,
+          _abandonedCountMeta,
+        ),
+      );
+    }
     if (data.containsKey('last_fought_at')) {
       context.handle(
         _lastFoughtAtMeta,
@@ -5204,6 +5226,10 @@ class $MapNodesTable extends MapNodes with TableInfo<$MapNodesTable, MapNode> {
         DriftSqlType.bool,
         data['${effectivePrefix}golden'],
       )!,
+      abandonedCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}abandoned_count'],
+      )!,
       lastFoughtAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_fought_at'],
@@ -5250,6 +5276,15 @@ class MapNode extends DataClass implements Insertable<MapNode> {
   /// дала бы одну и ту же карту всем и превратила бы редкость в расписание.
   final bool golden;
 
+  /// Сколько раз заход на этот узел обрывался, не добив противника.
+  ///
+  /// Считается только для того, чтобы дрифер мог об этом обмолвиться при
+  /// следующей встрече. Ни в HP, ни в уроне, ни в опыте счётчик не участвует:
+  /// приложение просит останавливаться честно, и превращать честную
+  /// остановку в механический штраф означало бы просить об одном, а
+  /// наказывать за другое.
+  final int abandonedCount;
+
   /// Когда по узлу били в последний раз — от этого зависит, успел ли
   /// недобитый дрифер восстановиться.
   final DateTime? lastFoughtAt;
@@ -5264,6 +5299,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     required this.currentHp,
     required this.playerHp,
     required this.golden,
+    required this.abandonedCount,
     this.lastFoughtAt,
   });
   @override
@@ -5279,6 +5315,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     map['current_hp'] = Variable<int>(currentHp);
     map['player_hp'] = Variable<int>(playerHp);
     map['golden'] = Variable<bool>(golden);
+    map['abandoned_count'] = Variable<int>(abandonedCount);
     if (!nullToAbsent || lastFoughtAt != null) {
       map['last_fought_at'] = Variable<DateTime>(lastFoughtAt);
     }
@@ -5297,6 +5334,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       currentHp: Value(currentHp),
       playerHp: Value(playerHp),
       golden: Value(golden),
+      abandonedCount: Value(abandonedCount),
       lastFoughtAt: lastFoughtAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastFoughtAt),
@@ -5319,6 +5357,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       currentHp: serializer.fromJson<int>(json['currentHp']),
       playerHp: serializer.fromJson<int>(json['playerHp']),
       golden: serializer.fromJson<bool>(json['golden']),
+      abandonedCount: serializer.fromJson<int>(json['abandonedCount']),
       lastFoughtAt: serializer.fromJson<DateTime?>(json['lastFoughtAt']),
     );
   }
@@ -5336,6 +5375,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       'currentHp': serializer.toJson<int>(currentHp),
       'playerHp': serializer.toJson<int>(playerHp),
       'golden': serializer.toJson<bool>(golden),
+      'abandonedCount': serializer.toJson<int>(abandonedCount),
       'lastFoughtAt': serializer.toJson<DateTime?>(lastFoughtAt),
     };
   }
@@ -5351,6 +5391,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     int? currentHp,
     int? playerHp,
     bool? golden,
+    int? abandonedCount,
     Value<DateTime?> lastFoughtAt = const Value.absent(),
   }) => MapNode(
     id: id ?? this.id,
@@ -5363,6 +5404,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     currentHp: currentHp ?? this.currentHp,
     playerHp: playerHp ?? this.playerHp,
     golden: golden ?? this.golden,
+    abandonedCount: abandonedCount ?? this.abandonedCount,
     lastFoughtAt: lastFoughtAt.present ? lastFoughtAt.value : this.lastFoughtAt,
   );
   MapNode copyWithCompanion(MapNodesCompanion data) {
@@ -5377,6 +5419,9 @@ class MapNode extends DataClass implements Insertable<MapNode> {
       currentHp: data.currentHp.present ? data.currentHp.value : this.currentHp,
       playerHp: data.playerHp.present ? data.playerHp.value : this.playerHp,
       golden: data.golden.present ? data.golden.value : this.golden,
+      abandonedCount: data.abandonedCount.present
+          ? data.abandonedCount.value
+          : this.abandonedCount,
       lastFoughtAt: data.lastFoughtAt.present
           ? data.lastFoughtAt.value
           : this.lastFoughtAt,
@@ -5396,6 +5441,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
           ..write('currentHp: $currentHp, ')
           ..write('playerHp: $playerHp, ')
           ..write('golden: $golden, ')
+          ..write('abandonedCount: $abandonedCount, ')
           ..write('lastFoughtAt: $lastFoughtAt')
           ..write(')'))
         .toString();
@@ -5413,6 +5459,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
     currentHp,
     playerHp,
     golden,
+    abandonedCount,
     lastFoughtAt,
   );
   @override
@@ -5429,6 +5476,7 @@ class MapNode extends DataClass implements Insertable<MapNode> {
           other.currentHp == this.currentHp &&
           other.playerHp == this.playerHp &&
           other.golden == this.golden &&
+          other.abandonedCount == this.abandonedCount &&
           other.lastFoughtAt == this.lastFoughtAt);
 }
 
@@ -5443,6 +5491,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
   final Value<int> currentHp;
   final Value<int> playerHp;
   final Value<bool> golden;
+  final Value<int> abandonedCount;
   final Value<DateTime?> lastFoughtAt;
   final Value<int> rowid;
   const MapNodesCompanion({
@@ -5456,6 +5505,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     this.currentHp = const Value.absent(),
     this.playerHp = const Value.absent(),
     this.golden = const Value.absent(),
+    this.abandonedCount = const Value.absent(),
     this.lastFoughtAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5470,6 +5520,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     required int currentHp,
     this.playerHp = const Value.absent(),
     this.golden = const Value.absent(),
+    this.abandonedCount = const Value.absent(),
     this.lastFoughtAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5490,6 +5541,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     Expression<int>? currentHp,
     Expression<int>? playerHp,
     Expression<bool>? golden,
+    Expression<int>? abandonedCount,
     Expression<DateTime>? lastFoughtAt,
     Expression<int>? rowid,
   }) {
@@ -5504,6 +5556,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
       if (currentHp != null) 'current_hp': currentHp,
       if (playerHp != null) 'player_hp': playerHp,
       if (golden != null) 'golden': golden,
+      if (abandonedCount != null) 'abandoned_count': abandonedCount,
       if (lastFoughtAt != null) 'last_fought_at': lastFoughtAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5520,6 +5573,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     Value<int>? currentHp,
     Value<int>? playerHp,
     Value<bool>? golden,
+    Value<int>? abandonedCount,
     Value<DateTime?>? lastFoughtAt,
     Value<int>? rowid,
   }) {
@@ -5534,6 +5588,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
       currentHp: currentHp ?? this.currentHp,
       playerHp: playerHp ?? this.playerHp,
       golden: golden ?? this.golden,
+      abandonedCount: abandonedCount ?? this.abandonedCount,
       lastFoughtAt: lastFoughtAt ?? this.lastFoughtAt,
       rowid: rowid ?? this.rowid,
     );
@@ -5572,6 +5627,9 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
     if (golden.present) {
       map['golden'] = Variable<bool>(golden.value);
     }
+    if (abandonedCount.present) {
+      map['abandoned_count'] = Variable<int>(abandonedCount.value);
+    }
     if (lastFoughtAt.present) {
       map['last_fought_at'] = Variable<DateTime>(lastFoughtAt.value);
     }
@@ -5594,6 +5652,7 @@ class MapNodesCompanion extends UpdateCompanion<MapNode> {
           ..write('currentHp: $currentHp, ')
           ..write('playerHp: $playerHp, ')
           ..write('golden: $golden, ')
+          ..write('abandonedCount: $abandonedCount, ')
           ..write('lastFoughtAt: $lastFoughtAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8350,6 +8409,7 @@ typedef $$MapNodesTableCreateCompanionBuilder =
       required int currentHp,
       Value<int> playerHp,
       Value<bool> golden,
+      Value<int> abandonedCount,
       Value<DateTime?> lastFoughtAt,
       Value<int> rowid,
     });
@@ -8365,6 +8425,7 @@ typedef $$MapNodesTableUpdateCompanionBuilder =
       Value<int> currentHp,
       Value<int> playerHp,
       Value<bool> golden,
+      Value<int> abandonedCount,
       Value<DateTime?> lastFoughtAt,
       Value<int> rowid,
     });
@@ -8425,6 +8486,11 @@ class $$MapNodesTableFilterComposer
 
   ColumnFilters<bool> get golden => $composableBuilder(
     column: $table.golden,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get abandonedCount => $composableBuilder(
+    column: $table.abandonedCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8493,6 +8559,11 @@ class $$MapNodesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get abandonedCount => $composableBuilder(
+    column: $table.abandonedCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastFoughtAt => $composableBuilder(
     column: $table.lastFoughtAt,
     builder: (column) => ColumnOrderings(column),
@@ -8538,6 +8609,11 @@ class $$MapNodesTableAnnotationComposer
   GeneratedColumn<bool> get golden =>
       $composableBuilder(column: $table.golden, builder: (column) => column);
 
+  GeneratedColumn<int> get abandonedCount => $composableBuilder(
+    column: $table.abandonedCount,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get lastFoughtAt => $composableBuilder(
     column: $table.lastFoughtAt,
     builder: (column) => column,
@@ -8582,6 +8658,7 @@ class $$MapNodesTableTableManager
                 Value<int> currentHp = const Value.absent(),
                 Value<int> playerHp = const Value.absent(),
                 Value<bool> golden = const Value.absent(),
+                Value<int> abandonedCount = const Value.absent(),
                 Value<DateTime?> lastFoughtAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MapNodesCompanion(
@@ -8595,6 +8672,7 @@ class $$MapNodesTableTableManager
                 currentHp: currentHp,
                 playerHp: playerHp,
                 golden: golden,
+                abandonedCount: abandonedCount,
                 lastFoughtAt: lastFoughtAt,
                 rowid: rowid,
               ),
@@ -8610,6 +8688,7 @@ class $$MapNodesTableTableManager
                 required int currentHp,
                 Value<int> playerHp = const Value.absent(),
                 Value<bool> golden = const Value.absent(),
+                Value<int> abandonedCount = const Value.absent(),
                 Value<DateTime?> lastFoughtAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MapNodesCompanion.insert(
@@ -8623,6 +8702,7 @@ class $$MapNodesTableTableManager
                 currentHp: currentHp,
                 playerHp: playerHp,
                 golden: golden,
+                abandonedCount: abandonedCount,
                 lastFoughtAt: lastFoughtAt,
                 rowid: rowid,
               ),

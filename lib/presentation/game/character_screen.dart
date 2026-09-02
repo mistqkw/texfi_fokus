@@ -7,6 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/game_entities.dart';
 import '../../domain/entities/game_rules.dart';
+import '../../l10n/app_localizations.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
 import 'game_labels.dart';
@@ -47,6 +48,8 @@ class CharacterScreen extends ConsumerWidget {
               _StagesCard(progress: progress),
               AppSpacing.gapLg,
               _StatsCard(progress: progress),
+              AppSpacing.gapLg,
+              _ScrapsCard(progress: progress),
             ],
           ),
         ),
@@ -267,6 +270,95 @@ class _StatsCard extends StatelessWidget {
             label: l10n.characterTotalXp,
             value: '${progress.totalXp}',
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Обрывки — сквозная нить, спрятанная за боссами.
+///
+/// Живёт на экране персонажа, за иконкой в шапке карты, и это единственное
+/// место, где её вообще можно прочитать. Так и задумано: приложение — это
+/// таймер, и человек, который никогда сюда не заглянет, не пропустит ничего
+/// из того, что делает таймер таймером. История не всплывает сама, не
+/// прерывает сессию и не просит себя дочитать.
+///
+/// Открывается победами над боссами: [GameRules.unlockedLoreFragments].
+/// Последний обрывок придерживается до полного прохождения карты — ему
+/// нечего подытоживать раньше.
+class _ScrapsCard extends StatelessWidget {
+  const _ScrapsCard({required this.progress});
+
+  final PlayerProgressEntity progress;
+
+  /// Текст обрывка по его 1-based номеру.
+  ///
+  /// Тот же приём, что и у имён дриферов: домен не знает языка, перевод
+  /// живёт рядом с интерфейсом. `_` в конце — не заглушка, а последний
+  /// обрывок: их ровно столько, сколько миров, плюс один.
+  static String _fragment(AppLocalizations l10n, int number) =>
+      switch (number) {
+        1 => l10n.loreFragment1,
+        2 => l10n.loreFragment2,
+        3 => l10n.loreFragment3,
+        _ => l10n.loreFragment4,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+
+    final unlocked = GameRules.unlockedLoreFragments(progress.bossKills);
+    final total = GameRules.loreFragmentCount;
+
+    return PixelCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.loreTitle, style: context.text.sectionTitle),
+          AppSpacing.gapXs,
+          Text(
+            l10n.loreBody,
+            style: context.text.caption.copyWith(color: colors.textSecondary),
+          ),
+
+          if (unlocked == 0) ...[
+            const PixelDivider(gap: AppSpacing.md),
+            Text(
+              l10n.loreEmpty,
+              style: context.text.caption.copyWith(
+                color: colors.textTertiary,
+              ),
+            ),
+          ],
+
+          for (var i = 1; i <= total; i++) ...[
+            // Ненайденный обрывок всё равно показан строкой: видно, что
+            // впереди что-то есть, но не видно что. Скрывать его целиком
+            // значило бы, что до первой победы карточка выглядит пустой и
+            // бессмысленной, а перечислять тексты заранее — что читать их
+            // потом уже незачем.
+            if (i <= unlocked || i == unlocked + 1) ...[
+              const PixelDivider(gap: AppSpacing.md),
+              Text(
+                l10n.loreScrap(i).toUpperCase(),
+                style: context.text.chartLabel.copyWith(
+                  color: i <= unlocked ? colors.accent : colors.textTertiary,
+                ),
+              ),
+              AppSpacing.gapXs,
+              Text(
+                i <= unlocked ? _fragment(l10n, i) : l10n.loreLocked,
+                style: i <= unlocked
+                    ? context.text.body
+                    : context.text.caption.copyWith(
+                        color: colors.textTertiary,
+                      ),
+              ),
+            ],
+          ],
         ],
       ),
     );
