@@ -29,7 +29,9 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
+import '../shared/tap_streak.dart';
 import 'alarm_sound_labels.dart';
+import 'credits_screen.dart';
 import 'settings_providers.dart';
 import 'update_card.dart';
 
@@ -546,7 +548,7 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppInfo.name, style: context.text.sectionTitle),
+                  const _AppNameLine(),
                   AppSpacing.gapSm,
                   Text(
                     l10n.settingsVersion(AppInfo.version),
@@ -560,6 +562,39 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Название приложения в блоке «о приложении».
+///
+/// Выглядит и ведёт себя как обычный текст — им и остаётся для всех, кто по
+/// нему не барабанит. Отдельный виджет, а не поле экрана, только потому,
+/// что экран настроек не имеет состояния и заводить его целиком ради
+/// счётчика нажатий было бы дороже, чем оно стоит.
+class _AppNameLine extends StatefulWidget {
+  const _AppNameLine();
+
+  @override
+  State<_AppNameLine> createState() => _AppNameLineState();
+}
+
+class _AppNameLineState extends State<_AppNameLine> {
+  final TapStreak _taps = TapStreak();
+
+  void _onTap() {
+    if (!_taps.register(DateTime.now())) return;
+    Navigator.of(context).push(
+      pixelDissolveRoute<void>(const CreditsScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _onTap,
+      child: Text(AppInfo.name, style: context.text.sectionTitle),
     );
   }
 }
