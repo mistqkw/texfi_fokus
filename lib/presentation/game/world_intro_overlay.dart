@@ -11,13 +11,18 @@ import '../../core/theme/app_text_styles_ext.dart';
 import '../../l10n/app_localizations.dart';
 import '../shared/pixel_background.dart';
 import 'game_labels.dart';
+import 'world_style.dart';
 
 /// Эпиграф мира — та же интонация, что у описаний дриферов: короткое
 /// наблюдение, а не рекламное обещание.
-String worldEpigraph(AppLocalizations l10n, int world) => switch (world) {
+///
+/// null — миру ещё не написали своего эпиграфа. Заставка тогда показывает
+/// одно имя: пустая строка честнее, чем фраза, сочинённая про другое место.
+String? worldEpigraph(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.mapWorld1Epigraph,
       2 => l10n.mapWorld2Epigraph,
-      _ => l10n.mapWorld3Epigraph,
+      3 => l10n.mapWorld3Epigraph,
+      _ => null,
     };
 
 /// Заставка нового мира: имя крупно и одна фраза под ним.
@@ -71,6 +76,12 @@ class _WorldIntroOverlayState extends State<WorldIntroOverlay> {
     final l10n = context.l10n;
     final colors = context.colors;
 
+    // Заставка представляет мир — и делает это в том же тоне, в каком мир
+    // потом стоит на карте. Иначе первое впечатление и место, куда человек
+    // придёт через секунду, окрашены по-разному.
+    final tint = WorldStyle.tint(colors, widget.world);
+    final epigraph = worldEpigraph(l10n, widget.world);
+
     return GestureDetector(
       onTap: _close,
       behavior: HitTestBehavior.opaque,
@@ -96,9 +107,7 @@ class _WorldIntroOverlayState extends State<WorldIntroOverlay> {
                     Text(
                       worldName(l10n, widget.world),
                       textAlign: TextAlign.center,
-                      style: context.text.headline.copyWith(
-                        color: colors.accent,
-                      ),
+                      style: context.text.headline.copyWith(color: tint),
                     )
                         .animate()
                         .fadeIn(
@@ -127,17 +136,22 @@ class _WorldIntroOverlayState extends State<WorldIntroOverlay> {
                           delay: AppMotion.normal,
                         ),
 
-                    AppSpacing.gapLg,
-                    Text(
-                      worldEpigraph(l10n, widget.world),
-                      textAlign: TextAlign.center,
-                      style: context.text.body.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ).animate().fadeIn(
-                          duration: AppMotion.normal,
-                          delay: AppMotion.slow,
+                    // Эпиграфа может не быть — у мира, которому его ещё не
+                    // написали. Заставка тогда показывает одно имя, и это
+                    // честнее, чем фраза, сочинённая про другое место.
+                    if (epigraph != null) ...[
+                      AppSpacing.gapLg,
+                      Text(
+                        epigraph,
+                        textAlign: TextAlign.center,
+                        style: context.text.body.copyWith(
+                          color: colors.textSecondary,
                         ),
+                      ).animate().fadeIn(
+                            duration: AppMotion.normal,
+                            delay: AppMotion.slow,
+                          ),
+                    ],
                   ],
                 ),
               ),

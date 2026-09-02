@@ -58,6 +58,8 @@ class EncounterCard extends ConsumerWidget {
         ? colors.danger
         : (node.golden ? AppColorsExt.rareGold : colors.accent);
 
+    final flavor = node.flavor(l10n);
+
     return PixelCard(
       accent: !node.isBoss,
       borderColor: node.isBoss
@@ -83,9 +85,9 @@ class EncounterCard extends ConsumerWidget {
                   children: [
                     Text(node.title(l10n), style: context.text.sectionTitle),
                     AppSpacing.gapXs,
-                    if (!compact) ...[
+                    if (!compact && flavor != null) ...[
                       Text(
-                        node.flavor(l10n),
+                        flavor,
                         style: context.text.caption.copyWith(
                           color: colors.textSecondary,
                         ),
@@ -109,6 +111,23 @@ class EncounterCard extends ConsumerWidget {
           if (node.wounded) ...[
             AppSpacing.gapSm,
             _Note(text: l10n.encounterWounded, color: colors.warning),
+          ],
+
+          // Дрифер помнит, сколько раз с ним начинали и не заканчивали.
+          //
+          // Тон здесь — единственное, что имеет значение. Это наблюдение, а
+          // не упрёк: первая ступень просто называет число, вторая говорит,
+          // что дело, похоже, в самой задаче, а не в человеке. Ни цвета
+          // тревоги, ни восклицательных знаков — и никакого штрафа за
+          // спиной у текста: счётчик ни на что в игре не влияет.
+          if (node.memoryTier > 0 && !compact) ...[
+            AppSpacing.gapSm,
+            _Note(
+              text: node.memoryTier >= 2
+                  ? l10n.encounterMemoryDeep(node.abandonedCount)
+                  : l10n.encounterMemoryNoticed(node.abandonedCount),
+              color: colors.textTertiary,
+            ),
           ],
 
           if (node.isBoss) ...[

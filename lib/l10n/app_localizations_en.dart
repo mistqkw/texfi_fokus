@@ -1602,4 +1602,63 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String mapWorldAffinity(String category) {
+    return 'Leans toward $category';
+  }
+
+  @override
+  String get mapWorldAffinityHint =>
+      'Sessions in that category leave a little more here. Anything else works just as well.';
+
+  @override
+  String encounterMemoryNoticed(int count) {
+    return '$count runs at this one ended early. It is still standing.';
+  }
+
+  @override
+  String encounterMemoryDeep(int count) {
+    return '$count times now. Something about this task is not what the plan says it is.';
+  }
+
+  @override
+  String resultResonance(String category) {
+    return 'This world leans toward $category — a small bonus.';
+  }
+
+  @override
+  String get loreTitle => 'Scraps';
+
+  @override
+  String get loreBody =>
+      'Each world has something written on the back of it. It turns up once the thing at the end is gone.';
+
+  @override
+  String get loreEmpty =>
+      'Nothing yet. The first scrap is behind the first boss.';
+
+  @override
+  String get loreLocked => 'Not found yet';
+
+  @override
+  String loreScrap(int number) {
+    return 'Scrap $number';
+  }
+
+  @override
+  String get loreFragment1 =>
+      'On the floor of the still room: \"Left the door open for a minute. Came back and the minute was gone.\"';
+
+  @override
+  String get loreFragment2 =>
+      'Same handwriting, out in the field: \"They do not come in from outside. They are what I put down and did not pick up.\"';
+
+  @override
+  String get loreFragment3 =>
+      'At the far end of the hall: \"The hall is the same room. I have been walking it since I sat down.\"';
+
+  @override
+  String get loreFragment4 =>
+      'The last scrap, in no handwriting at all: \"It is quiet now. It will not stay quiet. That is fine — you know the way back.\"';
 }

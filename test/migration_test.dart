@@ -134,6 +134,117 @@ File _seedV1(Directory dir) {
   return file;
 }
 
+/// Схема версии 7 в той части, которая нас здесь интересует: игровой слой уже
+/// стоит, партия уже начата, а колонки `abandoned_count` ещё нет.
+///
+/// Пишется вручную по той же причине, что и [_schemaV1]: тест обязан ловить
+/// ровно тот случай, когда новая колонка появилась только в `onCreate`, и у
+/// человека с начатой партией её не окажется.
+File _seedV7(Directory dir) {
+  final file = File(p.join(dir.path, 'v7.sqlite'));
+  final db = sqlite3.open(file.path);
+  for (final statement in _schemaV1) {
+    db.execute(statement);
+  }
+  // Колонки, добавленные миграциями v2-v6 к уже существующим таблицам.
+  db.execute('ALTER TABLE sessions ADD COLUMN was_manual_override '
+      'INTEGER NOT NULL DEFAULT 0');
+  db.execute('ALTER TABLE sessions ADD COLUMN interruption_reason INTEGER');
+  db.execute('ALTER TABLE sessions ADD COLUMN session_note TEXT');
+  db.execute('ALTER TABLE sessions ADD COLUMN photo_path TEXT');
+  db.execute('ALTER TABLE habits ADD COLUMN frequency_type '
+      'INTEGER NOT NULL DEFAULT 0');
+  db.execute('ALTER TABLE habits ADD COLUMN times_per_week '
+      'INTEGER NOT NULL DEFAULT 3');
+  db.execute('ALTER TABLE habits ADD COLUMN reward TEXT');
+  db.execute('ALTER TABLE habits ADD COLUMN reward_streak_days '
+      'INTEGER NOT NULL DEFAULT 7');
+  db.execute('ALTER TABLE habits ADD COLUMN freeze_interval_days '
+      'INTEGER NOT NULL DEFAULT 7');
+  db.execute('''
+    CREATE TABLE habit_freezes (
+      id TEXT NOT NULL,
+      habit_id TEXT NOT NULL,
+      day INTEGER NOT NULL,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (id)
+    )''');
+  db.execute('''
+    CREATE TABLE day_plan_entries (
+      id TEXT NOT NULL,
+      day INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      done INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (id)
+    )''');
+  db.execute('''
+    CREATE TABLE subtasks (
+      id TEXT NOT NULL,
+      entry_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      done INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (id)
+    )''');
+  db.execute('''
+    CREATE TABLE player_progress (
+      id INTEGER NOT NULL DEFAULT 0,
+      total_xp INTEGER NOT NULL DEFAULT 0,
+      drifter_kills INTEGER NOT NULL DEFAULT 0,
+      boss_kills INTEGER NOT NULL DEFAULT 0,
+      updated_at INTEGER NOT NULL,
+      PRIMARY KEY (id)
+    )''');
+  db.execute('''
+    CREATE TABLE map_nodes (
+      id TEXT NOT NULL,
+      world INTEGER NOT NULL,
+      position INTEGER NOT NULL,
+      kind INTEGER NOT NULL,
+      status INTEGER NOT NULL,
+      species INTEGER NOT NULL DEFAULT 0,
+      max_hp INTEGER NOT NULL,
+      current_hp INTEGER NOT NULL,
+      player_hp INTEGER NOT NULL DEFAULT 0,
+      golden INTEGER NOT NULL DEFAULT 0,
+      last_fought_at INTEGER,
+      PRIMARY KEY (id)
+    )''');
+  db.execute('''
+    CREATE TABLE game_settings (
+      id INTEGER NOT NULL DEFAULT 0,
+      enabled INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (id)
+    )''');
+
+  // Партия в разгаре: седьмой уровень, первый мир пройден, на втором стоит
+  // недобитый дрифер. Ровно то, что человек потерял бы, если бы миграция
+  // оказалась пересозданием таблицы.
+  db.execute(
+    'INSERT INTO player_progress (id, total_xp, drifter_kills, boss_kills, '
+    'updated_at) VALUES (0, 1080, 7, 1, ?)',
+    [_stamp(DateTime(2026, 2, 20))],
+  );
+  db.execute('INSERT INTO game_settings (id, enabled) VALUES (0, 1)');
+  db.execute(
+    'INSERT INTO map_nodes (id, world, position, kind, status, species, '
+    'max_hp, current_hp, player_hp, golden) '
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ['w1n1', 1, 1, 0, 2, 2, 31, 0, 0, 0],
+  );
+  db.execute(
+    'INSERT INTO map_nodes (id, world, position, kind, status, species, '
+    'max_hp, current_hp, player_hp, golden) '
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ['w2n1', 2, 1, 0, 1, 3, 31, 12, 0, 1],
+  );
+  db.execute('PRAGMA user_version = 7');
+  db.dispose();
+  return file;
+}
+
 void main() {
   late Directory dir;
 
@@ -279,5 +390,46 @@ void main() {
       'drifter_kills',
       'boss_kills',
     ]));
+  });
+
+  test('an upgrade from v7 keeps a game in progress and adds the counter',
+      () async {
+    final file = _seedV7(dir);
+    final db = AppDatabase.forTesting(NativeDatabase(file));
+    addTearDown(db.close);
+
+    // Прогресс на месте до последней цифры. Уровень и пройденные узлы — это
+    // недели работы человека, и восстановлению они не подлежат.
+    final progress = await db.select(db.playerProgress).getSingle();
+    expect(progress.totalXp, 1080);
+    expect(progress.drifterKills, 7);
+    expect(progress.bossKills, 1);
+
+    final nodes = await db.select(db.mapNodes).get();
+    expect(nodes, hasLength(2));
+
+    final cleared = nodes.firstWhere((n) => n.id == 'w1n1');
+    expect(cleared.status, 2);
+    expect(cleared.currentHp, 0);
+
+    // Недобитый дрифер второго мира сохранил и HP, и редкую окраску.
+    final wounded = nodes.firstWhere((n) => n.id == 'w2n1');
+    expect(wounded.currentHp, 12);
+    expect(wounded.golden, isTrue);
+    expect(wounded.species, 3);
+
+    // Новая колонка появилась и у старых строк честно начинается с нуля:
+    // сколько раз человек уходил с этого узла до обновления, взять неоткуда,
+    // а выдуманное число приложение потом назвало бы вслух.
+    expect(cleared.abandonedCount, 0);
+    expect(wounded.abandonedCount, 0);
+
+    // И игровой режим остался включённым: миграция не трогает выбор.
+    final settings = await db.select(db.gameSettings).getSingle();
+    expect(settings.enabled, isTrue);
+
+    final version =
+        await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.data.values.single, db.schemaVersion);
   });
 }

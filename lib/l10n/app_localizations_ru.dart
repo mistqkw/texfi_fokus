@@ -1600,4 +1600,62 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String mapWorldAffinity(String category) {
+    return 'Тяготеет к: $category';
+  }
+
+  @override
+  String get mapWorldAffinityHint =>
+      'Сессии этой категории оставляют здесь чуть больше. Всё остальное работает ровно так же.';
+
+  @override
+  String encounterMemoryNoticed(int count) {
+    return 'Заходов сюда, оборвавшихся на полпути: $count. Он всё ещё стоит.';
+  }
+
+  @override
+  String encounterMemoryDeep(int count) {
+    return 'Уже $count. С этой задачей что-то не то, чем она записана в плане.';
+  }
+
+  @override
+  String resultResonance(String category) {
+    return 'Этот мир тяготеет к: $category — небольшая надбавка.';
+  }
+
+  @override
+  String get loreTitle => 'Обрывки';
+
+  @override
+  String get loreBody =>
+      'У каждого мира что-то написано на обороте. Находится, когда того, кто стоял в конце, больше нет.';
+
+  @override
+  String get loreEmpty => 'Пока ничего. Первый обрывок — за первым боссом.';
+
+  @override
+  String get loreLocked => 'Ещё не найден';
+
+  @override
+  String loreScrap(int number) {
+    return 'Обрывок $number';
+  }
+
+  @override
+  String get loreFragment1 =>
+      'На полу тихой комнаты: «Оставил дверь открытой на минуту. Вернулся — минуты нет».';
+
+  @override
+  String get loreFragment2 =>
+      'Тот же почерк, уже в поле: «Они не приходят снаружи. Они — то, что я положил и не поднял».';
+
+  @override
+  String get loreFragment3 =>
+      'В дальнем конце зала: «Зал — это та же комната. Я иду по ней с тех пор, как сел».';
+
+  @override
+  String get loreFragment4 =>
+      'Последний обрывок, вообще без почерка: «Сейчас тихо. Тихо не останется. Это нормально — дорогу назад ты знаешь».';
 }

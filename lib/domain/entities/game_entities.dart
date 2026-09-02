@@ -53,6 +53,7 @@ class MapNodeEntity {
     required this.currentHp,
     required this.playerHp,
     this.golden = false,
+    this.abandonedCount = 0,
     this.lastFoughtAt,
   });
 
@@ -82,6 +83,14 @@ class MapNodeEntity {
   /// надбавка к опыту за победу — на HP, урон и порядок узлов не влияет.
   final bool golden;
 
+  /// Сколько раз заход сюда обрывался, не добив противника.
+  ///
+  /// Только для одной строки текста при следующей встрече. Ни на HP, ни на
+  /// урон, ни на опыт не влияет: приложение просит останавливаться честно, и
+  /// штрафовать за честную остановку означало бы просить об одном, а
+  /// наказывать за другое.
+  final int abandonedCount;
+
   final DateTime? lastFoughtAt;
 
   bool get isBoss => kind == MapNodeKind.boss;
@@ -90,6 +99,14 @@ class MapNodeEntity {
 
   /// Дрифер, которого начали, но не добили.
   bool get wounded => currentHp < maxHp && currentHp > 0;
+
+  /// Ступень памяти дрифера, 0..2. 0 — дриферу нечего сказать.
+  ///
+  /// Только у обычных дриферов: босс и так возвращает к себе целиком, и
+  /// отдельная реплика про брошенные заходы к нему была бы вторым
+  /// напоминанием об одном и том же.
+  int get memoryTier =>
+      isBoss ? 0 : GameRules.drifterMemoryTier(abandonedCount);
 
   /// Доля оставшегося HP, 0..1 — то, что рисует полоска.
   double get hpFraction =>
@@ -100,6 +117,7 @@ class MapNodeEntity {
     int? maxHp,
     int? currentHp,
     int? playerHp,
+    int? abandonedCount,
     DateTime? lastFoughtAt,
   }) {
     return MapNodeEntity(
@@ -113,6 +131,7 @@ class MapNodeEntity {
       currentHp: currentHp ?? this.currentHp,
       playerHp: playerHp ?? this.playerHp,
       golden: golden,
+      abandonedCount: abandonedCount ?? this.abandonedCount,
       lastFoughtAt: lastFoughtAt ?? this.lastFoughtAt,
     );
   }
@@ -147,6 +166,7 @@ class EncounterResult {
     required this.damageDealt,
     this.node,
     this.leveledUpTo,
+    this.resonated = false,
   });
 
   const EncounterResult.none()
@@ -154,7 +174,8 @@ class EncounterResult {
         xpGained = 0,
         damageDealt = 0,
         node = null,
-        leveledUpTo = null;
+        leveledUpTo = null,
+        resonated = false;
 
   final EncounterOutcome outcome;
   final int xpGained;
@@ -165,6 +186,12 @@ class EncounterResult {
 
   /// Новый уровень, если он взят этим заходом. null — уровень не изменился.
   final int? leveledUpTo;
+
+  /// Категория задачи совпала с тем, с чем перекликается этот мир, и за это
+  /// начислена небольшая надбавка. Нужно только затем, чтобы итоговый экран
+  /// мог назвать причину: непрошеная прибавка к опыту без объяснения читается
+  /// как сбой подсчёта.
+  final bool resonated;
 
   bool get isSomething => outcome != EncounterOutcome.none;
 }

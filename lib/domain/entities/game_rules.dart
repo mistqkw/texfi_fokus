@@ -81,6 +81,33 @@ enum DrifterSpecies {
           : DrifterSpecies.buzz;
 }
 
+/// Из чего состоит один мир.
+///
+/// Заведено отдельным описанием, а не тремя параллельными списками, ровно
+/// по той причине, по которой в этом файле вообще есть [worlds]: мир — это
+/// не «номер в цикле», а набор согласованных между собой решений. Чтобы
+/// появился четвёртый, достаточно дописать сюда одну строку и три вида в
+/// [DrifterSpecies]; ни схема БД, ни репозиторий, ни экраны при этом не
+/// меняются. Пока миров три, разница между «списком списков» и этим
+/// классом почти незаметна — она станет заметна ровно в тот день, когда
+/// у мира появится второе свойство, и его придётся вписывать в код,
+/// который к тому времени успел разъехаться.
+final class WorldDefinition {
+  const WorldDefinition({required this.roster, required this.affinity});
+
+  /// Кто стоит на обычных узлах этого мира. Внутри мира повторов нет.
+  final List<DrifterSpecies> roster;
+
+  /// С какой категорией задач мир перекликается.
+  ///
+  /// Это не требование и не фильтр: в «Громком поле» можно спокойно учиться,
+  /// и ничего не сломается. Совпадение только добавляет небольшую разовую
+  /// надбавку к опыту и одну строку на карте — ровно столько, чтобы порядок
+  /// миров перестал быть случайным и начал что-то говорить о том, над чем
+  /// человек на самом деле работает.
+  final TaskCategory affinity;
+}
+
 /// Правила игрового слоя.
 ///
 /// Всё здесь — чистые функции без состояния и без Flutter: игровая механика
@@ -313,9 +340,46 @@ abstract final class GameRules {
 
   // --- Карта ---
 
-  /// Сколько миров реализовано в первом заходе. Каждый — со своим боссом и
-  /// своим набором дриферов.
-  static const int worldCount = 3;
+  /// Миры по порядку. Индекс в списке — это `world - 1`.
+  ///
+  /// Первый мир оставлен ровно в том составе и порядке, в каком он
+  /// раскладывался прежней формулой `(world + position) % 3`, — иначе у
+  /// людей с уже начатой партией узлы сменили бы обитателей на ровном
+  /// месте.
+  ///
+  /// Соответствие мира категории выбрано по характеру, а не по алфавиту:
+  /// тихая комната — это про то, как садятся за учёбу; громкое поле — про
+  /// рабочий день, где всё требует очереди; длинный зал — про дела, которые
+  /// не кончаются. Творчество и спорт намеренно оставлены четвёртому и
+  /// пятому мирам: их характер ещё не написан, и раздавать им категории
+  /// заранее значило бы решать за ещё не существующий контент.
+  static const List<WorldDefinition> worlds = [
+    WorldDefinition(
+      roster: [DrifterSpecies.loom, DrifterSpecies.buzz, DrifterSpecies.creep],
+      affinity: TaskCategory.study,
+    ),
+    WorldDefinition(
+      roster: [DrifterSpecies.tangle, DrifterSpecies.mote, DrifterSpecies.husk],
+      affinity: TaskCategory.work,
+    ),
+    WorldDefinition(
+      roster: [DrifterSpecies.siphon, DrifterSpecies.knot, DrifterSpecies.veil],
+      affinity: TaskCategory.chores,
+    ),
+  ];
+
+  /// Сколько миров реализовано. Считается по [worlds], а не задано числом:
+  /// два источника правды про одно и то же — самый дешёвый способ однажды
+  /// разложить карту на четыре мира, из которых наполнены три.
+  static int get worldCount => worlds.length;
+
+  /// Мир по 1-based номеру. За пределами реализованного возвращает
+  /// последний: карта не должна падать от запроса про мир, которого ещё нет.
+  static WorldDefinition worldAt(int world) =>
+      worlds[(world - 1).clamp(0, worlds.length - 1)];
+
+  /// Категория, с которой перекликается мир.
+  static TaskCategory affinityOf(int world) => worldAt(world).affinity;
 
   /// Сколько обычных дриферов стоит перед боссом мира.
   static const int drifterNodesPerWorld = 3;
@@ -327,22 +391,73 @@ abstract final class GameRules {
   /// ссылки и логи, и он не разъедется при смене нумерации.
   static String nodeId(int world, int position) => 'w${world}n$position';
 
-  /// Состав каждого мира: своя тройка существ, ни одно не повторяется.
-  ///
-  /// Первый мир оставлен ровно в том порядке, в каком он раскладывался
-  /// прежней формулой `(world + position) % 3`, — иначе у людей с уже
-  /// начатой партией узлы сменили бы обитателей на ровном месте.
-  static const List<List<DrifterSpecies>> worldRoster = [
-    [DrifterSpecies.loom, DrifterSpecies.buzz, DrifterSpecies.creep],
-    [DrifterSpecies.tangle, DrifterSpecies.mote, DrifterSpecies.husk],
-    [DrifterSpecies.siphon, DrifterSpecies.knot, DrifterSpecies.veil],
-  ];
-
   /// Какое существо стоит на узле. У каждого мира свой набор, внутри мира
   /// повторов нет.
   static DrifterSpecies speciesFor(int world, int position) {
-    final row = worldRoster[(world - 1).clamp(0, worldRoster.length - 1)];
+    final row = worldAt(world).roster;
     return row[(position - 1) % row.length];
+  }
+
+  // --- Перекличка мира с категорией задачи ---
+
+  /// Надбавка за работу «в тему» мира.
+  ///
+  /// Плоская и намеренно маленькая — примерно треть короткой сессии. Смысл
+  /// не в том, чтобы направлять человека («учись, пока ты в первом мире»),
+  /// а в том, чтобы совпадение было замечено, когда оно случается само.
+  /// Множитель здесь был бы вредной механикой: он превратил бы карту в
+  /// расписание того, чем сейчас положено заниматься.
+  static const int resonanceBonusXp = 8;
+
+  /// Начисляется ли надбавка за перекличку.
+  ///
+  /// «Прочее» не в счёт: это значение по умолчанию, а не выбор, и совпадать
+  /// с ним не должно ничего.
+  static bool resonates({required int world, required TaskCategory category}) {
+    if (category == TaskCategory.other) return false;
+    return affinityOf(world) == category;
+  }
+
+  // --- Память дрифера ---
+
+  /// Со скольких брошенных заходов дрифер начинает это замечать.
+  ///
+  /// Два, а не один: один оборванный заход — это просто оборванный заход, и
+  /// делать из него наблюдение о человеке было бы и неточно, и неприятно.
+  static const int drifterMemoryThreshold = 2;
+
+  /// Со скольких — вторая, более прямая строка.
+  static const int drifterMemoryDeepThreshold = 4;
+
+  /// Ступень памяти дрифера, 0..2. 0 — молчит.
+  ///
+  /// Это только текст. Ни на HP, ни на урон, ни на опыт счётчик не влияет и
+  /// влиять не должен: механический штраф за брошенные сессии наказывал бы
+  /// ровно за то, что приложение вообще-то просит делать честно — за
+  /// признание, что сессия не пошла.
+  static int drifterMemoryTier(int abandonedCount) {
+    if (abandonedCount >= drifterMemoryDeepThreshold) return 2;
+    if (abandonedCount >= drifterMemoryThreshold) return 1;
+    return 0;
+  }
+
+  // --- Сквозная нить ---
+
+  /// Сколько всего обрывков записок спрятано за боссами.
+  ///
+  /// По одному на мир плюс последний, который открывается только когда
+  /// пройдены все. Считается от [worldCount]: появится четвёртый мир —
+  /// появится и четвёртый обрывок, и последний уедет за него сам.
+  static int get loreFragmentCount => worldCount + 1;
+
+  /// Сколько обрывков открыто при таком числе побеждённых боссов.
+  ///
+  /// Последний придерживается до полного прохождения карты: он единственный,
+  /// что говорит про место целиком, и до конца пути ему нечего подытоживать.
+  static int unlockedLoreFragments(int bossKills) {
+    if (bossKills <= 0) return 0;
+    if (bossKills >= worldCount) return loreFragmentCount;
+    return bossKills.clamp(0, worldCount);
   }
 
   // --- Персонаж ---

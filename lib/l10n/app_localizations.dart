@@ -2897,6 +2897,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} session} other{{count} sessions}}'**
   String settingsBurnoutStreakValue(int count);
+
+  /// Which task category a map world resonates with
+  ///
+  /// In en, this message translates to:
+  /// **'Leans toward {category}'**
+  String mapWorldAffinity(String category);
+
+  /// Explains the world/category resonance without turning it into a requirement
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions in that category leave a little more here. Anything else works just as well.'**
+  String get mapWorldAffinityHint;
+
+  /// Drifter memory, first tier: a plain count of abandoned runs
+  ///
+  /// In en, this message translates to:
+  /// **'{count} runs at this one ended early. It is still standing.'**
+  String encounterMemoryNoticed(int count);
+
+  /// Drifter memory, second tier: points at the task, not at the person
+  ///
+  /// In en, this message translates to:
+  /// **'{count} times now. Something about this task is not what the plan says it is.'**
+  String encounterMemoryDeep(int count);
+
+  /// Result sheet note naming why the extra XP appeared
+  ///
+  /// In en, this message translates to:
+  /// **'This world leans toward {category} — a small bonus.'**
+  String resultResonance(String category);
+
+  /// Title of the optional lore section on the character screen
+  ///
+  /// In en, this message translates to:
+  /// **'Scraps'**
+  String get loreTitle;
+
+  /// Subtitle of the lore section
+  ///
+  /// In en, this message translates to:
+  /// **'Each world has something written on the back of it. It turns up once the thing at the end is gone.'**
+  String get loreBody;
+
+  /// Empty state of the lore section
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. The first scrap is behind the first boss.'**
+  String get loreEmpty;
+
+  /// Placeholder for a lore scrap that is not unlocked yet
+  ///
+  /// In en, this message translates to:
+  /// **'Not found yet'**
+  String get loreLocked;
+
+  /// Label of one lore scrap
+  ///
+  /// In en, this message translates to:
+  /// **'Scrap {number}'**
+  String loreScrap(int number);
+
+  /// Lore scrap found after the first boss
+  ///
+  /// In en, this message translates to:
+  /// **'On the floor of the still room: \"Left the door open for a minute. Came back and the minute was gone.\"'**
+  String get loreFragment1;
+
+  /// Lore scrap found after the second boss
+  ///
+  /// In en, this message translates to:
+  /// **'Same handwriting, out in the field: \"They do not come in from outside. They are what I put down and did not pick up.\"'**
+  String get loreFragment2;
+
+  /// Lore scrap found after the third boss
+  ///
+  /// In en, this message translates to:
+  /// **'At the far end of the hall: \"The hall is the same room. I have been walking it since I sat down.\"'**
+  String get loreFragment3;
+
+  /// Final lore scrap, unlocked only after every world is cleared
+  ///
+  /// In en, this message translates to:
+  /// **'The last scrap, in no handwriting at all: \"It is quiet now. It will not stay quiet. That is fine — you know the way back.\"'**
+  String get loreFragment4;
 }
 
 class _AppLocalizationsDelegate
