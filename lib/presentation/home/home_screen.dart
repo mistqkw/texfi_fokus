@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class HomeScreen extends ConsumerWidget {
         body: ListView(
           padding: AppSpacing.screen,
           children: [
+            const _MidnightMark(),
             const _StreakAndFocusRow(),
             const _InsightCard(),
             AppSpacing.gapXl,
@@ -82,6 +84,80 @@ class HomeScreen extends ConsumerWidget {
               data: (items) => _HabitsList(items: items),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Едва заметная отметка ровно в полночь.
+///
+/// Отдельного вечного таймера ради неё не заводится: в обычную минуту
+/// виджет один раз смотрит на часы при появлении и на этом заканчивается —
+/// он ничего не подписывает, ничем не владеет и занимает ноль высоты.
+/// Единственное исключение — последние минуты суток: если экран открыт
+/// прямо перед полуночью, ставится один-единственный отложенный вызов на
+/// сам рубеж. Это разовый таймер в пятиминутном окне раз в сутки, а не
+/// фоновая работа.
+class _MidnightMark extends StatefulWidget {
+  const _MidnightMark();
+
+  @override
+  State<_MidnightMark> createState() => _MidnightMarkState();
+}
+
+class _MidnightMarkState extends State<_MidnightMark> {
+  /// Сколько отметка держится на экране, прежде чем исчезнуть сама.
+  static const Duration _visibleFor = Duration(seconds: 6);
+
+  /// За сколько до полуночи имеет смысл дождаться рубежа, а не пропустить
+  /// его только потому, что экран открыли минутой раньше.
+  static const Duration _waitWithin = Duration(minutes: 5);
+
+  bool _visible = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+
+    if (now.hour == 0 && now.minute == 0) {
+      _show();
+      return;
+    }
+
+    final midnight = DateTime(now.year, now.month, now.day + 1);
+    final until = midnight.difference(now);
+    if (until <= _waitWithin) {
+      _timer = Timer(until, _show);
+    }
+  }
+
+  void _show() {
+    if (!mounted) return;
+    setState(() => _visible = true);
+    _timer = Timer(_visibleFor, () {
+      if (mounted) setState(() => _visible = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_visible) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Text(
+        '00:00',
+        textAlign: TextAlign.center,
+        style: context.text.chartLabel.copyWith(
+          color: AppColorsExt.rareGold.withValues(alpha: 0.55),
         ),
       ),
     );
