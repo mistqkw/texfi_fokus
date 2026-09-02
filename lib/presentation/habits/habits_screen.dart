@@ -10,6 +10,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
 import '../../domain/entities/habit_entity.dart';
+import '../home/home_providers.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_card.dart';
@@ -111,6 +112,16 @@ class HabitsScreen extends ConsumerWidget {
             // Поле поиска появляется только на длинном списке: на пяти
             // привычках оно отняло бы высоту у самого списка, не дав ничего
             // взамен.
+            // Стрики берутся из уже существующего потока «привычки на
+            // сегодня» — того же, по которому живёт Home. Второй запрос ради
+            // одного значка заводить незачем, а пока поток не приехал,
+            // значков просто нет.
+            final streaks = {
+              for (final status in ref.watch(todayHabitsProvider).valueOrNull ??
+                  const <HabitWithStatus>[])
+                status.habit.id: status.streak,
+            };
+
             final searchable = items.length >= habitSearchThreshold;
             final query = ref.watch(habitSearchQueryProvider);
             final shown = searchable ? filterHabits(items, query) : items;
@@ -140,6 +151,7 @@ class HabitsScreen extends ConsumerWidget {
                 final habit = shown[index - (searchable ? 1 : 0)];
                 return _HabitCard(
                   habit: habit,
+                  streakTier: StreakBadge.tierFor(streaks[habit.id] ?? 0),
                   onEdit: () {
                     Haptics.tap();
                     Navigator.of(context).push(
@@ -162,9 +174,14 @@ class _HabitCard extends StatelessWidget {
     required this.habit,
     required this.onEdit,
     required this.onDelete,
+    this.streakTier = 0,
   });
 
   final HabitEntity habit;
+
+  /// Ступень тихого значка долгого стрика, 0..3. Ноль — обычный случай, и
+  /// карточка тогда выглядит ровно как раньше.
+  final int streakTier;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -198,6 +215,19 @@ class _HabitCard extends StatelessWidget {
               Expanded(
                 child: Text(habit.name, style: context.text.title),
               ),
+              // Зарубки за долгий стрик. Без подписи и без всплывающих
+              // объяснений: карточка ничего не объявляет, просто с какого-то
+              // момента рядом с названием появляется метка.
+              for (var i = 0; i < streakTier; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 2),
+                  child: PixelSprite(
+                    rows: PixelSprites.notch,
+                    size: 10,
+                    color: colors.textTertiary,
+                  ),
+                ),
+              if (streakTier > 0) AppSpacing.wGapXs,
               IconButton(
                 icon: PixelSprite(
                 rows: PixelSprites.trash,

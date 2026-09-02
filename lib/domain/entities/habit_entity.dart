@@ -224,3 +224,26 @@ class HabitWithStatus {
       habit.frequency == HabitFrequencyType.timesPerWeek &&
       doneThisWeek >= habit.timesPerWeek;
 }
+
+/// Тихий значок долгого стрика.
+///
+/// Три ступени и ни одного слова: длинный стрик — это то, что человек и так
+/// про себя знает, и объявлять ему об этом баннером значило бы превращать
+/// признание в поздравительную открытку. Значок просто появляется сбоку от
+/// названия и остаётся там.
+abstract final class StreakBadge {
+  /// Пороги ступеней. Месяц, сто дней и год — три рубежа, каждый из которых
+  /// человек отмечает про себя и без приложения.
+  static const List<int> thresholds = [30, 100, 365];
+
+  static int get tierCount => thresholds.length;
+
+  /// Ступень значка: 0 — значка нет, 1..3 — есть.
+  static int tierFor(int streak) {
+    var tier = 0;
+    for (final threshold in thresholds) {
+      if (streak >= threshold) tier++;
+    }
+    return tier;
+  }
+}
