@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_motion.dart';
+import 'full_turn_detector.dart';
 
 /// Круговая «крутилка» таймера: показывает прогресс и позволяет прямо во
 /// время сессии подкрутить оставшееся время.
@@ -57,6 +58,10 @@ class _TimerDialState extends State<TimerDial>
   int _lastAppliedTick = 0;
   double? _lastAngle;
 
+  /// Наблюдатель за полным оборотом. На выставленное время не влияет
+  /// никак — минуты по-прежнему считает та же дельта ниже.
+  final FullTurnDetector _fullTurn = FullTurnDetector();
+
   /// «Взятость» крутилки: 0 — отпущена, 1 — палец на ней.
   ///
   /// Пока отклик был только в цифрах, крутилка не отличалась от картинки:
@@ -68,9 +73,17 @@ class _TimerDialState extends State<TimerDial>
     duration: AppMotion.pop,
   );
 
+  /// Искра, пробегающая по кольцу. Отдельный контроллер, а не кадр внутри
+  /// [_grab]: она должна доиграть, даже если палец уже отпустили.
+  late final AnimationController _spark = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 520),
+  );
+
   @override
   void dispose() {
     _grab.dispose();
+    _spark.dispose();
     super.dispose();
   }
 
@@ -90,6 +103,7 @@ class _TimerDialState extends State<TimerDial>
     _lastAngle = _angleOf(details.localPosition, size);
     _accumulatedMinutes = 0;
     _lastAppliedTick = 0;
+    _fullTurn.start();
   }
 
   void _onPanUpdate(DragUpdateDetails details, Size size) {
@@ -106,6 +120,11 @@ class _TimerDialState extends State<TimerDial>
     _lastAngle = angle;
     _accumulatedMinutes += delta / (2 * math.pi) * _minutesPerTurn;
 
+    // Замкнувшийся круг ничего не меняет во времени — только зажигает
+    // искру. Поэтому он и стоит здесь, до всякой работы с минутами: что бы
+    // ниже ни случилось, на выставленное значение это не влияет.
+    if (_fullTurn.add(delta)) _spark.forward(from: 0);
+
     final tick = (_accumulatedMinutes / widget.minutesPerTick).round();
     if (tick == _lastAppliedTick) return;
 
@@ -120,6 +139,7 @@ class _TimerDialState extends State<TimerDial>
     _lastAngle = null;
     _accumulatedMinutes = 0;
     _lastAppliedTick = 0;
+    _fullTurn.end();
   }
 
   String _format(Duration d) {
@@ -167,6 +187,7 @@ class _TimerDialState extends State<TimerDial>
                 track: colors.surfaceVariant,
                 knob: widget.enabled ? accent : colors.textTertiary,
                 grab: _grab,
+                spark: _spark,
               ),
               child: Center(
                 child: Column(
@@ -211,7 +232,8 @@ class _DialPainter extends CustomPainter {
     required this.track,
     required this.knob,
     required this.grab,
-  }) : super(repaint: grab);
+    required this.spark,
+  }) : super(repaint: Listenable.merge([grab, spark]));
 
   final double progress;
   final Color accent;
@@ -221,6 +243,10 @@ class _DialPainter extends CustomPainter {
   /// 0..1 — насколько крутилка «взята». Подсвечивает ручку: за неё берутся
   /// пальцем, и именно она должна показать, что жест принят.
   final Animation<double> grab;
+
+  /// 0..1 — где сейчас искра, пробегающая круг. В покое 0: ничего не
+  /// рисуется, и обычная крутилка выглядит ровно как раньше.
+  final Animation<double> spark;
 
   /// Сегментов в круге. 60 — по минуте на сегмент при часовом обороте.
   static const int _segments = 60;
@@ -261,6 +287,38 @@ class _DialPainter extends CustomPainter {
       canvas.restore();
     }
 
+    // Искра: три подряд идущих сегмента, пробегающих круг за один заход.
+    // Ни на заполнение, ни на ручку она не влияет — просто перекрашивает
+    // те сегменты, мимо которых пролетает.
+    final sparkValue = spark.value;
+    if (sparkValue > 0 && sparkValue < 1) {
+      final head = (sparkValue * _segments).floor();
+      final sparkPaint = Paint()..style = PaintingStyle.fill;
+      for (var trail = 0; trail < 3; trail++) {
+        final index = (head - trail) % _segments;
+        final angle = -math.pi / 2 + (index / _segments) * 2 * math.pi;
+        sparkPaint.color = AppColorsExt.rareGold.withValues(
+          alpha: 1 - trail * 0.3,
+        );
+        final position = Offset(
+          center.dx + math.cos(angle) * ringRadius,
+          center.dy + math.sin(angle) * ringRadius,
+        );
+        canvas.save();
+        canvas.translate(position.dx, position.dy);
+        canvas.rotate(angle + math.pi / 2);
+        canvas.drawRect(
+          Rect.fromCenter(
+            center: Offset.zero,
+            width: ringWidth * 0.8,
+            height: ringWidth * 1.2,
+          ),
+          sparkPaint,
+        );
+        canvas.restore();
+      }
+    }
+
     // Ручка на границе заполнения — за неё «берутся» пальцем.
     final knobAngle = -math.pi / 2 + progress * 2 * math.pi;
     final knobCenter = Offset(
@@ -286,6 +344,7 @@ class _DialPainter extends CustomPainter {
   @override
   bool shouldRepaint(_DialPainter oldDelegate) =>
       oldDelegate.grab != grab ||
+      oldDelegate.spark != spark ||
       oldDelegate.progress != progress ||
       oldDelegate.accent != accent ||
       oldDelegate.track != track ||
