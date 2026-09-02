@@ -133,6 +133,7 @@
   "moodGood": "good",
   "moodFullFokus": "full f0kus",
   "moodHint": "Slide or tap to switch. Each state has its own vibration.",
+  "moodLateNightNote": "The nights have been long lately. Take care of yourself.",
   "moodPickTaskTitle": "What are you working on?",
   "moodTaskHint": "Task name",
   "moodNewTask": "New task",

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../data/providers/data_providers.dart';
+import '../../domain/entities/late_night_pattern.dart';
 import '../../domain/entities/mood.dart';
 import '../../domain/entities/mood_entry_entity.dart';
 import '../../domain/entities/recommendation.dart';
@@ -23,6 +24,7 @@ class SessionDraft {
     this.difficulty = TaskDifficulty.medium,
     this.moodEntryId,
     this.photoPath,
+    this.unstoppable = false,
   });
 
   final Mood mood;
@@ -37,6 +39,13 @@ class SessionDraft {
   /// Уже скопированный в документы приложения снимок. null — обычный случай:
   /// фото полностью необязательно и ни на что в сессии не влияет.
   final String? photoPath;
+
+  /// Редкий отклик переключателя настроения. Живёт только в черновике и
+  /// нигде не сохраняется: в БД по-прежнему пишется обычный
+  /// [Mood.fullFokus], и движок рекомендаций видит ровно тот же контекст,
+  /// что и всегда, — иначе такие сессии копились бы в отдельной корзине и
+  /// портили статистику обычных.
+  final bool unstoppable;
 
   bool get isValid => taskTitle.trim().isNotEmpty;
 
@@ -56,6 +65,7 @@ class SessionDraft {
     String? moodEntryId,
     String? photoPath,
     bool clearPhoto = false,
+    bool? unstoppable,
   }) {
     return SessionDraft(
       mood: mood ?? this.mood,
@@ -65,6 +75,7 @@ class SessionDraft {
       difficulty: difficulty ?? this.difficulty,
       moodEntryId: moodEntryId ?? this.moodEntryId,
       photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
+      unstoppable: unstoppable ?? this.unstoppable,
     );
   }
 }
@@ -76,7 +87,15 @@ class SessionDraftNotifier extends StateNotifier<SessionDraft> {
 
   void reset() => state = const SessionDraft();
 
-  void setMood(Mood mood) => state = state.copyWith(mood: mood);
+  /// Смена настроения всегда снимает редкий отклик: он держится только на
+  /// том состоянии, на котором был получен.
+  void setMood(Mood mood) =>
+      state = state.copyWith(mood: mood, unstoppable: false);
+
+  void setUnstoppable() {
+    if (state.mood != Mood.fullFokus) return;
+    state = state.copyWith(unstoppable: true);
+  }
 
   /// Выбор существующей задачи подтягивает её категорию и сложность —
   /// пользователю не нужно вводить их заново.
@@ -169,4 +188,46 @@ final recommendationProvider =
     hour: DateTime.now().hour,
     capHour: capHour,
   );
+});
+
+/// Показать ли один раз короткую строку про длинные ночи.
+///
+/// Отдельной системы слежения здесь нет: провайдер один раз читает уже
+/// сохранённые времена начала сессий за две недели и отдаёт `true`, если в
+/// них видна закономерность и такую строку ещё не показывали. Ни на
+/// рекомендацию, ни на запись сессии он не влияет вовсе — это отдельная
+/// ветка, которая в обычном случае просто отдаёт `false`.
+final lateNightNoteProvider = FutureProvider<bool>((ref) async {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  if (prefs.getString(lateNightNoteShownKey) != null) return false;
+
+  final now = DateTime.now();
+  final sessions = await ref
+      .watch(sessionRepositoryProvider)
+      .sessionsInRange(now.subtract(const Duration(days: 14)), now);
+
+  return LateNightPattern.detect(
+    sessions.map((session) => session.startedAt),
+    now: now,
+  );
+});
+
+/// Ключ отметки «строку уже показывали».
+///
+/// В SharedPreferences, а не в схеме: это память интерфейса о собственном
+/// показе, по ней ничего не считается и переносить её при экспорте незачем.
+const String lateNightNoteShownKey = 'mood.late_night_note_shown';
+
+/// Отмечает строку показанной. Ровно один раз за всё время: смысл жеста в
+/// том, что он единичный, а повторённый на третий вечер он превратился бы в
+/// упрёк.
+final markLateNightNoteShownProvider = Provider<Future<void> Function()>((ref) {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return () async {
+    if (prefs.getString(lateNightNoteShownKey) != null) return;
+    await prefs.setString(
+      lateNightNoteShownKey,
+      DateTime.now().toIso8601String(),
+    );
+  };
 });

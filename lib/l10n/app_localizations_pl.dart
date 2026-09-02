@@ -219,6 +219,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get moodHint => 'Przesuń albo dotknij. Każdy stan ma własną wibrację.';
 
   @override
+  String get moodLateNightNote => 'Noce bywają ostatnio długie. Dbaj o siebie.';
+
+  @override
   String get moodPickTaskTitle => 'Nad czym pracujesz?';
 
   @override

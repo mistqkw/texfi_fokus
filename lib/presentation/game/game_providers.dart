@@ -104,12 +104,14 @@ final gameSessionRecorderProvider = Provider<
   required TaskDifficulty difficulty,
   required Mood mood,
   required bool completedFully,
+  int bonusXp,
 })>((ref) {
   return ({
     required int focusSeconds,
     required TaskDifficulty difficulty,
     required Mood mood,
     required bool completedFully,
+    int bonusXp = 0,
   }) async {
     try {
       final result = await ref.read(gameRepositoryProvider).applySession(
@@ -117,6 +119,7 @@ final gameSessionRecorderProvider = Provider<
             difficulty: difficulty,
             mood: mood,
             completedFully: completedFully,
+            bonusXp: bonusXp,
           );
       ref.read(lastEncounterProvider.notifier).set(result);
       return result;

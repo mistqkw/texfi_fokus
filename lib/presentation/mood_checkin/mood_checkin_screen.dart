@@ -76,6 +76,16 @@ class _MoodCheckinScreenState extends ConsumerState<MoodCheckinScreen> {
     final tasks = ref.watch(tasksProvider);
     final plan = ref.watch(todayPlanProvider).valueOrNull ?? const [];
 
+    // Строка про длинные ночи: в обычном случае провайдер отдаёт `false`, и
+    // экран об этой ветке ничего не знает. Отметка о показе ставится в тот
+    // же кадр, в котором строка появилась, — второго раза не будет.
+    final lateNight = ref.watch(lateNightNoteProvider).valueOrNull ?? false;
+    if (lateNight) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(markLateNightNoteShownProvider)();
+      });
+    }
+
     return PixelBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -90,6 +100,10 @@ class _MoodCheckinScreenState extends ConsumerState<MoodCheckinScreen> {
               value: draft.mood,
               labels: moodLabels(l10n),
               onChanged: ref.read(sessionDraftProvider.notifier).setMood,
+              note: lateNight ? l10n.moodLateNightNote : null,
+              unstoppable: draft.unstoppable,
+              onUnstoppable:
+                  ref.read(sessionDraftProvider.notifier).setUnstoppable,
             ),
             AppSpacing.gapSm,
             Text(

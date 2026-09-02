@@ -138,6 +138,14 @@ abstract final class Haptics {
         HapticFeedback.heavyImpact,
       );
 
+  /// Состояние сверх full f0kus. Та же нарастающая очередь, но длиннее и без
+  /// пауз на спад — она не разгоняется, а уже идёт на полную.
+  static Future<void> moodUnstoppable() => _pattern(
+        const [0, 20, 20, 20, 20, 20, 20, 30, 20, 40, 20, 120],
+        const [0, 120, 0, 160, 0, 200, 0, 230, 0, 255, 0, 255],
+        HapticFeedback.heavyImpact,
+      );
+
   static Future<void> mood(int index) => switch (index) {
         0 => moodBad(),
         1 => moodNeutral(),
