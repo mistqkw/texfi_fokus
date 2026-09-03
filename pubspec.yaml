@@ -2,7 +2,7 @@ name: texfi_fokus
 description: "TexFi f0kus — habit tracker и focus-таймер с адаптивными рекомендациями"
 publish_to: 'none'
 
-version: 1.3.0+7
+version: 1.4.0+8
 
 environment:
   sdk: ^3.13.0
