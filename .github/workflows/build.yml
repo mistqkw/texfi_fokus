@@ -3,12 +3,24 @@ name: Build & Release
 # Локально приложение не собирается — все билды идут здесь.
 #  • пуш тега версии:  git tag v1.0.0 && git push origin v1.0.0
 #      → соберёт все четыре платформы и выпустит релиз с артефактами
-#  • вручную: вкладка Actions → Run workflow
+#  • вручную без тега: вкладка Actions → Run workflow, поле пустое
 #      → просто соберёт, без релиза
+#  • вручную с тегом:  вкладка Actions → Run workflow, release_tag = v1.0.0
+#      → соберёт, создаст тег на выбранном коммите и выпустит релиз
+#
+# Третий путь нужен там, где пуш тега недоступен — например, из окружения,
+# которому разрешены только ветки. Тег в этом случае заводит сам
+# `softprops/action-gh-release` штатным токеном Actions, и результат ничем
+# не отличается от первого пути.
 on:
   push:
     tags: ["v*.*.*"]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Тег релиза, например v1.4.0. Пусто — только сборка."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -155,10 +167,13 @@ jobs:
           path: out/TexFi-fokus-macos.zip
           if-no-files-found: error
 
-  # Релиз создаётся только на пуш тега vX.Y.Z, но не на ручной запуск.
+  # Релиз создаётся на пуш тега vX.Y.Z либо на ручной запуск, в котором тег
+  # указан явно. Ручной запуск с пустым полем по-прежнему только собирает.
   release:
     needs: [build-android, build-windows, build-linux, build-macos]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -170,6 +185,12 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: TexFi f0kus ${{ github.ref_name }}
+          # На пуш тега `ref_name` — это сам тег; на ручном запуске он был бы
+          # именем ветки, поэтому там берётся то, что ввели в поле.
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          name: TexFi f0kus ${{ inputs.release_tag || github.ref_name }}
+          # К какому коммиту привязать тег, если его ещё нет. На пуш тега поле
+          # игнорируется — тег уже существует.
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: dist/**/*
