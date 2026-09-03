@@ -86,6 +86,21 @@ class SessionRepositoryImpl implements SessionRepository {
   }
 
   @override
+  Future<Set<String>> referencedPhotoPaths() async {
+    // Одним запросом за колонкой, а не выборкой сессий целиком: список может
+    // быть длинным, а нужен из него ровно один столбец.
+    final rows = await (_db.selectOnly(_db.sessions)
+          ..addColumns([_db.sessions.photoPath])
+          ..where(_db.sessions.photoPath.isNotNull()))
+        .get();
+    return rows
+        .map((row) => row.read(_db.sessions.photoPath))
+        .whereType<String>()
+        .where((path) => path.isNotEmpty)
+        .toSet();
+  }
+
+  @override
   Future<void> deleteSession(String id) async {
     final row = await (_db.select(_db.sessions)..where((t) => t.id.equals(id)))
         .getSingleOrNull();

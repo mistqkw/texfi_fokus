@@ -1209,7 +1209,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsExportFailed.
   ///
   /// In en, this message translates to:
-  /// **'Export failed'**
+  /// **'Couldn\'t save the file. Your data is untouched — try again.'**
   String get settingsExportFailed;
 
   /// No description provided for @settingsAbout.
@@ -2121,7 +2121,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsImportFailed.
   ///
   /// In en, this message translates to:
-  /// **'Import failed'**
+  /// **'Couldn\'t read that file. Nothing was changed — check it\'s an export from this app.'**
   String get settingsImportFailed;
 
   /// No description provided for @timerRepeat.

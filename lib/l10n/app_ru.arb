@@ -184,7 +184,7 @@
   "settingsData": "Данные",
   "settingsExport": "Экспорт данных в JSON",
   "settingsExportDone": "Сохранено в {path}",
-  "settingsExportFailed": "Не удалось экспортировать",
+  "settingsExportFailed": "Не получилось сохранить файл. С данными ничего не случилось — попробуйте ещё раз.",
   "settingsAbout": "О приложении",
   "settingsVersion": "Версия {version}",
   "settingsAboutBody": "Часть экосистемы TexFi. Работает полностью офлайн — данные не покидают устройство.",
@@ -441,7 +441,7 @@
       }
     }
   },
-  "settingsImportFailed": "Импорт не удался",
+  "settingsImportFailed": "Не получилось прочитать файл. Ничего не изменилось — проверьте, что это выгрузка из этого приложения.",
   "timerRepeat": "Ещё одну такую же",
   "recommendationEvidenceScopeLabel": "Совпадение контекста",
   "recommendationEvidenceCountLabel": "Сессий в основе",

@@ -31,6 +31,12 @@ class _FakePhotoStore implements SessionPhotoStore {
 
   @override
   Future<void> delete(String? path) async => deleted.add(path);
+
+  /// Уборка на подделке ничего не хранит: её собственное поведение
+  /// проверяется на настоящем диске в `session_photo_gc_test.dart`, а здесь
+  /// важно только, что подделка удовлетворяет интерфейсу.
+  @override
+  Future<int> deleteUnreferenced(Set<String> keep) async => 0;
 }
 
 SessionEntity _session(String id, {String? photoPath}) => SessionEntity(

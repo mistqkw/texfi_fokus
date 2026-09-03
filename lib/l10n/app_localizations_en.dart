@@ -616,7 +616,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settingsExportFailed => 'Export failed';
+  String get settingsExportFailed =>
+      'Couldn\'t save the file. Your data is untouched — try again.';
 
   @override
   String get settingsAbout => 'About';
@@ -1155,7 +1156,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settingsImportFailed => 'Import failed';
+  String get settingsImportFailed =>
+      'Couldn\'t read that file. Nothing was changed — check it\'s an export from this app.';
 
   @override
   String get timerRepeat => 'One more like this';

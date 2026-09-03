@@ -24,6 +24,22 @@ abstract class SessionPhotoStore {
   /// Удаляет файл, если он есть. Отсутствующий файл — не ошибка: запись
   /// могла пережить чистку кеша или переезд на другое устройство.
   Future<void> delete(String? path);
+
+  /// Удаляет из хранилища всё, на что не ссылается ни одна сессия, и
+  /// возвращает число убранных файлов.
+  ///
+  /// Нужна потому, что копия снимка появляется на диске раньше, чем сессия в
+  /// базе: файл кладётся сюда в момент выбора, а строка пишется только когда
+  /// сессия закончится. Между этими двумя моментами человек может передумать
+  /// — закрыть check-in, выйти из приложения, — и копия останется без
+  /// единственного, кто о ней знал.
+  ///
+  /// Удаление именно по списку ссылок, а не по возрасту файла или по тому,
+  /// что черновик сбросили: [keep] приходит из самой базы, и всё, что в неё
+  /// попало, переживает уборку по построению. Ошибиться в другую сторону —
+  /// стереть снимок, который человек сделал сам и который виден в истории, —
+  /// здесь несопоставимо хуже, чем не убрать лишний файл.
+  Future<int> deleteUnreferenced(Set<String> keep);
 }
 
 /// Реальное хранилище: `<документы приложения>/session_photos/<uuid><ext>`.
@@ -65,5 +81,29 @@ class FileSessionPhotoStore implements SessionPhotoStore {
     if (await file.exists()) {
       await file.delete();
     }
+  }
+
+  @override
+  Future<int> deleteUnreferenced(Set<String> keep) async {
+    final documents = await _documentsDirectory();
+    final folder = Directory(p.join(documents.path, folderName));
+    // Папки может не быть вовсе — фото ни разу не прикладывали. Создавать её
+    // ради уборки незачем: убирать в ней нечего.
+    if (!await folder.exists()) return 0;
+
+    var removed = 0;
+    await for (final entity in folder.list(followLinks: false)) {
+      if (entity is! File) continue;
+      if (keep.contains(entity.path)) continue;
+      try {
+        await entity.delete();
+        removed += 1;
+      } on FileSystemException {
+        // Файл могли забрать из-под нас — например, он уже удалён вместе с
+        // сессией. Уборка не тот повод, чтобы ронять запуск.
+        continue;
+      }
+    }
+    return removed;
   }
 }

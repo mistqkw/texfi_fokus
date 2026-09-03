@@ -184,7 +184,7 @@
   "settingsData": "Dane",
   "settingsExport": "Eksport danych do JSON",
   "settingsExportDone": "Zapisano w {path}",
-  "settingsExportFailed": "Eksport nie powiódł się",
+  "settingsExportFailed": "Nie udało się zapisać pliku. Dane są nietknięte — spróbuj jeszcze raz.",
   "settingsAbout": "O aplikacji",
   "settingsVersion": "Wersja {version}",
   "settingsAboutBody": "Część ekosystemu TexFi. Działa całkowicie offline — dane nie opuszczają urządzenia.",
@@ -441,7 +441,7 @@
       }
     }
   },
-  "settingsImportFailed": "Import nieudany",
+  "settingsImportFailed": "Nie udało się odczytać pliku. Nic nie zostało zmienione — sprawdź, czy to eksport z tej aplikacji.",
   "timerRepeat": "Jeszcze jedna taka sama",
   "recommendationEvidenceScopeLabel": "Dopasowanie kontekstu",
   "recommendationEvidenceCountLabel": "Sesji u podstaw",

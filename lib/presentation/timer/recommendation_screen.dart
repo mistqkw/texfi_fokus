@@ -10,9 +10,7 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../domain/entities/recommendation.dart';
-import '../game/battle_screen.dart';
 import '../game/encounter_card.dart';
-import '../game/game_providers.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
 import '../shared/enum_labels.dart';
 import '../shared/pixel_background.dart';
@@ -23,8 +21,8 @@ import '../shared/pixel_sprite.dart';
 import 'manual_timer_screen.dart';
 import 'session_guard_dialog.dart';
 import 'session_guard_providers.dart';
+import 'session_route.dart';
 import 'timer_providers.dart';
-import 'timer_screen.dart';
 
 /// Показывает предложение движка с человеческим объяснением, откуда оно
 /// взялось. Объяснение здесь не украшение: пользователь должен понимать,
@@ -46,16 +44,8 @@ class RecommendationScreen extends ConsumerWidget {
     ref.read(timerPlanProvider.notifier).state =
         TimerPlan.fromRecommendation(rec);
 
-    // В игровом режиме сессия идёт против конкретного противника, и вести её
-    // должен экран боя. Развилка ровно здесь и ровно в одну проверку: сам
-    // таймер, движок и запись сессии от этого не меняются — обе ветки ведут
-    // одну и ту же сессию одним и тем же контроллером.
-    final node = ref.read(gameModeOnProvider) ? ref.read(currentNodeProvider) : null;
-
     Navigator.of(context).pushReplacement(
-      pixelDissolveRoute<void>(
-        node == null ? const TimerScreen() : BattleScreen(node: node),
-      ),
+      pixelDissolveRoute<void>(nextSessionScreen(ref)),
     );
   }
 

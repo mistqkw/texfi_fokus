@@ -43,7 +43,17 @@ class SessionPhotoField extends ConsumerWidget {
       // временный каталог, который вычистят когда угодно, — и в истории
       // осталась бы ссылка в никуда.
       final stored = await ref.read(sessionPhotoStoreProvider).save(picked);
+
+      // Замена — это тоже удаление, просто вместе с добавлением. Прежняя
+      // копия уже лежит в документах приложения, и на неё после этой строки
+      // не сошлётся никто: черновик был единственным, кто о ней знал.
+      // Удаляется она после успешного копирования новой — если бы выбор
+      // сорвался посередине, снимок пропал бы, а взамен ничего не появилось.
+      final replaced = ref.read(sessionDraftProvider).photoPath;
       ref.read(sessionDraftProvider.notifier).setPhoto(stored);
+      if (replaced != null && replaced != stored) {
+        await ref.read(sessionPhotoStoreProvider).delete(replaced);
+      }
       Haptics.success();
     } catch (error, stack) {
       debugPrint('attaching a session photo failed: $error\n$stack');

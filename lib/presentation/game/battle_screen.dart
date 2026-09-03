@@ -8,7 +8,6 @@ import '../../core/screen/focus_screen_mode.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_l10n_ext.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_page_transitions.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
@@ -23,7 +22,9 @@ import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
+import '../timer/session_checklist.dart';
 import '../timer/session_finish_flow.dart';
+import '../timer/session_route.dart';
 import '../timer/timer_alarm_sync.dart';
 import '../timer/timer_providers.dart';
 import 'game_labels.dart';
@@ -160,17 +161,18 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
     if (level != null && mounted) await LevelUpOverlay.show(context, level);
   }
 
-  void _leave() {
+  Future<void> _leave() async {
     final outcome = _outcome;
     if (outcome != null && outcome.restart) {
-      // Черновик не сбрасываем: задача, настроение и категория те же.
-      Navigator.of(context).pushReplacement(
-        pixelDissolveRoute<void>(BattleScreen(node: widget.node)),
-      );
-      return;
+      // Черновик не сбрасываем: задача, настроение и категория те же. А вот
+      // узел — обязательно заново: `widget.node` это снимок на момент старта
+      // *этой* сессии, и к концу её противник уже ранен или побеждён.
+      // Повтор с тем же снимком показывал бы бой с убитым дрифером.
+      if (await restartSession(context, ref)) return;
+      if (!mounted) return;
     }
     ref.read(sessionDraftProvider.notifier).reset();
-    Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -418,6 +420,11 @@ class _BattleBody extends ConsumerWidget {
           style: context.text.caption,
         ),
         AppSpacing.gapLg,
+        // Тот же чеклист подзадач, что и на обычном таймере, и ровно на том
+        // же месте — над кнопками. Экран боя подменяет собой экран таймера
+        // целиком, а не дополняет его, и всё, чего здесь нет, для человека с
+        // включённым игровым режимом просто исчезает из приложения.
+        const SessionChecklist(),
         Row(
           children: [
             Expanded(
