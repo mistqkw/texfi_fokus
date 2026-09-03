@@ -614,7 +614,8 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get settingsExportFailed => 'Eksport nie powiódł się';
+  String get settingsExportFailed =>
+      'Nie udało się zapisać pliku. Dane są nietknięte — spróbuj jeszcze raz.';
 
   @override
   String get settingsAbout => 'O aplikacji';
@@ -1153,7 +1154,8 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get settingsImportFailed => 'Import nieudany';
+  String get settingsImportFailed =>
+      'Nie udało się odczytać pliku. Nic nie zostało zmienione — sprawdź, czy to eksport z tej aplikacji.';
 
   @override
   String get timerRepeat => 'Jeszcze jedna taka sama';

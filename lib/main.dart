@@ -59,7 +59,32 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
     // назрела ли, и в обычный запуск не сделает ничего.
     unawaited(_runScheduledBackup());
 
+    // Уборка снимков, на которые больше никто не ссылается. Тоже не
+    // ожидается — на запуск она влиять не должна.
+    //
+    // Именно на старте, и это не случайность: черновик сессии живёт в
+    // памяти и холодный запуск не переживает, поэтому в этот момент
+    // «прикреплённого, но ещё не сохранённого» снимка не существует по
+    // построению. Убирать в любой другой момент значило бы гоняться за
+    // файлом, который человек прямо сейчас держит в открытом check-in.
+    unawaited(_sweepOrphanedPhotos());
+
     return ref.read(notificationServiceProvider).init();
+  }
+
+  Future<void> _sweepOrphanedPhotos() async {
+    try {
+      final keep = await ref.read(sessionRepositoryProvider).referencedPhotoPaths();
+      final removed =
+          await ref.read(sessionPhotoStoreProvider).deleteUnreferenced(keep);
+      if (removed > 0) {
+        debugPrint('session photos: removed $removed orphaned file(s)');
+      }
+    } catch (error, stack) {
+      // Уборка — самое необязательное, что происходит на запуске. Упасть на
+      // ней и не открыть приложение было бы несоизмеримо хуже мусора.
+      debugPrint('sweeping orphaned session photos failed: $error\n$stack');
+    }
   }
 
   Future<void> _runScheduledBackup() async {

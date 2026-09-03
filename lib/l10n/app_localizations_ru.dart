@@ -616,7 +616,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settingsExportFailed => 'Не удалось экспортировать';
+  String get settingsExportFailed =>
+      'Не получилось сохранить файл. С данными ничего не случилось — попробуйте ещё раз.';
 
   @override
   String get settingsAbout => 'О приложении';
@@ -1153,7 +1154,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settingsImportFailed => 'Импорт не удался';
+  String get settingsImportFailed =>
+      'Не получилось прочитать файл. Ничего не изменилось — проверьте, что это выгрузка из этого приложения.';
 
   @override
   String get timerRepeat => 'Ещё одну такую же';

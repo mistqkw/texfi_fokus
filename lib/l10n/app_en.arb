@@ -344,7 +344,7 @@
       }
     }
   },
-  "settingsExportFailed": "Export failed",
+  "settingsExportFailed": "Couldn't save the file. Your data is untouched — try again.",
   "settingsAbout": "About",
   "settingsVersion": "Version {version}",
   "@settingsVersion": {
@@ -711,7 +711,7 @@
       }
     }
   },
-  "settingsImportFailed": "Import failed",
+  "settingsImportFailed": "Couldn't read that file. Nothing was changed — check it's an export from this app.",
   "timerRepeat": "One more like this",
   "recommendationEvidenceScopeLabel": "Context match",
   "recommendationEvidenceCountLabel": "Sessions behind it",

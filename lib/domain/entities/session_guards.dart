@@ -91,9 +91,15 @@ abstract final class SessionGuards {
     // Сравниваем и непрерывный блок, и весь план. Одного общего времени мало:
     // deep work на 90 минут короче четырёх помидоров суммарно, но именно эти
     // 90 минут без единого перерыва ночью и не нужны.
-    final tooLong =
-        recommendation.focusMinutes > capped.focusMinutes ||
-            recommendation.technique.totalMinutes > capped.totalMinutes;
+    //
+    // Обе величины берутся из самого предложения, а не из его `technique`.
+    // У встроенной руки разницы нет, а у пользовательского пресета
+    // `technique` — это лишь ближайшая по длине фокуса встроенная техника, и
+    // её план не имеет отношения к настоящему. Пресет «20 минут × 8 циклов»
+    // (195 минут) выдавал себя за помидор на 115 и проходил мимо капа
+    // целиком: фокус короче 25, а сумма спрашивалась не у него.
+    final tooLong = recommendation.focusMinutes > capped.focusMinutes ||
+        recommendation.totalMinutes > capped.totalMinutes;
     // Сессия короче капа ночью остаётся как есть: подтягивать спринт на 15
     // минут вверх до помидора было бы ровно обратным тому, чего мы хотим.
     if (!tooLong) return recommendation;

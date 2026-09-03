@@ -11,6 +11,14 @@ abstract class SessionRepository {
   /// не ссылается и который поэтому уже никогда не будет удалён.
   Future<void> deleteSession(String id);
 
+  /// Пути ко всем снимкам, на которые ссылается хоть одна сессия.
+  ///
+  /// Нужен уборке осиротевших файлов: копия снимка ложится на диск раньше,
+  /// чем сессия попадает в базу, и брошенный по дороге черновик оставляет
+  /// файл, на который уже никто не сошлётся. Это единственный источник
+  /// правды о том, что удалять нельзя.
+  Future<Set<String>> referencedPhotoPaths();
+
   Stream<List<SessionEntity>> watchRecentSessions({int limit = 20});
 
   Future<List<SessionEntity>> sessionsInRange(DateTime from, DateTime to);
