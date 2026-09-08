@@ -1,0 +1,7 @@
+Release 1.4.0
+
+* The map worlds each have a character of their own, and a thread between them
+* Five things the audit found had quietly stopped working are fixed
+* A full turn of the dial leaves a spark behind it
+* A very long streak is marked with a notch instead of a banner
+* Home notices the moment the date changes

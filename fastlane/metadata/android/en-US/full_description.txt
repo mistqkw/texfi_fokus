@@ -1,0 +1,21 @@
+A focus timer that learns how you actually work, and a habit tracker that holds you to your word.
+
+Check in with your mood before a session, get a session length that fits it, and let the app get sharper with every session it sees.
+
+WHAT IT DOES
+
+* Focus sessions with a pixel dial you can turn mid-session
+* Habits with streaks, flexible schedules and one honest way out
+* A mood log, and recommendations that read it
+* Statistics: a heatmap of your days, focus time, mood against results
+* An optional RPG layer — a map, opponents your sessions wear down, a character that grows with them. It can be switched off at first run and in Settings; the tracker underneath is the same either way.
+* Brakes against burnout: the app will suggest stopping before you run yourself down
+
+WHAT IT DOES NOT DO
+
+* No account. Nothing to register, nothing to log in to.
+* No analytics, no ad SDKs, no background "events".
+* No data leaves the device. The database lives on your phone; the network is used for update checks and nothing else.
+* No subscription, no ads, no popup asking for a rating.
+
+Free software under the GNU AGPL v3. The source is open, and the builds come from public CI on that same code.

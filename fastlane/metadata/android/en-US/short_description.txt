@@ -1,0 +1,1 @@
+Focus timer and habit tracker. Offline, no accounts, no tracking.
