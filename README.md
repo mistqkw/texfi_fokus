@@ -13,15 +13,47 @@
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Windows%20%7C%20Linux%20%7C%20macOS-4a7dfb" alt="Platform">
   <img src="https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/state-Riverpod-4a7dfb" alt="Riverpod">
-  <img src="https://img.shields.io/badge/license-open%20source-green" alt="License">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-green" alt="License: AGPL-3.0"></a>
 </p>
 
 <p align="center">
+  <a href="#download">Download</a> ·
+  <a href="#screenshots">Screenshots</a> ·
   <a href="#features">Features</a> ·
   <a href="#design">Design</a> ·
   <a href="#stack">Stack</a> ·
   <a href="#project-structure">Project structure</a>
 </p>
+
+---
+
+## Download
+
+| Platform | |
+|----------|--|
+| **Android** | [APK from the latest release](https://github.com/mistqkw/texfi_fokus/releases/latest) |
+| **Windows** | [zip from the latest release](https://github.com/mistqkw/texfi_fokus/releases/latest) |
+| **Linux** | [tar.gz from the latest release](https://github.com/mistqkw/texfi_fokus/releases/latest) |
+| **macOS** | [zip from the latest release](https://github.com/mistqkw/texfi_fokus/releases/latest) |
+
+Or let the site pick the file for your machine:
+**[texfi-hub.vercel.app/download/fokus](https://texfi-hub.vercel.app/download/fokus)**
+
+The APK does not come from Google Play, so Android will ask for permission to
+install from this source.
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="180" alt="Home">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="180" alt="Recommended session">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="180" alt="Session in progress">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="180" alt="Map">
+</p>
+
+<p align="center"><i>More on the <a href="https://texfi-hub.vercel.app/download/fokus">download page</a>.</i></p>
 
 ---
 
