@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/audio/alarm_sound.dart';
 import '../../core/haptics/haptics.dart';
+import '../../core/notifications/focus_mode.dart';
 import '../../core/theme/app_accent.dart';
 import '../../data/providers/data_providers.dart';
 import '../../domain/entities/session_guards.dart';
@@ -27,6 +28,7 @@ abstract final class PrefKeys {
   static const burnoutStreakThreshold = 'burnout_streak_threshold';
   static const weekStartDay = 'week_start_day';
   static const autoBackupEnabled = 'auto_backup_enabled';
+  static const silenceDuringFocus = 'silence_during_focus';
   static const lastAutoBackupAt = 'last_auto_backup_at';
 }
 
@@ -390,6 +392,41 @@ class AutoBackupNotifier extends StateNotifier<bool> {
 final autoBackupEnabledProvider =
     StateNotifierProvider<AutoBackupNotifier, bool>((ref) {
   return AutoBackupNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// --- Тишина на время сессии ---
+
+/// Глушить ли уведомления, пока идёт фокус-сессия.
+///
+/// По умолчанию выключено. Режим «Не беспокоить» — вещь заметная: он
+/// молчит и о звонках тоже, а человек мог сесть работать, ожидая звонка.
+/// Такое включают осознанно, а не обнаруживают потом.
+class SilenceDuringFocusNotifier extends StateNotifier<bool> {
+  SilenceDuringFocusNotifier(this._prefs)
+      : super(_prefs.getBool(PrefKeys.silenceDuringFocus) ?? false);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await _prefs.setBool(PrefKeys.silenceDuringFocus, value);
+  }
+}
+
+final silenceDuringFocusProvider =
+    StateNotifierProvider<SilenceDuringFocusNotifier, bool>((ref) {
+  return SilenceDuringFocusNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+final focusModeProvider = Provider<FocusMode>((ref) => const FocusMode());
+
+/// Выдан ли доступ к «Не беспокоить».
+///
+/// Отдельным провайдером, потому что ответ меняется вне приложения: доступ
+/// выдают на системном экране, и узнать об этом можно только спросив заново.
+/// Инвалидируется после возврата с того экрана.
+final focusModeGrantedProvider = FutureProvider<bool>((ref) {
+  return ref.watch(focusModeProvider).isGranted();
 });
 
 // --- Онбординг ---

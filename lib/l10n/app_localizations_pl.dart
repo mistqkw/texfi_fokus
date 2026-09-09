@@ -603,6 +603,23 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsDailyReminderTime => 'Podsumowanie dnia o';
 
   @override
+  String get settingsSilenceDuringFocus => 'Cisza podczas sesji';
+
+  @override
+  String get settingsSilenceDuringFocusDesc =>
+      'Włącza tryb Nie przeszkadzać na czas skupienia. Koniec sesji i tak zabrzmi — przychodzi jako alarm.';
+
+  @override
+  String get settingsSilenceNeedsAccess => 'Wymaga uprawnienia';
+
+  @override
+  String get settingsSilenceGrant => 'PRZYZNAJ DOSTĘP';
+
+  @override
+  String get settingsSilenceGrantHint =>
+      'Android pyta o to na swoim ekranie: znajdź TexFi f0kus na liście i zezwól.';
+
+  @override
   String get settingsData => 'Dane';
 
   @override

@@ -31,6 +31,12 @@
          объявляется намеренно: второй с тем же именем ломает слияние
          манифестов, а нужды в нём нет. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Тишина на время фокус-сессии. Разрешение только объявляет намерение:
+         доступ к «Не беспокоить» выдаётся не диалогом, а вручную на системном
+         экране, и без него вызов setInterruptionFilter просто не сработает.
+         Режим включается по явной настройке, снимается по концу сессии, а
+         прежний фильтр возвращается ровно тот, что был. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <application
         android:label="TexFi f0kus"

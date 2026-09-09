@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/haptics/haptics.dart';
+import '../../core/notifications/focus_mode.dart';
 import '../../core/notifications/notification_service.dart';
 import '../../core/screen/focus_screen_mode.dart';
 import '../../core/theme/app_colors_ext.dart';
@@ -12,6 +13,7 @@ import '../../core/theme/app_text_styles_ext.dart';
 import '../../data/providers/data_providers.dart';
 import '../game/encounter_result_sheet.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
+import '../settings/settings_providers.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_sprite.dart';
@@ -54,9 +56,14 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   late final NotificationService _notifications =
       ref.read(notificationServiceProvider);
 
+  /// Тишина на время сессии — по той же причине полем, что и всё выше:
+  /// снимать её обязательно, а `dispose()` для чтения провайдеров поздно.
+  late final FocusMode _focusMode = ref.read(focusModeProvider);
+
   @override
   void initState() {
     super.initState();
+    _enterSilence();
     // Первый график ставится сразу после первого кадра: с этого момента конец
     // сессии знает система, а не только живой Dart-таймер. Приложение можно
     // сворачивать, выгружать из памяти и блокировать экран.
@@ -68,10 +75,27 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     _screen.enter();
   }
 
+  /// Заглушить уведомления на время сессии, если это включено в настройках.
+  ///
+  /// Два независимых шага, и второй может не сработать: свои напоминания
+  /// снимаются всегда, а чужие — только через системный «Не беспокоить», на
+  /// который нужен отдельно выданный доступ. Если его нет, сессия всё равно
+  /// идёт: тишина здесь удобство, а не условие.
+  Future<void> _enterSilence() async {
+    if (!ref.read(silenceDuringFocusProvider)) return;
+    await _notifications.suspendReminders();
+    await _focusMode.enable();
+  }
+
   @override
   void dispose() {
     // Экран закрыт — будильников быть не должно ни при каком исходе.
     _notifications.cancelTimerAlarms();
+    // Снятие безусловное и без оглядки на настройку: её могли выключить
+    // прямо посреди сессии, и тогда проверка оставила бы телефон в тишине
+    // навсегда. Нативная сторона сама ничего не трогает, если режим ставили
+    // не мы. Напоминания вернёт `syncNotifications` в конце сессии.
+    _focusMode.disable();
     // Единственный путь снятия: `dispose()` отрабатывает и при жесте «назад»,
     // и при системной кнопке, и при программном уходе после конца сессии.
     // Пониженная яркость, забытая здесь, пережила бы сам экран.

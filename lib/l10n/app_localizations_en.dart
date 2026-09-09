@@ -605,6 +605,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDailyReminderTime => 'Daily summary at';
 
   @override
+  String get settingsSilenceDuringFocus => 'Silence during a session';
+
+  @override
+  String get settingsSilenceDuringFocusDesc =>
+      'Turns on Do Not Disturb while you focus. The end of the session still comes through — it is sent as an alarm.';
+
+  @override
+  String get settingsSilenceNeedsAccess => 'Needs permission';
+
+  @override
+  String get settingsSilenceGrant => 'GRANT ACCESS';
+
+  @override
+  String get settingsSilenceGrantHint =>
+      'Android asks for this on its own screen: find TexFi f0kus in the list and allow it.';
+
+  @override
   String get settingsData => 'Data';
 
   @override

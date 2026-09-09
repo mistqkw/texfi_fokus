@@ -334,6 +334,14 @@
   "settingsNotifications": "Notifications",
   "settingsNotificationsEnabled": "Habit reminders",
   "settingsDailyReminderTime": "Daily summary at",
+  "settingsSilenceDuringFocus": "Silence during a session",
+  "settingsSilenceDuringFocusDesc": "Turns on Do Not Disturb while you focus. The end of the session still comes through — it is sent as an alarm.",
+  "settingsSilenceNeedsAccess": "Needs permission",
+  "settingsSilenceGrant": "GRANT ACCESS",
+  "settingsSilenceGrantHint": "Android asks for this on its own screen: find TexFi f0kus in the list and allow it.",
+  "@settingsSilenceDuringFocus": {
+    "description": "Settings toggle: mute notifications while a focus session runs"
+  },
   "settingsData": "Data",
   "settingsExport": "Export data to JSON",
   "settingsExportDone": "Saved to {path}",
@@ -994,31 +1002,84 @@
     }
   },
   "mapWorldAffinity": "Leans toward {category}",
-  "@mapWorldAffinity": {"description": "Which task category a map world resonates with", "placeholders": {"category": {"type": "String"}}},
+  "@mapWorldAffinity": {
+    "description": "Which task category a map world resonates with",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
   "mapWorldAffinityHint": "Sessions in that category leave a little more here. Anything else works just as well.",
-  "@mapWorldAffinityHint": {"description": "Explains the world/category resonance without turning it into a requirement"},
+  "@mapWorldAffinityHint": {
+    "description": "Explains the world/category resonance without turning it into a requirement"
+  },
   "encounterMemoryNoticed": "{count} runs at this one ended early. It is still standing.",
-  "@encounterMemoryNoticed": {"description": "Drifter memory, first tier: a plain count of abandoned runs", "placeholders": {"count": {"type": "int"}}},
+  "@encounterMemoryNoticed": {
+    "description": "Drifter memory, first tier: a plain count of abandoned runs",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "encounterMemoryDeep": "{count} times now. Something about this task is not what the plan says it is.",
-  "@encounterMemoryDeep": {"description": "Drifter memory, second tier: points at the task, not at the person", "placeholders": {"count": {"type": "int"}}},
+  "@encounterMemoryDeep": {
+    "description": "Drifter memory, second tier: points at the task, not at the person",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "resultResonance": "This world leans toward {category} — a small bonus.",
-  "@resultResonance": {"description": "Result sheet note naming why the extra XP appeared", "placeholders": {"category": {"type": "String"}}},
+  "@resultResonance": {
+    "description": "Result sheet note naming why the extra XP appeared",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
   "loreTitle": "Scraps",
-  "@loreTitle": {"description": "Title of the optional lore section on the character screen"},
+  "@loreTitle": {
+    "description": "Title of the optional lore section on the character screen"
+  },
   "loreBody": "Each world has something written on the back of it. It turns up once the thing at the end is gone.",
-  "@loreBody": {"description": "Subtitle of the lore section"},
+  "@loreBody": {
+    "description": "Subtitle of the lore section"
+  },
   "loreEmpty": "Nothing yet. The first scrap is behind the first boss.",
-  "@loreEmpty": {"description": "Empty state of the lore section"},
+  "@loreEmpty": {
+    "description": "Empty state of the lore section"
+  },
   "loreLocked": "Not found yet",
-  "@loreLocked": {"description": "Placeholder for a lore scrap that is not unlocked yet"},
+  "@loreLocked": {
+    "description": "Placeholder for a lore scrap that is not unlocked yet"
+  },
   "loreScrap": "Scrap {number}",
-  "@loreScrap": {"description": "Label of one lore scrap", "placeholders": {"number": {"type": "int"}}},
+  "@loreScrap": {
+    "description": "Label of one lore scrap",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "loreFragment1": "On the floor of the still room: \"Left the door open for a minute. Came back and the minute was gone.\"",
-  "@loreFragment1": {"description": "Lore scrap found after the first boss"},
+  "@loreFragment1": {
+    "description": "Lore scrap found after the first boss"
+  },
   "loreFragment2": "Same handwriting, out in the field: \"They do not come in from outside. They are what I put down and did not pick up.\"",
-  "@loreFragment2": {"description": "Lore scrap found after the second boss"},
+  "@loreFragment2": {
+    "description": "Lore scrap found after the second boss"
+  },
   "loreFragment3": "At the far end of the hall: \"The hall is the same room. I have been walking it since I sat down.\"",
-  "@loreFragment3": {"description": "Lore scrap found after the third boss"},
+  "@loreFragment3": {
+    "description": "Lore scrap found after the third boss"
+  },
   "loreFragment4": "The last scrap, in no handwriting at all: \"It is quiet now. It will not stay quiet. That is fine — you know the way back.\"",
-  "@loreFragment4": {"description": "Final lore scrap, unlocked only after every world is cleared"}
+  "@loreFragment4": {
+    "description": "Final lore scrap, unlocked only after every world is cleared"
+  }
 }

@@ -69,6 +69,12 @@ class _TexFiFokusAppState extends ConsumerState<TexFiFokusApp> {
     // файлом, который человек прямо сейчас держит в открытом check-in.
     unawaited(_sweepOrphanedPhotos());
 
+    // Тишина, забытая прошлым запуском. Если процесс выгрузили посреди
+    // сессии, снимать «Не беспокоить» было некому — и человек остался бы в
+    // ней неизвестно насколько, не понимая, кто это сделал. Снимается ровно
+    // тот фильтр, что ставили мы: чужой режим нативная сторона не трогает.
+    unawaited(ref.read(focusModeProvider).restoreAfterCrash());
+
     return ref.read(notificationServiceProvider).init();
   }
 

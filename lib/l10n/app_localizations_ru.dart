@@ -605,6 +605,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsDailyReminderTime => 'Итог дня в';
 
   @override
+  String get settingsSilenceDuringFocus => 'Тишина во время сессии';
+
+  @override
+  String get settingsSilenceDuringFocusDesc =>
+      'Включает «Не беспокоить», пока идёт фокус. Конец сессии всё равно прозвучит — он приходит будильником.';
+
+  @override
+  String get settingsSilenceNeedsAccess => 'Нужно разрешение';
+
+  @override
+  String get settingsSilenceGrant => 'ВЫДАТЬ ДОСТУП';
+
+  @override
+  String get settingsSilenceGrantHint =>
+      'Android спрашивает это на своём экране: найдите в списке TexFi f0kus и разрешите.';
+
+  @override
   String get settingsData => 'Данные';
 
   @override

@@ -605,6 +605,23 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsDailyReminderTime => 'Підсумок дня о';
 
   @override
+  String get settingsSilenceDuringFocus => 'Тиша під час сесії';
+
+  @override
+  String get settingsSilenceDuringFocusDesc =>
+      'Вмикає «Не турбувати», поки триває фокус. Кінець сесії все одно пролунає — він приходить будильником.';
+
+  @override
+  String get settingsSilenceNeedsAccess => 'Потрібен дозвіл';
+
+  @override
+  String get settingsSilenceGrant => 'НАДАТИ ДОСТУП';
+
+  @override
+  String get settingsSilenceGrantHint =>
+      'Android питає це на своєму екрані: знайдіть у списку TexFi f0kus і дозвольте.';
+
+  @override
   String get settingsData => 'Дані';
 
   @override

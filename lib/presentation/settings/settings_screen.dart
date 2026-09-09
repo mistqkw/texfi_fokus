@@ -388,6 +388,7 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     onTap: () => _pickSummaryTime(context, ref),
                   ),
+                  const _SilenceDuringFocusTile(),
                 ],
               ),
             ),
@@ -755,6 +756,57 @@ class _ImportModeDialog extends StatelessWidget {
 /// Вынесен в отдельный виджет, а не вписан в общий список: он единственный
 /// в настройках, кто подписан на БД, и перестраивать из-за него весь экран
 /// на каждое изменение опыта было бы расточительно.
+/// Переключатель тишины на время сессии.
+///
+/// Живёт отдельным виджетом, а не строчкой в общем списке, из-за
+/// разрешения: доступ к «Не беспокоить» выдают на системном экране, ответ
+/// приходит не нам, и состояние приходится переспрашивать. Держать эту
+/// возню в теле экрана настроек значило бы размазать её по трёмстам
+/// строкам чужой разметки.
+///
+/// На платформах без такого режима виджет не показывается вовсе: предлагать
+/// переключатель, который ничего не сделает, хуже, чем не предлагать.
+class _SilenceDuringFocusTile extends ConsumerWidget {
+  const _SilenceDuringFocusTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final focusMode = ref.watch(focusModeProvider);
+    if (!focusMode.isSupported) return const SizedBox.shrink();
+
+    final enabled = ref.watch(silenceDuringFocusProvider);
+    // Пока ответ не пришёл, считаем, что доступ есть: мигать
+    // предупреждением на каждом заходе в настройки незачем.
+    final granted = ref.watch(focusModeGrantedProvider).value ?? true;
+
+    return PixelSwitchTile(
+      value: enabled,
+      title: l10n.settingsSilenceDuringFocus,
+      subtitle: enabled && !granted
+          ? '${l10n.settingsSilenceNeedsAccess} · ${l10n.settingsSilenceGrantHint}'
+          : l10n.settingsSilenceDuringFocusDesc,
+      onChanged: (value) async {
+        Haptics.tap();
+        await ref.read(silenceDuringFocusProvider.notifier).set(value);
+        if (!value) {
+          // Выключили посреди сессии — снимаем режим сразу, не дожидаясь
+          // её конца. Иначе настройка выглядела бы сломанной.
+          await focusMode.disable();
+          return;
+        }
+        // Включили, но доступа нет — сам по себе он не появится. Ведём на
+        // системный экран сразу: иначе человек узнает о том, что тишины не
+        // будет, только когда она не наступит.
+        if (!await focusMode.isGranted()) {
+          await focusMode.openAccessSettings();
+        }
+        ref.invalidate(focusModeGrantedProvider);
+      },
+    );
+  }
+}
+
 class _GameModeSection extends ConsumerWidget {
   const _GameModeSection();
 

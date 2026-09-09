@@ -1188,6 +1188,36 @@ abstract class AppLocalizations {
   /// **'Daily summary at'**
   String get settingsDailyReminderTime;
 
+  /// Settings toggle: mute notifications while a focus session runs
+  ///
+  /// In en, this message translates to:
+  /// **'Silence during a session'**
+  String get settingsSilenceDuringFocus;
+
+  /// No description provided for @settingsSilenceDuringFocusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Turns on Do Not Disturb while you focus. The end of the session still comes through — it is sent as an alarm.'**
+  String get settingsSilenceDuringFocusDesc;
+
+  /// No description provided for @settingsSilenceNeedsAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs permission'**
+  String get settingsSilenceNeedsAccess;
+
+  /// No description provided for @settingsSilenceGrant.
+  ///
+  /// In en, this message translates to:
+  /// **'GRANT ACCESS'**
+  String get settingsSilenceGrant;
+
+  /// No description provided for @settingsSilenceGrantHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Android asks for this on its own screen: find TexFi f0kus in the list and allow it.'**
+  String get settingsSilenceGrantHint;
+
   /// No description provided for @settingsData.
   ///
   /// In en, this message translates to:
