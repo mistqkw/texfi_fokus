@@ -126,7 +126,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     ),
                     AppSpacing.gapLg,
                   ],
-                  for (final world in worlds) _WorldSection(nodes: world),
+                  for (final world in worlds) ...[
+                    // Заголовок королевства встаёт перед его первым миром.
+                    // Считать по индексу в списке нельзя: миры приходят
+                    // группами узлов, и пустых среди них не бывает, но
+                    // порядок задаёт номер мира, а не позиция в списке.
+                    if (GameRules.worldsOfKingdom(
+                          GameRules.kingdomOf(world.first.world),
+                        ).first ==
+                        world.first.world)
+                      _KingdomHeader(
+                        kingdom: GameRules.kingdomOf(world.first.world),
+                        worlds: worlds,
+                      ),
+                    _WorldSection(nodes: world),
+                  ],
                   if (ref.watch(currentNodeProvider) == null) ...[
                     AppSpacing.gapLg,
                     PixelCard(
@@ -186,6 +200,77 @@ class _LevelStrip extends StatelessWidget {
 }
 
 /// Один мир: заголовок и тропа с узлами.
+/// Заголовок королевства: имя, номер, эпиграф и счётчик пройденного.
+///
+/// Появился вместе с шестым миром, и не для красоты. Шесть миров подряд
+/// читаются как шесть уровней — список, в котором ты где-то посередине.
+/// Королевство собирает их в пары и говорит о каждой паре одну вещь:
+/// «порог» — два способа не начать, «долгий путь» — два способа не дойти,
+/// «своё» — два, где мешать больше некому. С этим карта перестаёт быть
+/// длиной и становится дорогой.
+class _KingdomHeader extends StatelessWidget {
+  const _KingdomHeader({required this.kingdom, required this.worlds});
+
+  final int kingdom;
+
+  /// Все миры карты, сгруппированные по узлам. Счётчик считается отсюда, а
+  /// не приходит готовым: королевство знает только свои номера миров, и
+  /// сводить их с узлами где-то ещё значило бы завести второе место, где
+  /// это знание живёт.
+  final List<List<MapNodeEntity>> worlds;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
+
+    final mine = GameRules.worldsOfKingdom(kingdom).toSet();
+    final nodes = [
+      for (final world in worlds)
+        if (mine.contains(world.first.world)) ...world,
+    ];
+    final cleared =
+        nodes.where((node) => node.status == MapNodeStatus.completed).length;
+    final epigraph = kingdomEpigraph(l10n, kingdom);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  kingdomName(l10n, kingdom).toUpperCase(),
+                  style: context.text.sectionTitle,
+                ),
+              ),
+              Text(
+                l10n.mapKingdomProgress(cleared, nodes.length),
+                style: context.text.caption.copyWith(
+                  color: colors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+          if (epigraph != null) ...[
+            AppSpacing.gapXs,
+            Text(
+              epigraph,
+              style: context.text.caption.copyWith(color: colors.textTertiary),
+            ),
+          ],
+          AppSpacing.gapSm,
+          // Линия под заголовком — граница королевства. Без неё пары не
+          // видно: заголовок читался бы как подпись к ближайшему миру.
+          Container(height: 1, color: colors.divider),
+        ],
+      ),
+    );
+  }
+}
+
 class _WorldSection extends StatelessWidget {
   const _WorldSection({required this.nodes});
 

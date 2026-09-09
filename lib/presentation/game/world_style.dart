@@ -24,6 +24,20 @@ abstract final class WorldStyle {
   /// как выцветший тот же самый.
   static const Color _dustyIndigo = Color(0xFF6E6A94);
 
+  /// Тон четвёртого мира. «Тот же день» — про возвращение, и он взят
+  /// выцветшим тёплым: цвет вчерашней бумаги, а не сегодняшнего дня.
+  static const Color _fadedOchre = Color(0xFF9A8B63);
+
+  /// Тон пятого мира. «Зеркальный сад» — единственное место, где всё
+  /// красиво, и это единственный тон, который сам по себе приятен.
+  /// Приглушённый лиловый: он не зовёт к действию, он просит смотреть.
+  static const Color _mutedLilac = Color(0xFF8B7FB0);
+
+  /// Тон шестого мира. Не цвет вовсе — почти нейтральный серый, чуть
+  /// холоднее фона. В последней комнате мешать больше некому, и красить
+  /// её было бы неправдой.
+  static const Color _bareGrey = Color(0xFF7C7F86);
+
   /// Оттенок мира. Берётся из темы, а не задан константами: в светлой теме
   /// янтарный другой, и мир обязан меняться вместе с ней.
   ///
@@ -41,6 +55,9 @@ abstract final class WorldStyle {
         2 => colors.warning,
 
         3 => _dustyIndigo,
+        4 => _fadedOchre,
+        5 => _mutedLilac,
+        6 => _bareGrey,
         _ => colors.accent,
       };
 
@@ -52,6 +69,13 @@ abstract final class WorldStyle {
         1 => 0.35,
         2 => 1.0,
         3 => 0.7,
+        // Тот же день плотнее длинного зала: там одно и то же тянется,
+        // здесь оно возвращается — и накапливается.
+        4 => 0.85,
+        5 => 0.6,
+        // Последняя комната — самая пустая на карте. Пустее даже тихой:
+        // в тихой хотя бы висит пыль.
+        6 => 0.2,
         _ => 0.5,
       };
 
@@ -61,6 +85,9 @@ abstract final class WorldStyle {
         1 => WorldAtmosphereKind.scattered,
         2 => WorldAtmosphereKind.streaks,
         3 => WorldAtmosphereKind.columns,
+        4 => WorldAtmosphereKind.rings,
+        5 => WorldAtmosphereKind.mirrored,
+        6 => WorldAtmosphereKind.edges,
         _ => WorldAtmosphereKind.scattered,
       };
 }
@@ -78,6 +105,18 @@ enum WorldAtmosphereKind {
   /// Вертикальные ряды одинаковых отметин. Длинный зал: одно и то же,
   /// повторённое столько раз, что перестаёшь считать.
   columns,
+
+  /// Замкнутые кольца. Тот же день: единственный фон, у которого нет
+  /// начала и конца — куда ни пойди, придёшь туда же.
+  rings,
+
+  /// Отметины, отражённые относительно вертикальной середины. Зеркальный
+  /// сад: всё, что есть слева, есть и справа, и ничего своего.
+  mirrored,
+
+  /// Крап только вдоль краёв, середина пуста. Последняя комната: смотреть
+  /// не на что, и это её содержание.
+  edges,
 }
 
 /// Фон одного мира на карте: разреженный пиксельный крап в оттенке мира.
@@ -187,6 +226,68 @@ class _WorldAtmospherePainter extends CustomPainter {
               paint,
             );
           }
+        }
+
+      case WorldAtmosphereKind.rings:
+        // Кольцо выкладывается клетками по окружности — не рисуется
+        // обводкой: обводка дала бы гладкую кривую, единственную на всём
+        // экране, собранном из квадратов.
+        final count = (size.height * density / 150).round().clamp(1, 12);
+        for (var i = 0; i < count; i++) {
+          final cx = random.nextDouble() * size.width;
+          final cy = random.nextDouble() * size.height;
+          final radius = 12 + random.nextDouble() * 22;
+          // Шаг по углу подобран так, чтобы клетки стояли с просветом:
+          // сплошное кольцо на этой альфе читается как пятно.
+          const steps = 14;
+          for (var step = 0; step < steps; step++) {
+            final angle = step / steps * 2 * pi;
+            canvas.drawRect(
+              Rect.fromLTWH(
+                (cx + cos(angle) * radius).floorToDouble(),
+                (cy + sin(angle) * radius).floorToDouble(),
+                _cell,
+                _cell,
+              ),
+              paint,
+            );
+          }
+        }
+
+      case WorldAtmosphereKind.mirrored:
+        // Каждая отметина рисуется дважды: слева и её отражением справа.
+        // Ровно поэтому позиция берётся только из левой половины.
+        final count = (size.height * density / 22).round();
+        for (var i = 0; i < count; i++) {
+          final x = (random.nextDouble() * size.width / 2).floorToDouble();
+          final y = (random.nextDouble() * size.height).floorToDouble();
+          canvas.drawRect(Rect.fromLTWH(x, y, _cell, _cell), paint);
+          canvas.drawRect(
+            Rect.fromLTWH(size.width - x - _cell, y, _cell, _cell),
+            paint,
+          );
+        }
+
+      case WorldAtmosphereKind.edges:
+        // Полоса у края, середина пустая. Ширина полосы — восьмая часть
+        // экрана: заметно, что крап есть, и заметно, что его нет там, где
+        // человек смотрит.
+        final band = size.width / 8;
+        final count = (size.height * density / 14).round();
+        for (var i = 0; i < count; i++) {
+          final left = random.nextBool();
+          final x = left
+              ? random.nextDouble() * band
+              : size.width - band + random.nextDouble() * band;
+          canvas.drawRect(
+            Rect.fromLTWH(
+              x.floorToDouble(),
+              (random.nextDouble() * size.height).floorToDouble(),
+              _cell,
+              _cell,
+            ),
+            paint,
+          );
         }
     }
   }

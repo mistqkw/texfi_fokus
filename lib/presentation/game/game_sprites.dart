@@ -188,7 +188,175 @@ abstract final class GameSprites {
         DrifterSpecies.siphon => drifterSiphon,
         DrifterSpecies.knot => drifterKnot,
         DrifterSpecies.veil => drifterVeil,
+        DrifterSpecies.echo => drifterEcho,
+        DrifterSpecies.ledger => drifterLedger,
+        DrifterSpecies.pendulum => drifterPendulum,
+        DrifterSpecies.mirror => drifterMirror,
+        DrifterSpecies.bloom => drifterBloom,
+        DrifterSpecies.thorn => drifterThorn,
+        DrifterSpecies.ember => drifterEmber,
+        DrifterSpecies.weight => drifterWeight,
+        DrifterSpecies.door => drifterDoor,
       };
+
+  // --- Мир 4: всё возвращается ---
+
+  /// Эхо: фигура и её выцветающая копия со сдвигом. Одно и то же,
+  /// сказанное ещё раз — и слышно, что это уже было.
+  static const List<String> drifterEcho = [
+    'xxxx........',
+    'xxxxxx......',
+    'xx..xx......',
+    'xx..xx..oo..',
+    'xxxxxx.oooo.',
+    'xxxxxx.oo.oo',
+    'xxxxxx.oooo.',
+    'xx..xx..oo..',
+    'xx..xx......',
+    'xxxxxx......',
+    'xxxx........',
+    '............',
+  ];
+
+  /// Список: стопка одинаковых строк во весь кадр, снизу нарастает
+  /// новая. Вычеркнутое не кончает список, а освобождает в нём место.
+  static const List<String> drifterLedger = [
+    'xxxxxxxxxxxx',
+    'xoooooooooox',
+    'xxxxxxxxxxxx',
+    'xoooooooooox',
+    'xxxxxxxxxxxx',
+    'xoooooooooox',
+    'xxxxxxxxxxxx',
+    'xoooooooooox',
+    'xxxxxxxxxxxx',
+    '.oxxxxxxxxo.',
+    '..oxxxxxxo..',
+    '...oooooo...',
+  ];
+
+  /// Маятник: подвес, груз и дуга полутоном по обе стороны. Уходит и
+  /// возвращается ровно туда же — движение без перемещения.
+  static const List<String> drifterPendulum = [
+    '....xxxx....',
+    '....xoox....',
+    '.....xx.....',
+    '.....xx.....',
+    'o....xx....o',
+    'oo...xx...oo',
+    '.o...xx...o.',
+    '.o..xxxx..o.',
+    '..o.xxxx.o..',
+    '..oxxxxxxo..',
+    '...oxxxxo...',
+    '....oooo....',
+  ];
+
+  // --- Мир 5: всё красивое ---
+
+  /// Зеркало: рама во весь кадр, внутри — смутный силуэт, в котором
+  /// узнаётся сам персонаж. Единственный дрифер, который ничего не
+  /// делает сам.
+  static const List<String> drifterMirror = [
+    'xxxxxxxxxxxx',
+    'xo........ox',
+    'x..oooooo..x',
+    'x..o.oo.o..x',
+    'x..ooooooo.x',
+    'x..o.oooo..x',
+    'x...oooo...x',
+    'x...o..o...x',
+    'x..o....o..x',
+    'xo........ox',
+    'xxxxxxxxxxxx',
+    '..x......x..',
+  ];
+
+  /// Цвет: раскрытые лепестки вокруг тёмной сердцевины. Симметричный и
+  /// приятный — тем и берёт.
+  static const List<String> drifterBloom = [
+    '....o..o....',
+    '...oxxxxo...',
+    '..oxx..xxo..',
+    '.ox..xx..xo.',
+    'ox..xxxx..xo',
+    'o..xxxxxx..o',
+    'o..xxxxxx..o',
+    'ox..xxxx..xo',
+    '.ox..xx..xo.',
+    '..oxx..xxo..',
+    '...oxxxxo...',
+    '.....xx.....',
+  ];
+
+  /// Шип: мелкий, кривой, наискось в углу кадра. Единственный, кто не
+  /// занимает центр: по отдельности пустяк, цепляет каждый раз.
+  static const List<String> drifterThorn = [
+    '..........x.',
+    '.........xx.',
+    '........xxo.',
+    '.......xxo..',
+    '......xxo...',
+    '.....xxo....',
+    '..o.xxo.....',
+    '.oxxxo......',
+    'oxxxo.......',
+    'xxxo........',
+    'oxo.........',
+    'o...........',
+  ];
+
+  // --- Мир 6: остаётся только своё ---
+
+  /// Уголёк: ядро и зола кольцом. Не помеха снаружи, а то, что осталось
+  /// от собственного внимания к концу дня.
+  static const List<String> drifterEmber = [
+    '............',
+    '....oooo....',
+    '..oo.xx.oo..',
+    '..o.xxxx.o..',
+    '.o.xxxxxx.o.',
+    '.o.xxooxx.o.',
+    '.o.xxooxx.o.',
+    '.o.xxxxxx.o.',
+    '..o.xxxx.o..',
+    '..oo.xx.oo..',
+    '....oooo....',
+    '............',
+  ];
+
+  /// Груз: низкий тяжёлый блок, вдавленный в нижний край. Самый
+  /// плотный силуэт в наборе — у него нет ни просветов, ни отростков.
+  static const List<String> drifterWeight = [
+    '............',
+    '............',
+    '....xxxx....',
+    '...xxxxxx...',
+    '..xxxxxxxx..',
+    '.xxoooooxxx.',
+    'xxxoooooxxxx',
+    'xxxxxxxxxxxx',
+    'xxxoooooxxxx',
+    'xxxxxxxxxxxx',
+    'ooxxxxxxxxoo',
+    'oo........oo',
+  ];
+
+  /// Дверь: проём, за которым такая же комната. Рама в раме в раме.
+  static const List<String> drifterDoor = [
+    'xxxxxxxxxxxx',
+    'xoooooooooox',
+    'xo.xxxxxx.ox',
+    'xo.xoooox.ox',
+    'xo.xo..ox.ox',
+    'xo.xo..ox.ox',
+    'xo.xo..ox.ox',
+    'xo.xo.xox.ox',
+    'xo.xoooox.ox',
+    'xo.xxxxxx.ox',
+    'xoooooooooox',
+    'xxxxxxxxxxxx',
+  ];
 
   // --- Боссы, 16×16. У каждого мира свой, со своей идеей ---
 
@@ -258,12 +426,81 @@ abstract final class GameSprites {
     'xxxxxxxxxxxxxxxx',
   ];
 
+  /// Мир 4 — Карусель. Кольцо из одинаковых фигур на общей оси: день,
+  /// который приходит снова. Единственный босс с осевой симметрией —
+  /// у него нет ни начала, ни конца, только оборот.
+  static const List<String> bossCarousel = [
+    '.......xx.......',
+    '......xxxx......',
+    '..xxxxxxxxxxxx..',
+    '.xoooooooooooox.',
+    'xx.xx.xxxx.xx.xx',
+    'xo.xo.xoox.ox.ox',
+    'xx.xx.xxxx.xx.xx',
+    'xoooooooooooooox',
+    'xx.xx.xxxx.xx.xx',
+    'xo.xo.xoox.ox.ox',
+    'xx.xx.xxxx.xx.xx',
+    '.xoooooooooooox.',
+    '..xxxxxxxxxxxx..',
+    '....x......x....',
+    '...xx......xx...',
+    '..oo........oo..',
+  ];
+
+  /// Мир 5 — Отражение. Две половины одного силуэта: левая заливкой,
+  /// правая — её полутоновый двойник. Босс, у которого нет своей формы,
+  /// он берёт её у того, кто пришёл.
+  static const List<String> bossReflection = [
+    '.....xxxxxx.....',
+    '...xxxxxxoooo...',
+    '..xxxxxxxoooooo.',
+    '.xxx.xxxxoo.ooo.',
+    '.xx...xxxoo...oo',
+    'xxx.x.xxxoo.o.oo',
+    'xxx...xxxoo...oo',
+    'xxxxxxxxxoooooo.',
+    'xxxxxxxxxoooooo.',
+    'xxx...xxxoo...oo',
+    'xxx.x.xxxoo.o.oo',
+    '.xx...xxxoo...oo',
+    '.xxx.xxxxoo.ooo.',
+    '..xxxxxxxoooooo.',
+    '...xxxxxxoooo...',
+    '.....xxxxxx.....',
+  ];
+
+  /// Мир 6 — Последний. Почти пустой кадр, углы рамки и в центре то, с
+  /// чего всё начиналось: та же фигура, что у первой ступени аватара,
+  /// только выросшая. Самый тихий силуэт из всех — и самый поздний.
+  static const List<String> bossLast = [
+    'xxx..........xxx',
+    'xxo..........oxx',
+    'x..............x',
+    '.....xxxxxx.....',
+    '....xxxxxxxx....',
+    '...xxxxooxxxx...',
+    '...xxxo..oxxx...',
+    '..xxxo....oxxx..',
+    '..xxxo....oxxx..',
+    '...xxxo..oxxx...',
+    '...xxxxooxxxx...',
+    '....xxxxxxxx....',
+    '.....xxxxxx.....',
+    'x..............x',
+    'xxo..........oxx',
+    'xxx..........xxx',
+  ];
+
   /// Босс мира. За пределами реализованных миров silently не падаем —
   /// выдаём последнего.
   static List<String> boss(int world) => switch (world) {
         1 => bossScroll,
         2 => bossChorus,
-        _ => bossHollow,
+        3 => bossHollow,
+        4 => bossCarousel,
+        5 => bossReflection,
+        _ => bossLast,
       };
 
   // --- Аватар персонажа, 12×12 ---

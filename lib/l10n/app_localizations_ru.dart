@@ -1676,5 +1676,150 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loreFragment4 =>
-      'Последний обрывок, вообще без почерка: «Сейчас тихо. Тихо не останется. Это нормально — дорогу назад ты знаешь».';
+      'Приколото к двери, которая ведёт обратно: «Я всё доделываю этот день. Он всё никак не доделан».';
+
+  @override
+  String get drifterEcho => 'Эхо';
+
+  @override
+  String get drifterEchoFlavor =>
+      'Одно и то же, сказанное дважды, второй раз тише. Ничего нового — а обернуться всё равно тянет.';
+
+  @override
+  String get drifterLedger => 'Список';
+
+  @override
+  String get drifterLedgerFlavor =>
+      'Стопка одинаковых строк. Вычеркнуть одну не значит закончить список: это значит освободить в нём место.';
+
+  @override
+  String get drifterPendulum => 'Маятник';
+
+  @override
+  String get drifterPendulumFlavor =>
+      'Уходит и возвращается ровно туда же. Движение без перемещения.';
+
+  @override
+  String get drifterMirror => 'Зеркало';
+
+  @override
+  String get drifterMirrorFlavor =>
+      'Рама, а в ней смутная фигура, повторяющая ваши движения. Единственный дрифер, который сам не делает ничего.';
+
+  @override
+  String get drifterBloom => 'Цвет';
+
+  @override
+  String get drifterBloomFlavor =>
+      'Раскрытые лепестки вокруг тёмной сердцевины. Он не перебивает — он просто приятнее работы.';
+
+  @override
+  String get drifterThorn => 'Шип';
+
+  @override
+  String get drifterThornFlavor =>
+      'Мелкий, кривой, сидит в стороне. Сам по себе пустяк. Цепляет каждый раз.';
+
+  @override
+  String get drifterEmber => 'Уголёк';
+
+  @override
+  String get drifterEmberFlavor =>
+      'Ядро и зола вокруг. Не помеха снаружи, а то, что осталось от вашего внимания.';
+
+  @override
+  String get drifterWeight => 'Груз';
+
+  @override
+  String get drifterWeightFlavor =>
+      'Низкий блок, вдавленный в пол. Ни просветов, ни отростков, взяться не за что. Просто не двигается.';
+
+  @override
+  String get drifterDoor => 'Дверь';
+
+  @override
+  String get drifterDoorFlavor =>
+      'Выход, за которым такая же комната. Рама в раме в раме.';
+
+  @override
+  String get bossCarousel => 'Карусель';
+
+  @override
+  String get bossCarouselFlavor =>
+      'Одинаковые фигуры на одной оси. Ни начала, ни конца — только оборот.';
+
+  @override
+  String get bossReflection => 'Отражение';
+
+  @override
+  String get bossReflectionFlavor =>
+      'У него нет своей формы. Он берёт её у того, кто вошёл.';
+
+  @override
+  String get bossLast => 'Последний';
+
+  @override
+  String get bossLastFlavor =>
+      'Почти пустая комната, а в середине то, с чего вы начинали, — только выросшее.';
+
+  @override
+  String get mapWorld4Name => 'Тот же день';
+
+  @override
+  String get mapWorld4Epigraph => 'Вы здесь уже были. Это не повод уходить.';
+
+  @override
+  String get mapWorld5Name => 'Зеркальный сад';
+
+  @override
+  String get mapWorld5Epigraph => 'Здесь всё красивое. Здесь ничего вашего.';
+
+  @override
+  String get mapWorld6Name => 'Последняя комната';
+
+  @override
+  String get mapWorld6Epigraph => 'Мешать больше некому. Остались только вы.';
+
+  @override
+  String get mapKingdom1Name => 'Порог';
+
+  @override
+  String get mapKingdom1Epigraph =>
+      'Два способа потерять начало: слишком тихо и слишком громко.';
+
+  @override
+  String get mapKingdom2Name => 'Долгий путь';
+
+  @override
+  String get mapKingdom2Epigraph =>
+      'Здесь никто не нападает. Здесь просто дольше, чем у вас есть.';
+
+  @override
+  String get mapKingdom3Name => 'Своё';
+
+  @override
+  String get mapKingdom3Epigraph =>
+      'Последнее королевство пустое. Всё, что в нём есть, вы принесли сами.';
+
+  @override
+  String mapKingdomLabel(int number) {
+    return 'Королевство $number';
+  }
+
+  @override
+  String mapKingdomProgress(int cleared, int total) {
+    return 'пройдено $cleared из $total';
+  }
+
+  @override
+  String get loreFragment5 =>
+      'Лицом вниз в саду: «Здесь всё лучше того, зачем я пришёл. Для этого оно и есть».';
+
+  @override
+  String get loreFragment6 =>
+      'В последней комнате, на полу: «Со мной сюда никто не вошёл. Вот в чём я ошибался».';
+
+  @override
+  String get loreFragment7 =>
+      'Последний обрывок, ничьим почерком: «Сейчас тихо. Тихо не останется. Это ничего — дорогу назад вы теперь знаете».';
 }

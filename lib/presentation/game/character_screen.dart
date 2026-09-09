@@ -302,7 +302,10 @@ class _ScrapsCard extends StatelessWidget {
         1 => l10n.loreFragment1,
         2 => l10n.loreFragment2,
         3 => l10n.loreFragment3,
-        _ => l10n.loreFragment4,
+        4 => l10n.loreFragment4,
+        5 => l10n.loreFragment5,
+        6 => l10n.loreFragment6,
+        _ => l10n.loreFragment7,
       };
 
   @override

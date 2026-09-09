@@ -653,8 +653,66 @@
   "@loreFragment3": {
     "description": "Lore scrap found after the third boss"
   },
-  "loreFragment4": "Останній уривок, узагалі без почерку: «Зараз тихо. Тихо не залишиться. Це нормально — дорогу назад ти знаєш».",
+  "loreFragment4": "Приколото до дверей, які ведуть назад: «Я все дороблюю цей день. Він усе ніяк не дороблений».",
   "@loreFragment4": {
     "description": "Final lore scrap, unlocked only after every world is cleared"
-  }
+  },
+  "drifterEcho": "Луна",
+  "drifterEchoFlavor": "Те саме, сказане двічі, другого разу тихіше. Нічого нового — а озирнутися все одно тягне.",
+  "drifterLedger": "Список",
+  "drifterLedgerFlavor": "Стос однакових рядків. Викреслити один не означає закінчити список: це означає звільнити в ньому місце.",
+  "drifterPendulum": "Маятник",
+  "drifterPendulumFlavor": "Іде і повертається рівно туди ж. Рух без переміщення.",
+  "drifterMirror": "Дзеркало",
+  "drifterMirrorFlavor": "Рама, а в ній туманна постать, що повторює ваші рухи. Єдиний дрифер, який сам не робить нічого.",
+  "drifterBloom": "Цвіт",
+  "drifterBloomFlavor": "Розкриті пелюстки навколо темної серцевини. Він не перебиває — він просто приємніший за роботу.",
+  "drifterThorn": "Шип",
+  "drifterThornFlavor": "Дрібний, кривий, сидить осторонь. Сам по собі дурниця. Чіпляє щоразу.",
+  "drifterEmber": "Жарина",
+  "drifterEmberFlavor": "Ядро і попіл навколо. Не перешкода зовні, а те, що лишилося від вашої уваги.",
+  "drifterWeight": "Тягар",
+  "drifterWeightFlavor": "Низький блок, вдавлений у підлогу. Ні просвітів, ні відростків, ні за що взятися. Просто не рухається.",
+  "drifterDoor": "Двері",
+  "drifterDoorFlavor": "Вихід, за яким така сама кімната. Рама в рамі в рамі.",
+  "bossCarousel": "Карусель",
+  "bossCarouselFlavor": "Однакові постаті на одній осі. Ні початку, ні кінця — тільки оберт.",
+  "bossReflection": "Відображення",
+  "bossReflectionFlavor": "У нього немає своєї форми. Він бере її в того, хто увійшов.",
+  "bossLast": "Останній",
+  "bossLastFlavor": "Майже порожня кімната, а посередині те, з чого ви починали, — тільки виросле.",
+  "mapWorld4Name": "Той самий день",
+  "mapWorld4Epigraph": "Ви тут уже були. Це не привід іти.",
+  "mapWorld5Name": "Дзеркальний сад",
+  "mapWorld5Epigraph": "Тут усе красиве. Тут нічого вашого.",
+  "mapWorld6Name": "Остання кімната",
+  "mapWorld6Epigraph": "Заважати більше нікому. Лишилися тільки ви.",
+  "mapKingdom1Name": "Поріг",
+  "mapKingdom1Epigraph": "Два способи втратити початок: надто тихо і надто гучно.",
+  "mapKingdom2Name": "Довга дорога",
+  "mapKingdom2Epigraph": "Тут ніхто не нападає. Тут просто довше, ніж у вас є.",
+  "mapKingdom3Name": "Своє",
+  "mapKingdom3Epigraph": "Останнє королівство порожнє. Усе, що в ньому є, ви принесли самі.",
+  "mapKingdomLabel": "Королівство {number}",
+  "mapKingdomProgress": "пройдено {cleared} з {total}",
+  "@mapKingdomLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "@mapKingdomProgress": {
+    "placeholders": {
+      "cleared": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loreFragment5": "Лицем донизу в саду: «Тут усе краще за те, по що я прийшов. Для цього воно й існує».",
+  "loreFragment6": "В останній кімнаті, на підлозі: «Зі мною сюди ніхто не увійшов. Ось у чому я помилявся».",
+  "loreFragment7": "Останній обривок, нічиїм почерком: «Зараз тихо. Тихо не залишиться. Це нічого — дорогу назад ви тепер знаєте»."
 }

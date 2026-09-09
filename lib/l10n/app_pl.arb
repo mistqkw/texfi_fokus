@@ -653,8 +653,66 @@
   "@loreFragment3": {
     "description": "Lore scrap found after the third boss"
   },
-  "loreFragment4": "Ostatni strzęp, w ogóle bez pisma: „Teraz jest cicho. Cicho nie zostanie. W porządku — drogę powrotną znasz”.",
+  "loreFragment4": "Przypięte do drzwi, które prowadzą z powrotem: „Ciągle kończę ten dzień. On ciągle jest niedokończony”.",
   "@loreFragment4": {
     "description": "Final lore scrap, unlocked only after every world is cleared"
-  }
+  },
+  "drifterEcho": "Echo",
+  "drifterEchoFlavor": "To samo powiedziane dwa razy, za drugim ciszej. Nic nowego — a i tak ciągnie, żeby się obejrzeć.",
+  "drifterLedger": "Lista",
+  "drifterLedgerFlavor": "Stos identycznych wierszy. Skreślenie jednego nie kończy listy — robi w niej miejsce.",
+  "drifterPendulum": "Wahadło",
+  "drifterPendulumFlavor": "Odchodzi i wraca dokładnie tam, gdzie było. Ruch bez przemieszczenia.",
+  "drifterMirror": "Lustro",
+  "drifterMirrorFlavor": "Rama, a w niej niewyraźna postać powtarzająca twoje ruchy. Jedyny dryfer, który sam nie robi nic.",
+  "drifterBloom": "Kwiat",
+  "drifterBloomFlavor": "Rozchylone płatki wokół ciemnego środka. Nie przerywa — jest po prostu przyjemniejszy niż praca.",
+  "drifterThorn": "Cierń",
+  "drifterThornFlavor": "Drobny, krzywy, siedzi z boku. Sam w sobie drobiazg. Zaczepia za każdym razem.",
+  "drifterEmber": "Żar",
+  "drifterEmberFlavor": "Rdzeń i popiół dookoła. Nie przeszkoda z zewnątrz, tylko to, co zostało z twojej uwagi.",
+  "drifterWeight": "Ciężar",
+  "drifterWeightFlavor": "Niski blok wciśnięty w podłogę. Bez szczelin, bez wypustek, nie ma za co chwycić. Po prostu nie rusza się.",
+  "drifterDoor": "Drzwi",
+  "drifterDoorFlavor": "Wyjście, za którym jest ten sam pokój. Rama w ramie w ramie.",
+  "bossCarousel": "Karuzela",
+  "bossCarouselFlavor": "Identyczne figury na jednej osi. Bez początku, bez końca — tylko obrót.",
+  "bossReflection": "Odbicie",
+  "bossReflectionFlavor": "Nie ma własnego kształtu. Bierze go od tego, kto wszedł.",
+  "bossLast": "Ostatni",
+  "bossLastFlavor": "Prawie pusty pokój, a pośrodku to, od czego zaczynałeś — tylko wyrosłe.",
+  "mapWorld4Name": "Ten sam dzień",
+  "mapWorld4Epigraph": "Już tu byłeś. To nie powód, żeby wychodzić.",
+  "mapWorld5Name": "Lustrzany ogród",
+  "mapWorld5Epigraph": "Wszystko tu jest ładne. Nic tu nie jest twoje.",
+  "mapWorld6Name": "Ostatni pokój",
+  "mapWorld6Epigraph": "Nie ma już komu przeszkadzać. Zostałeś tylko ty.",
+  "mapKingdom1Name": "Próg",
+  "mapKingdom1Epigraph": "Dwa sposoby, żeby stracić początek: za cicho i za głośno.",
+  "mapKingdom2Name": "Długa droga",
+  "mapKingdom2Epigraph": "Tu nikt nie atakuje. Tu po prostu trwa dłużej, niż masz czasu.",
+  "mapKingdom3Name": "Swoje",
+  "mapKingdom3Epigraph": "Ostatnie królestwo jest puste. Wszystko, co w nim jest, przyniosłeś sam.",
+  "mapKingdomLabel": "Królestwo {number}",
+  "mapKingdomProgress": "przebyto {cleared} z {total}",
+  "@mapKingdomLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "@mapKingdomProgress": {
+    "placeholders": {
+      "cleared": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loreFragment5": "Odwrócone w ogrodzie: „Wszystko tu jest lepsze niż to, po co przyszedłem. Po to właśnie jest”.",
+  "loreFragment6": "W ostatnim pokoju, na podłodze: „Nikt za mną nie wszedł. Właśnie tego nie rozumiałem”.",
+  "loreFragment7": "Ostatni skrawek, niczyim pismem: „Teraz jest cicho. Nie zostanie cicho. To nic — drogę powrotną już znasz”."
 }

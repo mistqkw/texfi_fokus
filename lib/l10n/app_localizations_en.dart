@@ -1679,5 +1679,153 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loreFragment4 =>
+      'Pinned to a door that leads back: \"I keep finishing this day. It keeps being unfinished.\"';
+
+  @override
+  String get drifterEcho => 'Echo';
+
+  @override
+  String get drifterEchoFlavor =>
+      'The same shape said twice, the second time fainter. Nothing new in it — and you still turn to look.';
+
+  @override
+  String get drifterLedger => 'Ledger';
+
+  @override
+  String get drifterLedgerFlavor =>
+      'A stack of identical lines. Crossing one out doesn\'t end the list, it makes room in it.';
+
+  @override
+  String get drifterPendulum => 'Pendulum';
+
+  @override
+  String get drifterPendulumFlavor =>
+      'Swings out and comes back to exactly where it started. Movement without going anywhere.';
+
+  @override
+  String get drifterMirror => 'Mirror';
+
+  @override
+  String get drifterMirrorFlavor =>
+      'A frame with a dim figure in it that moves when you do. The only drifter that does nothing on its own.';
+
+  @override
+  String get drifterBloom => 'Bloom';
+
+  @override
+  String get drifterBloomFlavor =>
+      'Open petals around a dark centre. It doesn\'t interrupt you — it\'s just nicer than the work.';
+
+  @override
+  String get drifterThorn => 'Thorn';
+
+  @override
+  String get drifterThornFlavor =>
+      'Small, crooked, sitting off in the corner. Nothing on its own. Catches every single time.';
+
+  @override
+  String get drifterEmber => 'Ember';
+
+  @override
+  String get drifterEmberFlavor =>
+      'A core and the ash around it. Not something in your way — what\'s left of your own attention.';
+
+  @override
+  String get drifterWeight => 'Weight';
+
+  @override
+  String get drifterWeightFlavor =>
+      'A low block pressed into the floor. No gaps, no limbs, nothing to grab. It just doesn\'t move.';
+
+  @override
+  String get drifterDoor => 'Door';
+
+  @override
+  String get drifterDoorFlavor =>
+      'A way out with the same room behind it. Frame inside frame inside frame.';
+
+  @override
+  String get bossCarousel => 'The Carousel';
+
+  @override
+  String get bossCarouselFlavor =>
+      'Identical figures on one axle. No beginning, no end — only the turn.';
+
+  @override
+  String get bossReflection => 'The Reflection';
+
+  @override
+  String get bossReflectionFlavor =>
+      'It has no shape of its own. It takes the shape of whoever walked in.';
+
+  @override
+  String get bossLast => 'The Last One';
+
+  @override
+  String get bossLastFlavor =>
+      'An almost empty room and, in the middle, the thing you started as — grown.';
+
+  @override
+  String get mapWorld4Name => 'The Same Day';
+
+  @override
+  String get mapWorld4Epigraph =>
+      'You have been here. That is not a reason to leave.';
+
+  @override
+  String get mapWorld5Name => 'The Mirror Garden';
+
+  @override
+  String get mapWorld5Epigraph =>
+      'Everything here is lovely. Nothing here is yours.';
+
+  @override
+  String get mapWorld6Name => 'The Last Room';
+
+  @override
+  String get mapWorld6Epigraph =>
+      'No one is left to get in your way. Only you.';
+
+  @override
+  String get mapKingdom1Name => 'The Threshold';
+
+  @override
+  String get mapKingdom1Epigraph =>
+      'Two ways to lose the beginning: too quiet, and too loud.';
+
+  @override
+  String get mapKingdom2Name => 'The Long Way';
+
+  @override
+  String get mapKingdom2Epigraph =>
+      'Nothing here attacks. It only takes longer than you have.';
+
+  @override
+  String get mapKingdom3Name => 'What You Brought';
+
+  @override
+  String get mapKingdom3Epigraph =>
+      'The last kingdom is empty. Everything in it came with you.';
+
+  @override
+  String mapKingdomLabel(int number) {
+    return 'Kingdom $number';
+  }
+
+  @override
+  String mapKingdomProgress(int cleared, int total) {
+    return '$cleared of $total cleared';
+  }
+
+  @override
+  String get loreFragment5 =>
+      'Face down in the garden: \"Everything here is better than what I came to do. That is what it is for.\"';
+
+  @override
+  String get loreFragment6 =>
+      'In the last room, on the floor: \"No one followed me in. That was the part I got wrong.\"';
+
+  @override
+  String get loreFragment7 =>
       'The last scrap, in no handwriting at all: \"It is quiet now. It will not stay quiet. That is fine — you know the way back.\"';
 }

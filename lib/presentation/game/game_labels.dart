@@ -16,6 +16,15 @@ extension DrifterSpeciesLabel on DrifterSpecies {
         DrifterSpecies.siphon => l10n.drifterSiphon,
         DrifterSpecies.knot => l10n.drifterKnot,
         DrifterSpecies.veil => l10n.drifterVeil,
+        DrifterSpecies.echo => l10n.drifterEcho,
+        DrifterSpecies.ledger => l10n.drifterLedger,
+        DrifterSpecies.pendulum => l10n.drifterPendulum,
+        DrifterSpecies.mirror => l10n.drifterMirror,
+        DrifterSpecies.bloom => l10n.drifterBloom,
+        DrifterSpecies.thorn => l10n.drifterThorn,
+        DrifterSpecies.ember => l10n.drifterEmber,
+        DrifterSpecies.weight => l10n.drifterWeight,
+        DrifterSpecies.door => l10n.drifterDoor,
       };
 
   String flavor(AppLocalizations l10n) => switch (this) {
@@ -28,6 +37,15 @@ extension DrifterSpeciesLabel on DrifterSpecies {
         DrifterSpecies.siphon => l10n.drifterSiphonFlavor,
         DrifterSpecies.knot => l10n.drifterKnotFlavor,
         DrifterSpecies.veil => l10n.drifterVeilFlavor,
+        DrifterSpecies.echo => l10n.drifterEchoFlavor,
+        DrifterSpecies.ledger => l10n.drifterLedgerFlavor,
+        DrifterSpecies.pendulum => l10n.drifterPendulumFlavor,
+        DrifterSpecies.mirror => l10n.drifterMirrorFlavor,
+        DrifterSpecies.bloom => l10n.drifterBloomFlavor,
+        DrifterSpecies.thorn => l10n.drifterThornFlavor,
+        DrifterSpecies.ember => l10n.drifterEmberFlavor,
+        DrifterSpecies.weight => l10n.drifterWeightFlavor,
+        DrifterSpecies.door => l10n.drifterDoorFlavor,
       };
 }
 
@@ -44,6 +62,9 @@ String bossLabel(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.bossScroll,
       2 => l10n.bossChorus,
       3 => l10n.bossHollow,
+      4 => l10n.bossCarousel,
+      5 => l10n.bossReflection,
+      6 => l10n.bossLast,
       _ => l10n.mapBossNode,
     };
 
@@ -53,6 +74,9 @@ String? bossFlavor(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.bossScrollFlavor,
       2 => l10n.bossChorusFlavor,
       3 => l10n.bossHollowFlavor,
+      4 => l10n.bossCarouselFlavor,
+      5 => l10n.bossReflectionFlavor,
+      6 => l10n.bossLastFlavor,
       _ => null,
     };
 
@@ -68,6 +92,9 @@ String worldName(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.mapWorld1Name,
       2 => l10n.mapWorld2Name,
       3 => l10n.mapWorld3Name,
+      4 => l10n.mapWorld4Name,
+      5 => l10n.mapWorld5Name,
+      6 => l10n.mapWorld6Name,
       _ => l10n.mapWorld(world),
     };
 
@@ -101,4 +128,31 @@ String rankLabel(AppLocalizations l10n, int rank) => switch (rank) {
       5 => l10n.characterRank6,
       6 => l10n.characterRank7,
       _ => l10n.characterRank8,
+    };
+
+/// Имя королевства.
+///
+/// Королевство — единственное на карте, что говорит не про существо и не
+/// про место, а про способ проиграть. «Порог» — два мира, в которых
+/// теряется начало; «Долгий путь» — два, в которых кончается запас; «Своё»
+/// — два, где мешать больше некому. Из-за этого имена и нужны: без них
+/// шесть миров подряд читаются как шесть уровней, а не как три пары.
+///
+/// Королевство без написанного имени называется своим номером — тем же
+/// честным способом, что и мир.
+String kingdomName(AppLocalizations l10n, int kingdom) => switch (kingdom) {
+      1 => l10n.mapKingdom1Name,
+      2 => l10n.mapKingdom2Name,
+      3 => l10n.mapKingdom3Name,
+      _ => l10n.mapKingdomLabel(kingdom),
+    };
+
+/// Эпиграф королевства. null — ещё не написан; заголовок в этом случае
+/// показывается без строки под ним, а не с чужой.
+String? kingdomEpigraph(AppLocalizations l10n, int kingdom) =>
+    switch (kingdom) {
+      1 => l10n.mapKingdom1Epigraph,
+      2 => l10n.mapKingdom2Epigraph,
+      3 => l10n.mapKingdom3Epigraph,
+      _ => null,
     };

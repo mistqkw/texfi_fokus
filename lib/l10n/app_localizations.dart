@@ -3006,11 +3006,257 @@ abstract class AppLocalizations {
   /// **'At the far end of the hall: \"The hall is the same room. I have been walking it since I sat down.\"'**
   String get loreFragment3;
 
-  /// Final lore scrap, unlocked only after every world is cleared
+  /// Lore scrap unlocked after the world 4 boss
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned to a door that leads back: \"I keep finishing this day. It keeps being unfinished.\"'**
+  String get loreFragment4;
+
+  /// No description provided for @drifterEcho.
+  ///
+  /// In en, this message translates to:
+  /// **'Echo'**
+  String get drifterEcho;
+
+  /// No description provided for @drifterEchoFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'The same shape said twice, the second time fainter. Nothing new in it — and you still turn to look.'**
+  String get drifterEchoFlavor;
+
+  /// No description provided for @drifterLedger.
+  ///
+  /// In en, this message translates to:
+  /// **'Ledger'**
+  String get drifterLedger;
+
+  /// No description provided for @drifterLedgerFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A stack of identical lines. Crossing one out doesn\'t end the list, it makes room in it.'**
+  String get drifterLedgerFlavor;
+
+  /// No description provided for @drifterPendulum.
+  ///
+  /// In en, this message translates to:
+  /// **'Pendulum'**
+  String get drifterPendulum;
+
+  /// No description provided for @drifterPendulumFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Swings out and comes back to exactly where it started. Movement without going anywhere.'**
+  String get drifterPendulumFlavor;
+
+  /// No description provided for @drifterMirror.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror'**
+  String get drifterMirror;
+
+  /// No description provided for @drifterMirrorFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A frame with a dim figure in it that moves when you do. The only drifter that does nothing on its own.'**
+  String get drifterMirrorFlavor;
+
+  /// No description provided for @drifterBloom.
+  ///
+  /// In en, this message translates to:
+  /// **'Bloom'**
+  String get drifterBloom;
+
+  /// No description provided for @drifterBloomFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Open petals around a dark centre. It doesn\'t interrupt you — it\'s just nicer than the work.'**
+  String get drifterBloomFlavor;
+
+  /// No description provided for @drifterThorn.
+  ///
+  /// In en, this message translates to:
+  /// **'Thorn'**
+  String get drifterThorn;
+
+  /// No description provided for @drifterThornFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Small, crooked, sitting off in the corner. Nothing on its own. Catches every single time.'**
+  String get drifterThornFlavor;
+
+  /// No description provided for @drifterEmber.
+  ///
+  /// In en, this message translates to:
+  /// **'Ember'**
+  String get drifterEmber;
+
+  /// No description provided for @drifterEmberFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A core and the ash around it. Not something in your way — what\'s left of your own attention.'**
+  String get drifterEmberFlavor;
+
+  /// No description provided for @drifterWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get drifterWeight;
+
+  /// No description provided for @drifterWeightFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A low block pressed into the floor. No gaps, no limbs, nothing to grab. It just doesn\'t move.'**
+  String get drifterWeightFlavor;
+
+  /// No description provided for @drifterDoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get drifterDoor;
+
+  /// No description provided for @drifterDoorFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'A way out with the same room behind it. Frame inside frame inside frame.'**
+  String get drifterDoorFlavor;
+
+  /// No description provided for @bossCarousel.
+  ///
+  /// In en, this message translates to:
+  /// **'The Carousel'**
+  String get bossCarousel;
+
+  /// No description provided for @bossCarouselFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'Identical figures on one axle. No beginning, no end — only the turn.'**
+  String get bossCarouselFlavor;
+
+  /// No description provided for @bossReflection.
+  ///
+  /// In en, this message translates to:
+  /// **'The Reflection'**
+  String get bossReflection;
+
+  /// No description provided for @bossReflectionFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'It has no shape of its own. It takes the shape of whoever walked in.'**
+  String get bossReflectionFlavor;
+
+  /// No description provided for @bossLast.
+  ///
+  /// In en, this message translates to:
+  /// **'The Last One'**
+  String get bossLast;
+
+  /// No description provided for @bossLastFlavor.
+  ///
+  /// In en, this message translates to:
+  /// **'An almost empty room and, in the middle, the thing you started as — grown.'**
+  String get bossLastFlavor;
+
+  /// No description provided for @mapWorld4Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Same Day'**
+  String get mapWorld4Name;
+
+  /// No description provided for @mapWorld4Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been here. That is not a reason to leave.'**
+  String get mapWorld4Epigraph;
+
+  /// No description provided for @mapWorld5Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Mirror Garden'**
+  String get mapWorld5Name;
+
+  /// No description provided for @mapWorld5Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything here is lovely. Nothing here is yours.'**
+  String get mapWorld5Epigraph;
+
+  /// No description provided for @mapWorld6Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Last Room'**
+  String get mapWorld6Name;
+
+  /// No description provided for @mapWorld6Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'No one is left to get in your way. Only you.'**
+  String get mapWorld6Epigraph;
+
+  /// No description provided for @mapKingdom1Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Threshold'**
+  String get mapKingdom1Name;
+
+  /// No description provided for @mapKingdom1Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Two ways to lose the beginning: too quiet, and too loud.'**
+  String get mapKingdom1Epigraph;
+
+  /// No description provided for @mapKingdom2Name.
+  ///
+  /// In en, this message translates to:
+  /// **'The Long Way'**
+  String get mapKingdom2Name;
+
+  /// No description provided for @mapKingdom2Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here attacks. It only takes longer than you have.'**
+  String get mapKingdom2Epigraph;
+
+  /// No description provided for @mapKingdom3Name.
+  ///
+  /// In en, this message translates to:
+  /// **'What You Brought'**
+  String get mapKingdom3Name;
+
+  /// No description provided for @mapKingdom3Epigraph.
+  ///
+  /// In en, this message translates to:
+  /// **'The last kingdom is empty. Everything in it came with you.'**
+  String get mapKingdom3Epigraph;
+
+  /// No description provided for @mapKingdomLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Kingdom {number}'**
+  String mapKingdomLabel(int number);
+
+  /// No description provided for @mapKingdomProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{cleared} of {total} cleared'**
+  String mapKingdomProgress(int cleared, int total);
+
+  /// Lore scrap unlocked after the world 5 boss
+  ///
+  /// In en, this message translates to:
+  /// **'Face down in the garden: \"Everything here is better than what I came to do. That is what it is for.\"'**
+  String get loreFragment5;
+
+  /// Lore scrap unlocked after the world 6 boss
+  ///
+  /// In en, this message translates to:
+  /// **'In the last room, on the floor: \"No one followed me in. That was the part I got wrong.\"'**
+  String get loreFragment6;
+
+  /// Final lore scrap, unlocked only when the whole map is cleared
   ///
   /// In en, this message translates to:
   /// **'The last scrap, in no handwriting at all: \"It is quiet now. It will not stay quiet. That is fine — you know the way back.\"'**
-  String get loreFragment4;
+  String get loreFragment7;
 }
 
 class _AppLocalizationsDelegate

@@ -22,6 +22,9 @@ String? worldEpigraph(AppLocalizations l10n, int world) => switch (world) {
       1 => l10n.mapWorld1Epigraph,
       2 => l10n.mapWorld2Epigraph,
       3 => l10n.mapWorld3Epigraph,
+      4 => l10n.mapWorld4Epigraph,
+      5 => l10n.mapWorld5Epigraph,
+      6 => l10n.mapWorld6Epigraph,
       _ => null,
     };
 

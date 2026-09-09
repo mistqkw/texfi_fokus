@@ -118,10 +118,16 @@ void main() {
 
   testWidgets('последний обрывок ждёт полного прохождения карты',
       (tester) async {
+    // Итоговый обрывок — не четвёртый и не седьмой сам по себе, а
+    // `worldCount + 1`. Строки локализации по номеру не достать, поэтому
+    // связь закреплена проверкой рядом: разъедется — упадёт здесь, а не
+    // на экране у человека.
+    expect(GameRules.loreFragmentCount, 7);
+
     // Все боссы, кроме последнего.
     await seedBossKills(GameRules.worldCount - 1);
     await pump(tester);
-    expect(find.text(en.loreFragment4), findsNothing);
+    expect(find.text(en.loreFragment7), findsNothing);
 
     await drain(tester);
   });
@@ -130,7 +136,7 @@ void main() {
     await seedBossKills(GameRules.worldCount);
     await pump(tester);
 
-    expect(find.text(en.loreFragment4), findsOneWidget);
+    expect(find.text(en.loreFragment7), findsOneWidget);
     // И заглушек больше нет: открывать нечего.
     expect(find.text(en.loreLocked), findsNothing);
 

@@ -21,18 +21,36 @@ import 'package:texfi_fokus/presentation/game/world_style.dart';
 /// ради невозможности которой игровой слой вообще устроен отдельно.
 void main() {
   group('перекличка мира с категорией', () {
-    test('у каждого реализованного мира есть своя категория', () {
-      final seen = <TaskCategory>{};
+    test('«прочее» не досталось ни одному миру', () {
+      // Значение по умолчанию, а не выбор: `resonates` исключает его, и мир
+      // с такой привязкой не откликался бы никогда — то есть привязки у
+      // него не было бы вовсе, только строчка в коде.
       for (var world = 1; world <= GameRules.worldCount; world++) {
-        final category = GameRules.affinityOf(world);
-        // «Прочее» — значение по умолчанию, а не выбор: мир, которому досталось
-        // оно, на деле не связан ни с чем.
-        expect(category, isNot(TaskCategory.other));
-        seen.add(category);
+        expect(GameRules.affinityOf(world), isNot(TaskCategory.other));
       }
-      // Два мира с одной категорией сделали бы карту менее осмысленной, а не
-      // более: смысл ровно в том, что места разные.
-      expect(seen, hasLength(GameRules.worldCount));
+    });
+
+    test('категории не повторяются, кроме замыкающего круг последнего мира',
+        () {
+      // Пригодных категорий пять, а миров шесть, и одна обязана
+      // повториться. Повтор выбран не по остатку: последняя комната
+      // возвращается к учёбе, с которой всё начиналось, и круг замыкается
+      // там же, где открылся.
+      //
+      // Тест стережёт именно это: любой другой повтор — уже недосмотр.
+      final seen = <TaskCategory>{};
+      for (var world = 1; world < GameRules.worldCount; world++) {
+        expect(
+          seen.add(GameRules.affinityOf(world)),
+          isTrue,
+          reason: 'мир $world повторяет чужую категорию',
+        );
+      }
+      expect(
+        GameRules.affinityOf(GameRules.worldCount),
+        GameRules.affinityOf(1),
+        reason: 'последний мир обязан возвращаться к первому',
+      );
     });
 
     test('совпадение категории засчитывается, «прочее» — никогда', () {
@@ -121,7 +139,7 @@ void main() {
     });
   });
 
-  group('задел на четвёртый мир', () {
+  group('задел на ненаписанный мир', () {
     final AppLocalizations l10n = AppLocalizationsEn();
 
     test('у каждого написанного мира своё имя, босс и эпиграф', () {
@@ -142,12 +160,17 @@ void main() {
     });
 
     test('ненаписанный мир не присваивает себе чужое имя', () {
-      // Это и есть цена `_ =>` в подписях: добавив четвёртый мир в
-      // `GameRules.worlds`, автор получил бы мир с именем и боссом третьего,
-      // и увидеть это можно было бы только глазами на экране.
-      const unwritten = 4;
-      expect(worldName(l10n, unwritten), isNot(worldName(l10n, 3)));
-      expect(bossLabel(l10n, unwritten), isNot(bossLabel(l10n, 3)));
+      // Это и есть цена `_ =>` в подписях: дописав мир в `GameRules.worlds`
+      // и забыв про строки, автор получил бы мир с именем и боссом
+      // предыдущего, и увидеть это можно было бы только глазами на экране.
+      //
+      // Номер берётся от `worldCount`, а не задан числом: иначе тест
+      // проверял бы «мир 4» и после появления четвёртого мира молча
+      // перестал бы стеречь то, ради чего написан.
+      final unwritten = GameRules.worldCount + 1;
+      final last = GameRules.worldCount;
+      expect(worldName(l10n, unwritten), isNot(worldName(l10n, last)));
+      expect(bossLabel(l10n, unwritten), isNot(bossLabel(l10n, last)));
       expect(bossFlavor(l10n, unwritten), isNull);
       expect(worldEpigraph(l10n, unwritten), isNull);
     });
