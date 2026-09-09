@@ -15,8 +15,7 @@ import 'package:flutter/services.dart';
 /// Свои напоминания приложение глушит само и без всякого разрешения (см.
 /// `NotificationService.suspendReminders`); этот класс — только про чужие.
 class FocusMode {
-  const FocusMode({@visibleForTesting bool? supportedOverride})
-      : _supportedOverride = supportedOverride;
+  const FocusMode({@visibleForTesting this.supportedOverride});
 
   /// Подмена ответа [isSupported] в тестах.
   ///
@@ -24,7 +23,8 @@ class FocusMode {
   /// шва проверить можно было бы ровно одно: что на Linux ничего не
   /// происходит. А проверять надо обратное — что на поддерживаемой платформе
   /// вызовы уходят в канал под правильными именами.
-  final bool? _supportedOverride;
+  @visibleForTesting
+  final bool? supportedOverride;
 
   static const String channelName = 'com.texfi.texfi_fokus/focus_mode';
 
@@ -35,7 +35,7 @@ class FocusMode {
   /// На десктопе и в вебе системного «Не беспокоить», которым можно было бы
   /// управлять из приложения, нет — там настройка не показывается.
   bool get isSupported =>
-      _supportedOverride ?? (!kIsWeb && Platform.isAndroid);
+      supportedOverride ?? (!kIsWeb && Platform.isAndroid);
 
   /// Выдан ли доступ к политике уведомлений.
   Future<bool> isGranted() async {
