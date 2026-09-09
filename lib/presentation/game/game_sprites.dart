@@ -18,17 +18,17 @@ abstract final class GameSprites {
   /// Гудок: почти всё существо — размах крыльев, тело мелкое, сверху усики.
   /// Горизонтальный, широкий, «налетающий» — то самое «звякнуло и утащило».
   static const List<String> drifterBuzz = [
-    '............',
     '...x....x...',
+    '...ox..xo...',
     '....x..x....',
-    '.xx.xxxx.xx.',
-    'xxxxxxxxxxxx',
-    'xxxx.xx.xxxx',
+    '.xo.xxxx.ox.',
+    'oxxxxooxxxxo',
+    'xxxo.xx.oxxx',
     '.xxxxxxxxxx.',
-    '...xxxxxx...',
-    '...x.xx.x...',
+    '..xoxxxxox..',
+    '...x.oo.x...',
     '..x..xx..x..',
-    '............',
+    '...o....o...',
     '............',
   ];
 
@@ -40,15 +40,15 @@ abstract final class GameSprites {
     '............',
     '............',
     '............',
-    '............',
-    '............',
+    '..oo....oo..',
+    '.oxxo..oxxo.',
     '.x........x.',
     'xxxxxxxxxxxx',
-    'x.x.xx.x.x.x',
+    'xoxoxxoxoxox',
     'xxxxxxxxxxxx',
     'x..x..x..x..',
     '.x..x..x..x.',
-    '............',
+    'o..o..o..o..',
   ];
 
   /// Морок: высокий, узкий, с одним большим пустым глазом и рваным подолом.
@@ -59,12 +59,12 @@ abstract final class GameSprites {
     '....xxxx....',
     '...xxxxxx...',
     '..xxxxxxxx..',
-    '..xx....xx..',
-    '..xx....xx..',
-    '..xxx..xxx..',
+    '..xxoooxxx..',
+    '..xo...oxx..',
+    '..xo...oxx..',
+    '..xxoooxxx..',
     '..xxxxxxxx..',
-    '..xxxxxxxx..',
-    '..xxxxxxxx..',
+    '..xxoxxoxx..',
     '..x.xx.x.x..',
     '..x..x...x..',
   ];
@@ -76,14 +76,14 @@ abstract final class GameSprites {
   static const List<String> drifterTangle = [
     '............',
     '.xx......xx.',
-    '..xx....xx..',
-    '...xx..xx...',
-    '....xxxx....',
-    '.....xx.....',
-    '.....xx.....',
-    '....xxxx....',
-    '...xx..xx...',
-    '..xx....xx..',
+    '.oxx....xxo.',
+    '..oxx..xxo..',
+    '...oxxxxo...',
+    '....oxxo....',
+    '....oxxo....',
+    '...oxxxxo...',
+    '..oxx..xxo..',
+    '.oxx....xxo.',
     '.xx......xx.',
     '............',
   ];
@@ -93,34 +93,34 @@ abstract final class GameSprites {
   /// зацепиться, и в этом вся суть.
   static const List<String> drifterMote = [
     'xx......xx..',
-    'xx......xx..',
-    '....xx......',
-    '....xx......',
+    'xo......ox..',
+    '...ox.......',
+    '...xx.......',
     'xx........xx',
-    'xx........xx',
-    '..xx....xx..',
+    'xo........ox',
+    '..xo....ox..',
     '..xx....xx..',
     'xx......xx..',
-    'xx......xx..',
-    '....xx..xx..',
-    '....xx..xx..',
+    'xo......ox..',
+    '....xx.ox...',
+    '....xo.xx...',
   ];
 
   /// Скорлупа: замкнутое кольцо и ничего внутри. Самый лёгкий силуэт на
   /// карте — одна линия по кругу.
   static const List<String> drifterHusk = [
     '....xxxx....',
-    '..xx....xx..',
+    '..xxoooxx...',
+    '.xo......ox.',
     '.x........x.',
-    '.x........x.',
+    'xo........ox',
     'x..........x',
     'x..........x',
-    'x..........x',
+    'xo........ox',
     '.x........x.',
-    '.x........x.',
-    '..xx....xx..',
+    '.xo......ox.',
+    '..xxoooxx...',
     '....xxxx....',
-    '............',
   ];
 
   // --- Мир 3 ---
@@ -130,17 +130,17 @@ abstract final class GameSprites {
   /// внизу, эта сверху.
   static const List<String> drifterSiphon = [
     'xxxxxxxxxxxx',
-    'xxxxxxxxxxxx',
-    '.xxxxxxxxxx.',
-    '..xxxxxxxx..',
-    '...xxxxxx...',
+    'xoooooooooox',
+    '.xxoooooxxx.',
+    '..xxoooxxx..',
+    '...xxoxxx...',
     '....xxxx....',
-    '....x..x....',
+    '....xoox....',
     '.....xx.....',
-    '.....xx.....',
-    '.....xx.....',
+    '.....ox.....',
+    '.....xo.....',
     '....xxxx....',
-    '............',
+    '....oooo....',
   ];
 
   /// Узел: столб во всю высоту с двумя перекладинами поперёк. Единственная
@@ -149,16 +149,16 @@ abstract final class GameSprites {
   static const List<String> drifterKnot = [
     '.....xx.....',
     '.....xx.....',
-    'xxxxxxxxxxxx',
-    'xxxxxxxxxxxx',
+    'xxxxxooxxxxx',
+    'xoooxxxxooox',
     '.....xx.....',
     '.....xx.....',
     '..xxxxxxxx..',
-    '..xxxxxxxx..',
+    '..xoo..oox..',
     '.....xx.....',
     '.....xx.....',
     '.....xx.....',
-    '.....xx.....',
+    '....o..o....',
   ];
 
   /// Полог: косая масса из угла в угол с обтрёпанным нижним краем.
@@ -166,16 +166,16 @@ abstract final class GameSprites {
   static const List<String> drifterVeil = [
     'xxxxxxx.....',
     'xxxxxxxx....',
-    '.xxxxxxxx...',
-    '..xxxxxxxx..',
-    '...xxxxxxxx.',
-    '....xxxxxxxx',
-    '.....xxxxxxx',
-    '....x.xxxxx.',
-    '...x...xxx..',
-    '..x.....x...',
-    '.x..........',
-    'x...........',
+    'oxxxxxxxx...',
+    '.oxxxxxxxx..',
+    '..oxxxxxxxx.',
+    '...oxxxxxxxx',
+    '....oxxxxxxx',
+    '....o.oxxxxx',
+    '...o...ooxx.',
+    '..o.....o...',
+    '.o..........',
+    'o...........',
   ];
 
   static List<String> drifter(DrifterSpecies species) => switch (species) {
@@ -198,42 +198,42 @@ abstract final class GameSprites {
   static const List<String> bossScroll = [
     '................',
     '..xxxxxxxxxxxx..',
-    '.xxxxxxxxxxxxxx.',
-    '.xx..........xx.',
-    '.xx.xxxxxxxx.xx.',
-    '.xx.xx......xx..',
-    '.xx.xx.xxxx.xx..',
-    '.xx.xx.xx.x.xx..',
-    '.xx.xx.xxxx.xx..',
-    '.xx.xx......xx..',
-    '.xx.xxxxxxxxxx..',
-    '.xx...........x.',
-    '.xxxxxxxxxxxxxx.',
+    '.xoooooooooooox.',
+    '.xo..........ox.',
+    '.xo.xxxxxxxx.ox.',
+    '.xo.xoooooxx.ox.',
+    '.xo.xo.xx.ox.ox.',
+    '.xo.xo.xo.ox.ox.',
+    '.xo.xo.xx.ox.ox.',
+    '.xo.xooooooo.ox.',
+    '.xo.xxxxxxxx.ox.',
+    '.xo..........ox.',
+    '.xoooooooooooox.',
     '..xxxxxxxxxxxx..',
-    '....x......x....',
-    '...xx......xx...',
+    '....xx....xx....',
+    '...oxx....xxo...',
   ];
 
   /// Мир 2 — Хор. Не одно существо, а гроздь: множество мелких голов с
   /// собственными глазами на общем основании. Верхний край нарочно
   /// бугристый, силуэт распадается на части — рой, который говорит разом.
   static const List<String> bossChorus = [
-    '................',
     '..xx..xx..xx....',
+    '.xoox.xoox.xox..',
     '.xxxxxxxxxxxxx..',
     '.x.xx.x.xx.x.x..',
-    '.xxxxxxxxxxxxx..',
+    '.xoxxoxoxxoxox..',
     '..xx..xx..xx..x.',
     '.xxxxxxxxxxxxxx.',
     '.x.xx.x.xx.x.xx.',
-    '.xxxxxxxxxxxxxx.',
+    '.xoxxoxoxxoxoxx.',
     '..xxxxxxxxxxxx..',
-    '...xxxxxxxxxx...',
+    '...xoxxxxxxox...',
     '...x.xxxxxx.x...',
-    '...xxxxxxxxxx...',
+    '...xoxxxxxxox...',
     '....x.x..x.x....',
     '...xx.x..x.xx...',
-    '................',
+    '...oo.o..o.oo...',
   ];
 
   /// Мир 3 — Пустота. Самый простой и самый тяжёлый силуэт: массивная
@@ -241,20 +241,20 @@ abstract final class GameSprites {
   /// клинья. Единственный босс, у которого «тело» — это отсутствие тела.
   static const List<String> bossHollow = [
     'xxxxxxxxxxxxxxxx',
-    'xxxxxxxxxxxxxxxx',
-    'xx............xx',
-    'xx.x........x.xx',
-    'xx.xx......xx.xx',
-    'xx..xx....xx..xx',
-    'xx...xx..xx...xx',
-    'xx....xxxx....xx',
-    'xx....xxxx....xx',
-    'xx...xx..xx...xx',
-    'xx..xx....xx..xx',
-    'xx.xx......xx.xx',
-    'xx.x........x.xx',
-    'xx............xx',
-    'xxxxxxxxxxxxxxxx',
+    'xoooooooooooooox',
+    'xo............ox',
+    'xo.x........x.ox',
+    'xo.xx......xx.ox',
+    'xo..xx....xx..ox',
+    'xo...xx..xx...ox',
+    'xo....xxxx....ox',
+    'xo....xxxx....ox',
+    'xo...xx..xx...ox',
+    'xo..xx....xx..ox',
+    'xo.xx......xx.ox',
+    'xo.x........x.ox',
+    'xo............ox',
+    'xoooooooooooooox',
     'xxxxxxxxxxxxxxxx',
   ];
 
@@ -268,19 +268,24 @@ abstract final class GameSprites {
 
   // --- Аватар персонажа, 12×12 ---
   //
-  // Не человек и не зверь: огонёк. Четыре ступени, а не деталь на каждый
+  // Не человек и не зверь: огонёк. Шесть ступеней, а не деталь на каждый
   // уровень — иначе изменение перестаёт читаться как событие.
+  //
+  // Полутон здесь работает по смыслу, а не для красоты: у пламени горячая
+  // середина и остывающий край, и второй тон — единственный способ это
+  // показать, не разрезая силуэт дырами. Заодно он даёт росту вторую ось:
+  // огонёк не просто становится больше, у него разгорается ядро.
 
   /// Ступень 0 (уровни 1–2) — искра. Всё, что есть, — ядро.
   static const List<String> avatarSpark = [
     '............',
     '............',
-    '............',
-    '.....xx.....',
-    '....xxxx....',
-    '....xxxx....',
-    '.....xx.....',
-    '............',
+    '.....oo.....',
+    '....oxxo....',
+    '...oxxxxo...',
+    '...oxxxxo...',
+    '....oxxo....',
+    '.....oo.....',
     '............',
     '............',
     '............',
@@ -292,81 +297,81 @@ abstract final class GameSprites {
     '............',
     '.....xx.....',
     '....xxxx....',
+    '...xxoxxx...',
+    '...xo..ox...',
+    '..xxo..oxx..',
+    '..xxxooxxx..',
     '...xxxxxx...',
-    '...xx..xx...',
-    '..xxx..xxx..',
-    '..xxxxxxxx..',
-    '...xxxxxx...',
-    '....xxxx....',
-    '.....xx.....',
+    '....oxxo....',
+    '.....oo.....',
     '............',
     '............',
   ];
 
   /// Ступень 2 (6–9) — вокруг огонька зажигаются искры по углам.
   static const List<String> avatarAura = [
-    'x....xx....x',
-    '.x..xxxx..x.',
-    '...xxxxxx...',
-    '..xxx..xxx..',
-    '..xx....xx..',
-    '.xxx....xxx.',
-    '.xxxxxxxxxx.',
+    'o....xx....o',
+    '.o..xxxx..o.',
+    '...xxoxxx...',
+    '..xxo..oxx..',
+    '..xo....ox..',
+    '.xxo....oxx.',
+    '.xxxxooxxxx.',
     '..xxxxxxxx..',
-    '...xxxxxx...',
-    '.x..xxxx..x.',
-    'x....xx....x',
+    '...oxxxxo...',
+    '.o..oxxo..o.',
+    'o....oo....o',
     '............',
   ];
 
   /// Ступень 3 (10+) — сверху смыкается корона, снизу расходятся лучи.
   static const List<String> avatarCrown = [
-    'x.x.xxxx.x.x',
+    'x.x.oxxo.x.x',
     '.xxxxxxxxxx.',
-    'x.xxxxxxxx.x',
+    'x.xxoxxoxx.x',
     '...xxxxxx...',
-    '..xxx..xxx..',
-    '.xxx....xxx.',
-    '.xx......xx.',
-    '.xxxxxxxxxx.',
+    '..xxo..oxx..',
+    '.xxo....oxx.',
+    '.xo......ox.',
+    '.xxxxooxxxx.',
     '..xxxxxxxx..',
-    '...xxxxxx...',
-    '.x..xxxx..x.',
-    'x...x..x...x',
+    '...oxxxxo...',
+    '.o..oxxo..o.',
+    'x...o..o...x',
   ];
 
   /// Ступень 4 (15–20) — корона смыкается в сплошной венец, лучи идут
   /// по всем четырём сторонам.
   static const List<String> avatarCorona = [
-    'x.xxxxxxxx.x',
+    'x.oxxxxxxo.x',
     '.xxxxxxxxxx.',
-    'xxxxxxxxxxxx',
+    'xxxxoxxoxxxx',
     '.xxxxxxxxxx.',
-    '..xxx..xxx..',
-    '.xxx....xxx.',
-    '.xx......xx.',
-    '.xxxxxxxxxx.',
+    '..xxo..oxx..',
+    '.xxo....oxx.',
+    '.xo......ox.',
+    '.xxxxooxxxx.',
     '.xxxxxxxxxx.',
     '..xxxxxxxx..',
-    '.x.xxxxxx.x.',
-    'x.x.xxxx.x.x',
+    '.x.oxxxxo.x.',
+    'x.x.oxxo.x.x',
   ];
 
   /// Ступень 5 (21+) — огонёк занимает почти весь кадр: сердцевина всё ещё
   /// полая, но вокруг неё уже не аура, а сплошное свечение.
   static const List<String> avatarSun = [
-    'x.xxxxxxxx.x',
+    'x.oxxxxxxo.x',
     'xxxxxxxxxxxx',
+    'xxxoxxxxoxxx',
     'xxxxxxxxxxxx',
+    '.xxxo..oxxx.',
+    '.xxo....oxx.',
+    '.xxo....oxx.',
+    '.xxxxooxxxx.',
     'xxxxxxxxxxxx',
-    '.xxxx..xxxx.',
-    '.xxx....xxx.',
-    '.xxx....xxx.',
+    'xxxoxxxxoxxx',
     '.xxxxxxxxxx.',
-    'xxxxxxxxxxxx',
-    'xxxxxxxxxxxx',
-    '.xxxxxxxxxx.',
-    'x.x.xxxx.x.x',
+    'x.x.oxxo.x.x',
   ];
 
   /// Все ступени аватара по порядку — от искры к почти-солнцу.
