@@ -574,6 +574,32 @@
       }
     }
   },
+  "notificationChannelOngoing": "Session status",
+  "notificationChannelOngoingDesc": "An ongoing notice while a focus session is running — visible on the lock screen",
+  "notificationOngoingRunningTitle": "{phase} is running",
+  "@notificationOngoingRunningTitle": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationOngoingPausedTitle": "{phase} is paused",
+  "@notificationOngoingPausedTitle": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationOngoingBody": "{time} left",
+  "@notificationOngoingBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "navMap": "Map",
   "gameSectionTitle": "Game mode",
   "gameModeToggle": "Play instead of just tracking",

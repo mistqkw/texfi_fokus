@@ -37,6 +37,14 @@ TimerNotificationCopy timerNotificationCopyFrom(AppLocalizations l10n) {
   );
 }
 
+/// Тексты постоянного уведомления о ходе сессии — по тому же принципу.
+OngoingSessionCopy ongoingSessionCopyFrom(AppLocalizations l10n) {
+  return OngoingSessionCopy(
+    channelName: l10n.notificationChannelOngoing,
+    channelDescription: l10n.notificationChannelOngoingDesc,
+  );
+}
+
 /// Пересобирает расписание уведомлений под текущее состояние привычек и
 /// настроек. Вызывается после любых изменений, которые на него влияют:
 /// создание/правка/удаление привычки, переключатели в настройках, старт

@@ -934,6 +934,28 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Статус сесії';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'Постійне сповіщення на час фокус-сесії — видно на заблокованому екрані';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase триває';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase на паузі';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return 'Залишилось $time';
+  }
+
+  @override
   String get navMap => 'Карта';
 
   @override

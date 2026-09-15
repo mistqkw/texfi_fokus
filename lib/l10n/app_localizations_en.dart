@@ -937,6 +937,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Session status';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'An ongoing notice while a focus session is running — visible on the lock screen';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase is running';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase is paused';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return '$time left';
+  }
+
+  @override
   String get navMap => 'Map';
 
   @override

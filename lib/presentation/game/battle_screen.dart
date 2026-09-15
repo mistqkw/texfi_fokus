@@ -22,6 +22,7 @@ import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
+import '../timer/ongoing_notification_sync.dart';
 import '../timer/session_checklist.dart';
 import '../timer/session_finish_flow.dart';
 import '../timer/session_route.dart';
@@ -77,12 +78,21 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   late final NotificationService _notifications =
       ref.read(notificationServiceProvider);
 
+  /// Постоянное уведомление о ходе сессии — тот же механизм, что и на
+  /// обычном экране таймера: сессию можно вести и отсюда, и уведомление на
+  /// заблокированном экране обязано обновляться одинаково независимо от
+  /// того, с какого экрана её ведут.
+  late final OngoingSessionNotifier _ongoingNotification =
+      OngoingSessionNotifier(_notifications);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _syncAlarms(ref.read(timerControllerProvider));
+      final state = ref.read(timerControllerProvider);
+      _syncAlarms(state);
+      _ongoingNotification.sync(state, context.l10n);
     });
     // На бой смотрят — гасить экран посреди сессии незачем.
     _screen.enter();
@@ -91,6 +101,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   @override
   void dispose() {
     _notifications.cancelTimerAlarms();
+    _ongoingNotification.cancel();
     // Единственный путь снятия: отрабатывает при любом способе ухода с
     // экрана — жестом, кнопкой, программно после конца боя.
     _screen.release();
@@ -184,6 +195,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
       if (previous == null || previous.scheduleEpoch != next.scheduleEpoch) {
         _syncAlarms(next);
       }
+      _ongoingNotification.sync(next, l10n);
       if (next.finished && !(previous?.finished ?? false)) {
         _handleFinish(next);
       }

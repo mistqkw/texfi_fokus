@@ -934,6 +934,28 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Status sesji';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'Stałe powiadomienie na czas sesji skupienia — widoczne na ekranie blokady';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase trwa';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase wstrzymana';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return 'Zostało $time';
+  }
+
+  @override
   String get navMap => 'Mapa';
 
   @override

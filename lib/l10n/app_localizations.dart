@@ -1746,6 +1746,36 @@ abstract class AppLocalizations {
   /// **'{minutes} min planned in focus. Well held.'**
   String notificationTimerSessionDoneBody(int minutes);
 
+  /// No description provided for @notificationChannelOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Session status'**
+  String get notificationChannelOngoing;
+
+  /// No description provided for @notificationChannelOngoingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'An ongoing notice while a focus session is running — visible on the lock screen'**
+  String get notificationChannelOngoingDesc;
+
+  /// No description provided for @notificationOngoingRunningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} is running'**
+  String notificationOngoingRunningTitle(String phase);
+
+  /// No description provided for @notificationOngoingPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} is paused'**
+  String notificationOngoingPausedTitle(String phase);
+
+  /// No description provided for @notificationOngoingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String notificationOngoingBody(String time);
+
   /// No description provided for @navMap.
   ///
   /// In en, this message translates to:
