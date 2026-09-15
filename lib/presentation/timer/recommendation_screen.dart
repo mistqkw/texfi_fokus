@@ -149,16 +149,19 @@ class _RecommendationBody extends ConsumerWidget {
                   _PlanFigure(
                     value: '${recommendation.focusMinutes}',
                     caption: l10n.recommendationFocusLength,
+                    flex: 4,
                   ),
                   AppSpacing.wGapLg,
                   _PlanFigure(
                     value: '${recommendation.breakMinutes}',
                     caption: l10n.recommendationBreakLength,
+                    flex: 4,
                   ),
                   AppSpacing.wGapLg,
                   _PlanFigure(
                     value: '${recommendation.cycles}',
                     caption: l10n.recommendationCycles,
+                    flex: 2,
                   ),
                 ],
               ),
@@ -475,14 +478,25 @@ class _SourceBadge extends StatelessWidget {
 }
 
 class _PlanFigure extends StatelessWidget {
-  const _PlanFigure({required this.value, required this.caption});
+  const _PlanFigure({
+    required this.value,
+    required this.caption,
+    this.flex = 1,
+  });
 
   final String value;
   final String caption;
 
+  // Подписи разной длины ("Длительность фокуса" против "Циклов") не могут
+  // делить строку поровну — короткой достаётся лишнее место, а длинной не
+  // хватает, и слово переносится посередине. Вес задаётся с места вызова
+  // под конкретные подписи, а не подбирается на глаз внутри виджета.
+  final int flex;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
+      flex: flex,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
