@@ -1132,6 +1132,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get gameContinue => 'Dalej';
 
   @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Stuknij błysk jeszcze $remaining raz(y), aby kontynuować';
+  }
+
+  @override
   String get settingsAccent => 'Kolor akcentu';
 
   @override

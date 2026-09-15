@@ -422,6 +422,7 @@
   "gamePlayerDefeated": "Бос оговтався",
   "gamePlayerDefeatedBody": "Він знову сповнений сил, і твоя витривалість теж. Спробуй ще раз, коли будеш готовий, — більше нічого не втрачено.",
   "gameContinue": "Далі",
+  "gameVictoryTapHint": "Тапни по спалаху ще {remaining} раз(и), щоб продовжити",
   "settingsAccent": "Акцентний колір",
   "settingsAccentSubtitle": "Змінюється лише акцентний тон — решта палітри лишається тією самою.",
   "settingsImport": "Імпорт із JSON",

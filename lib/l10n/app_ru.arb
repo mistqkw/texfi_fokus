@@ -422,6 +422,7 @@
   "gamePlayerDefeated": "Дрифер-босс пришёл в себя",
   "gamePlayerDefeatedBody": "Он снова полон сил, и твоя выносливость тоже. Попробуй снова, когда будешь готов, — больше ничего не потеряно.",
   "gameContinue": "Дальше",
+  "gameVictoryTapHint": "Тапни по вспышке ещё {remaining} раз, чтобы продолжить",
   "settingsAccent": "Акцентный цвет",
   "settingsAccentSubtitle": "Меняется только акцентный тон — остальная палитра остаётся прежней.",
   "settingsImport": "Импорт из JSON",

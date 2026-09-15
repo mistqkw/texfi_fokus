@@ -422,6 +422,7 @@
   "gamePlayerDefeated": "Boss doszedł do siebie",
   "gamePlayerDefeatedBody": "Znów jest pełen sił, i twoja wytrzymałość też. Spróbuj ponownie, gdy będziesz gotów — nic więcej nie przepadło.",
   "gameContinue": "Dalej",
+  "gameVictoryTapHint": "Stuknij błysk jeszcze {remaining} raz(y), aby kontynuować",
   "settingsAccent": "Kolor akcentu",
   "settingsAccentSubtitle": "Zmienia się tylko ton akcentu — reszta palety zostaje bez zmian.",
   "settingsImport": "Import z JSON",

@@ -1132,6 +1132,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gameContinue => 'Дальше';
 
   @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Тапни по вспышке ещё $remaining раз, чтобы продолжить';
+  }
+
+  @override
   String get settingsAccent => 'Акцентный цвет';
 
   @override

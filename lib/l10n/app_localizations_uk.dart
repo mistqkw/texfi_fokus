@@ -1132,6 +1132,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get gameContinue => 'Далі';
 
   @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Тапни по спалаху ще $remaining раз(и), щоб продовжити';
+  }
+
+  @override
   String get settingsAccent => 'Акцентний колір';
 
   @override

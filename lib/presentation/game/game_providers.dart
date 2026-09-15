@@ -92,6 +92,28 @@ final lastEncounterProvider =
   return LastEncounterNotifier();
 });
 
+/// Сколько побед подряд одержано за этот запуск приложения.
+///
+/// Специально не в базе и не в SharedPreferences: это не прогресс персонажа
+/// (тот и так растёт числом убийств в [PlayerProgressEntity]), а разгон
+/// зреличности победного эффекта здесь и сейчас — каждая следующая победа в
+/// одном «забеге» отмечается заметнее предыдущей (см. [VictoryBurst] и
+/// `requiredCelebrationTaps`). Сбрасывается перезапуском намеренно: смысл в
+/// нарастании внутри одного захода в приложение, а не в вечно растущем числе,
+/// которое через месяц перестанет что-либо показывать на экране — тир и так
+/// упирается в потолок за несколько побед.
+final sessionKillStreakProvider = StateProvider<int>((ref) => 0);
+
+/// Сколько тапов по эффекту победы требуется, чтобы продолжить, — растёт
+/// вместе со ступенью эскалации.
+///
+/// Первая победа отпускает сразу; каждая следующая просит на один тап
+/// больше, вплоть до трёх лишних. Это не искусственное препятствие, а способ
+/// заставить задержаться на разгоняющемся торжестве чуть дольше — молчаливый
+/// «продолжить» после пятой победы подряд обесценил бы именно то, что эффект
+/// в этот момент пытается показать.
+int requiredCelebrationTaps(int tier) => tier.clamp(1, 4);
+
 /// Разносит итог сессии по игровому слою и запоминает его для показа.
 ///
 /// Вызывается после того, как сессия уже сохранена и скормлена движку
@@ -125,6 +147,10 @@ final gameSessionRecorderProvider = Provider<
             bonusXp: bonusXp,
           );
       ref.read(lastEncounterProvider.notifier).set(result);
+      if (result.outcome == EncounterOutcome.drifterDefeated ||
+          result.outcome == EncounterOutcome.bossDefeated) {
+        ref.read(sessionKillStreakProvider.notifier).update((n) => n + 1);
+      }
       return result;
     } catch (error, stack) {
       debugPrint('applySession to game layer failed: $error\n$stack');

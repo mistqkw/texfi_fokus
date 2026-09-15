@@ -23,7 +23,7 @@ import 'game_widgets.dart';
 /// босс восстановился, выносливость тоже, ничего больше не потеряно. Скрытый
 /// штраф, о котором пользователь узнаёт, случайно заметив полное HP, — это
 /// не сложность, а обман.
-class EncounterResultSheet extends StatelessWidget {
+class EncounterResultSheet extends ConsumerStatefulWidget {
   const EncounterResultSheet({super.key, required this.result});
 
   final EncounterResult result;
@@ -42,6 +42,16 @@ class EncounterResultSheet extends StatelessWidget {
       _ => result.leveledUpTo != null,
     };
   }
+
+  @override
+  ConsumerState<EncounterResultSheet> createState() =>
+      _EncounterResultSheetState();
+}
+
+class _EncounterResultSheetState extends ConsumerState<EncounterResultSheet> {
+  bool _ready = true;
+
+  EncounterResult get result => widget.result;
 
   ({String title, String body, List<String> sprite, bool good}) _content(
     AppLocalizations l10n,
@@ -88,6 +98,12 @@ class EncounterResultSheet extends StatelessWidget {
     final defeated = result.outcome == EncounterOutcome.drifterDefeated ||
         result.outcome == EncounterOutcome.bossDefeated;
 
+    // См. тот же расчёт в `battle_screen.dart`: счётчик побед за запуск
+    // приложения уже включает эту победу к моменту показа листа.
+    final tier = defeated
+        ? requiredCelebrationTaps(ref.watch(sessionKillStreakProvider))
+        : 1;
+
     return SafeArea(
       child: Padding(
         padding: AppSpacing.screen,
@@ -96,10 +112,19 @@ class EncounterResultSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
-              child: _DefeatAnimation(
-                sprite: content.sprite,
+              child: DefeatedCreatureDisplay(
+                rows: content.sprite,
                 color: content.good ? colors.accent : colors.danger,
                 defeated: defeated,
+                victory: defeated,
+                tier: tier,
+                requiredTaps: tier,
+                size: 120,
+                tapHint: l10n.gameVictoryTapHint,
+                onReadyChanged: (ready) {
+                  if (ready == _ready) return;
+                  setState(() => _ready = ready);
+                },
               ),
             ),
             AppSpacing.gapLg,
@@ -145,53 +170,11 @@ class EncounterResultSheet extends StatelessWidget {
             AppSpacing.gapXl,
             PixelButton(
               label: l10n.gameContinue,
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: _ready ? () => Navigator.of(context).pop() : null,
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Спрайт, который рассыпается через мгновение после появления.
-///
-/// Пауза нужна, чтобы победу было видно: мгновенный распад читается как
-/// «спрайт не загрузился», а не как «ты его добил».
-class _DefeatAnimation extends StatefulWidget {
-  const _DefeatAnimation({
-    required this.sprite,
-    required this.color,
-    required this.defeated,
-  });
-
-  final List<String> sprite;
-  final Color color;
-  final bool defeated;
-
-  @override
-  State<_DefeatAnimation> createState() => _DefeatAnimationState();
-}
-
-class _DefeatAnimationState extends State<_DefeatAnimation> {
-  bool _alive = true;
-
-  @override
-  void initState() {
-    super.initState();
-    if (!widget.defeated) return;
-    Future.delayed(const Duration(milliseconds: 450), () {
-      if (mounted) setState(() => _alive = false);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PixelCreature(
-      rows: widget.sprite,
-      color: widget.color,
-      size: 120,
-      alive: _alive,
     );
   }
 }

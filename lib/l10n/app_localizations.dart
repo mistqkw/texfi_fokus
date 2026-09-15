@@ -2082,6 +2082,12 @@ abstract class AppLocalizations {
   /// **'Onward'**
   String get gameContinue;
 
+  /// No description provided for @gameVictoryTapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the flash {remaining} more time(s) to move on'**
+  String gameVictoryTapHint(int remaining);
+
   /// No description provided for @settingsAccent.
   ///
   /// In en, this message translates to:

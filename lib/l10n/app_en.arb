@@ -695,6 +695,14 @@
   "gamePlayerDefeated": "The boss caught its breath",
   "gamePlayerDefeatedBody": "It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.",
   "gameContinue": "Onward",
+  "gameVictoryTapHint": "Tap the flash {remaining} more time(s) to move on",
+  "@gameVictoryTapHint": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
   "settingsImport": "Import from JSON",

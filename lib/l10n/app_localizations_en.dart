@@ -1135,6 +1135,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameContinue => 'Onward';
 
   @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Tap the flash $remaining more time(s) to move on';
+  }
+
+  @override
   String get settingsAccent => 'Accent colour';
 
   @override
