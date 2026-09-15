@@ -53,13 +53,17 @@ jobs:
           restore-keys: pub-${{ runner.os }}-
       - run: flutter pub get
 
-      # Как подключить настоящий релизный keystore:
-      #   1. keytool -genkey -v -keystore texfi-release.jks -keyalg RSA \
-      #        -keysize 2048 -validity 10000 -alias texfi
-      #   2. base64 -w0 texfi-release.jks   → в секрет ANDROID_KEYSTORE_BASE64
-      #   3. пароли → в секреты ANDROID_STORE_PASSWORD и ANDROID_KEY_PASSWORD
-      # Пока секретов нет, APK подписывается debug-ключом: поставить и
-      # запустить можно, распространять — нет.
+      # Настоящий релизный keystore подключён через секреты
+      # ANDROID_KEYSTORE_BASE64 / ANDROID_STORE_PASSWORD / ANDROID_KEY_PASSWORD
+      # (PKCS12, alias texfi, без срока истечения на практике — 10000 дней).
+      # Это критично: без стабильной подписи каждая сборка с новым
+      # debug-ключом требует от пользователя удалить приложение перед
+      # обновлением — а удаление стирает и локальную базу, и бэкапы в
+      # песочнице приложения (см. коммит "Находить бэкапы..." — ровно
+      # так один такой бэкап и потерялся при обновлении на 0.3.0-beta.2).
+      # Если секретов вдруг нет, сборка падает обратно на debug-ключ, чтобы
+      # `flutter build apk --release` не ломался совсем, но такой APK никому
+      # не раздаём.
       - name: Set up release signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -73,6 +77,7 @@ jobs:
           storePassword=$STORE_PASSWORD
           keyAlias=texfi
           keyPassword=$KEY_PASSWORD
+          storeType=PKCS12
           EOF
           else
             echo "::warning::No release keystore secret set — building with debug signing (do not distribute)."

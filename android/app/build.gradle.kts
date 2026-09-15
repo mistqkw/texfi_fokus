@@ -53,6 +53,11 @@ android {
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
+                // По умолчанию AGP ждёт JKS. Наш keystore сгенерирован через
+                // openssl (без keytool/JDK под рукой) сразу в PKCS12 —
+                // современном формате, который keytool сам использует как
+                // storeType по умолчанию, если явно не задать jks.
+                storeType = (keystoreProperties["storeType"] as String?) ?: "PKCS12"
             }
         }
     }
