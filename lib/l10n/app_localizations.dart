@@ -1246,6 +1246,18 @@ abstract class AppLocalizations {
   /// **'Folder: {path}'**
   String backupFolderPathHint(String path);
 
+  /// No description provided for @backupLegacyFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Found in the app's own storage'**
+  String get backupLegacyFoundTitle;
+
+  /// No description provided for @backupLegacyFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These backups were made by an older version, into a folder the system file picker cannot reach. Tap one to import it directly.'**
+  String get backupLegacyFoundBody;
+
   /// No description provided for @settingsScreenTitle.
   ///
   /// In en, this message translates to:

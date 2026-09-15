@@ -635,6 +635,14 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get backupLegacyFoundTitle => 'Znaleziono w pamięci aplikacji';
+
+  @override
+  String get backupLegacyFoundBody =>
+      'Te kopie zostały zrobione przez starszą wersję, w folderze, do '
+      'którego systemowy wybór pliku nie ma dostępu. Dotknij, aby zaimportować.';
+
+  @override
   String get settingsScreenTitle => 'Ekran';
 
   @override

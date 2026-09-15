@@ -637,6 +637,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get backupLegacyFoundTitle => 'Найдены в памяти приложения';
+
+  @override
+  String get backupLegacyFoundBody =>
+      'Эти бэкапы сделаны старой версией в папку, куда системный выбор файла '
+      'попасть не может. Нажмите на нужный, чтобы импортировать напрямую.';
+
+  @override
   String get settingsScreenTitle => 'Экран';
 
   @override

@@ -637,6 +637,14 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get backupLegacyFoundTitle => 'Знайдено у пам\'яті застосунку';
+
+  @override
+  String get backupLegacyFoundBody =>
+      'Ці резервні копії зроблені старою версією в папку, куди системний '
+      'вибір файлу дістатися не може. Торкніться, щоб імпортувати напряму.';
+
+  @override
   String get settingsScreenTitle => 'Екран';
 
   @override

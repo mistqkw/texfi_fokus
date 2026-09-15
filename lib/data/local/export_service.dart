@@ -194,6 +194,35 @@ class ExportService {
   /// scoped storage.
   static const String _androidInternalStorageRoot = '/storage/emulated/0';
 
+  /// Бэкапы, оставшиеся в приватном каталоге приложения — там, куда до этой
+  /// версии писал и ручной экспорт, и автоматический (пока не было доступа
+  /// к общему хранилищу или выбор в его пользу ещё не выполнялся).
+  ///
+  /// Системный выбор файла (SAF) в этот каталог попасть не может в принципе:
+  /// он не входит в список общих хранилищ, которые SAF вообще показывает, —
+  /// не из-за отсутствия разрешения, а по устройству платформы. Но само
+  /// приложение читает свой собственный каталог всегда и без каких-либо
+  /// разрешений, поэтому найти забытые там бэкапы можно только отсюда, не
+  /// через диалог импорта.
+  Future<List<File>> findLegacyBackups() async {
+    final docs = await getApplicationDocumentsDirectory();
+    final dirs = [docs, Directory(p.join(docs.path, autoBackupDirName))];
+
+    final found = <File>[];
+    for (final dir in dirs) {
+      if (!await dir.exists()) continue;
+      for (final entry in await dir.list().toList()) {
+        if (entry is File &&
+            p.basename(entry.path).startsWith('texfi-fokus-backup') &&
+            entry.path.endsWith('.json')) {
+          found.add(entry);
+        }
+      }
+    }
+    found.sort((a, b) => p.basename(b.path).compareTo(p.basename(a.path)));
+    return found;
+  }
+
   /// Читает выгрузку и заливает её в базу.
   ///
   /// [merge] — не трогать существующие строки с теми же id (перенос на

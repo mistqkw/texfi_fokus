@@ -353,6 +353,8 @@
       }
     }
   },
+  "backupLegacyFoundTitle": "Found in the app's own storage",
+  "backupLegacyFoundBody": "These backups were made by an older version, into a folder the system file picker cannot reach. Tap one to import it directly.",
   "settingsScreenTitle": "Screen",
   "settingsAlwaysOnClockTitle": "Clock screen",
   "settingsAlwaysOnClockSubtitle": "A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose",

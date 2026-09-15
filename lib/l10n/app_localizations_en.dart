@@ -637,6 +637,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get backupLegacyFoundTitle => 'Found in the app\'s own storage';
+
+  @override
+  String get backupLegacyFoundBody =>
+      'These backups were made by an older version, into a folder the '
+      'system file picker cannot reach. Tap one to import it directly.';
+
+  @override
   String get settingsScreenTitle => 'Screen';
 
   @override

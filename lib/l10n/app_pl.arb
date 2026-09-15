@@ -190,6 +190,8 @@
   "backupAccessRationale": "Aby kopie zapasowe trafiały do wspólnej pamięci wewnętrznej — i przetrwały odinstalowanie aplikacji, a nie żyły tylko w jej własnym folderze — Android prosi o uprawnienie „Dostęp do wszystkich plików”. Przyznaje się je na osobnym ekranie systemowym, nie w oknie dialogowym: znajdź TexFi f0kus na liście i zezwól.",
   "backupGrantAccess": "PRZYZNAJ DOSTĘP",
   "backupFolderPathHint": "Folder: {path}",
+  "backupLegacyFoundTitle": "Znaleziono w pamięci aplikacji",
+  "backupLegacyFoundBody": "Te kopie zostały zrobione przez starszą wersję, w folderze, do którego systemowy wybór pliku nie ma dostępu. Dotknij, aby zaimportować.",
   "settingsScreenTitle": "Ekran",
   "settingsAlwaysOnClockTitle": "Ekran zegara",
   "settingsAlwaysOnClockSubtitle": "Przyciemniony zegar na cały ekran — to nie prawdziwy Always-On Display, tylko cichy widok włączany celowo",

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 import '../../core/haptics/haptics.dart';
 import '../../core/storage/backup_storage_access.dart';
@@ -46,11 +47,24 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
   /// раз перекидывать поверх приложения ещё и «Файлы».
   bool _openedFolder = false;
 
+  /// Бэкапы, найденные в приватном каталоге приложения — см.
+  /// [ExportService.findLegacyBackups]. Пусто, пока проверка не завершилась.
+  List<File> _legacyBackups = const [];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshAccess());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshAccess();
+      _loadLegacyBackups();
+    });
+  }
+
+  Future<void> _loadLegacyBackups() async {
+    final found = await ref.read(exportServiceProvider).findLegacyBackups();
+    if (!mounted) return;
+    setState(() => _legacyBackups = found);
   }
 
   @override
@@ -123,6 +137,20 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     final path = picked?.path;
     if (path == null || !context.mounted) return;
 
+    await _importFrom(context, ref, File(path));
+  }
+
+  /// Общий хвост импорта — диалог слияния/замены и сама загрузка в базу.
+  /// Файл на входе может прийти как из системного выбора, так и из списка
+  /// найденных в песочнице приложения бэкапов.
+  Future<void> _importFrom(
+    BuildContext context,
+    WidgetRef ref,
+    File file,
+  ) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+
     final merge = await showDialog<bool>(
       context: context,
       builder: (context) => const ImportModeDialog(),
@@ -132,7 +160,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     try {
       final result = await ref
           .read(exportServiceProvider)
-          .importFromFile(File(path), merge: merge);
+          .importFromFile(file, merge: merge);
       Haptics.success();
       messenger.showSnackBar(
         SnackBar(
@@ -171,6 +199,32 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
         body: ListView(
           padding: AppSpacing.screen,
           children: [
+            if (_legacyBackups.isNotEmpty) ...[
+              PixelCard(
+                borderColor: colors.warning,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.backupLegacyFoundTitle,
+                      style: context.text.sectionTitle,
+                    ),
+                    AppSpacing.gapSm,
+                    Text(l10n.backupLegacyFoundBody, style: context.text.caption),
+                    AppSpacing.gapMd,
+                    for (final file in _legacyBackups) ...[
+                      PixelButton(
+                        label: p.basename(file.path),
+                        primary: false,
+                        onPressed: () => _importFrom(context, ref, file),
+                      ),
+                      AppSpacing.gapSm,
+                    ],
+                  ],
+                ),
+              ),
+              AppSpacing.gapLg,
+            ],
             if (needsRationale) ...[
               PixelCard(
                 borderColor: colors.warning,
@@ -242,10 +296,6 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
       ),
     );
   }
-}
-
-extension _SingleOrNull<T> on List<T> {
-  T? get singleOrNull => length == 1 ? first : null;
 }
 
 /// Слияние или замена. Замена подписана прямо: «сотрёт всё, что есть» — на
