@@ -14,6 +14,7 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles_ext.dart';
 import '../../core/utils/duration_format.dart';
+import '../../data/settings/currency_store.dart';
 import '../../domain/entities/habit_entity.dart';
 import '../../domain/entities/insight.dart';
 import '../mood_checkin/mood_checkin_screen.dart';
@@ -26,6 +27,7 @@ import '../shared/pixel_radio.dart';
 import '../shared/pixel_spinner.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/undo_snackbar.dart';
+import '../shop/shop_screen.dart';
 import 'home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -35,6 +37,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final habits = ref.watch(todayHabitsProvider);
+    final balance = ref.watch(currencyBalanceProvider);
 
     return PixelBackground(
       child: Scaffold(
@@ -42,6 +45,19 @@ class HomeScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: Text(l10n.homeTitle),
+          actions: [
+            // Баланс живёт в шапке, а не на отдельном экране: это тот же
+            // принцип, что у стрика и времени в фокусе ниже — число, которое
+            // хочется видеть сразу, без захода куда-то ради него.
+            _CurrencyChip(
+              balance: balance,
+              onTap: () {
+                Haptics.tap();
+                Navigator.of(context)
+                    .push(pixelDissolveRoute<void>(const ShopScreen()));
+              },
+            ),
+          ],
         ),
         body: ListView(
           padding: AppSpacing.screen,
@@ -84,6 +100,49 @@ class HomeScreen extends ConsumerWidget {
               data: (items) => _HabitsList(items: items),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Баланс валюты в шапке — заодно и вход в магазин.
+class _CurrencyChip extends StatelessWidget {
+  const _CurrencyChip({required this.balance, required this.onTap});
+
+  final int balance;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Padding(
+      padding: const EdgeInsets.only(right: AppSpacing.sm),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PixelSprite(
+                rows: PixelSprites.hourglass,
+                size: 16,
+                color: colors.accent,
+              ),
+              AppSpacing.wGapXs,
+              Text(
+                '$balance',
+                style: context.text.title.copyWith(
+                  color: colors.accent,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

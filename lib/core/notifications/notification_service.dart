@@ -107,6 +107,17 @@ class TimerAlarmSignal {
   }
 }
 
+/// Тексты постоянного уведомления о ходе сессии.
+class OngoingSessionCopy {
+  const OngoingSessionCopy({
+    required this.channelName,
+    required this.channelDescription,
+  });
+
+  final String channelName;
+  final String channelDescription;
+}
+
 /// Итог дня для вечернего уведомления. Собирается на стороне приложения:
 /// сервис уведомлений о сессиях и настроениях ничего не знает.
 class DailyDigest {
@@ -167,8 +178,16 @@ class NotificationService {
   /// Идентификаторы уведомлений: у итога дня свой фиксированный, у привычек —
   /// производные от хеша id, смещённые, чтобы не столкнуться с ним.
   static const int _dailySummaryId = 1;
+  static const int _ongoingSessionId = 2;
   static const int _timerIdOffset = 500;
   static const int _habitIdOffset = 1000;
+
+  /// Канал постоянного уведомления о ходе сессии.
+  ///
+  /// Отдельный от канала будильников: у того звук и вибрация закодированы в
+  /// имени и не переиспользуются, а этот всегда тихий — обновляется каждую
+  /// минуту, и звучать при каждом обновлении он не должен.
+  static const String _ongoingChannelId = 'texfi_fokus_ongoing_session';
 
   /// Диапазон, отведённый под будильники таймера.
   static bool _isTimerId(int id) =>
@@ -679,6 +698,99 @@ class NotificationService {
       await _plugin.cancelAll();
     } catch (error) {
       debugPrint('cancelAll failed: $error');
+    }
+  }
+
+  // --- Постоянное уведомление о ходе сессии ---
+
+  bool _ongoingChannelEnsured = false;
+
+  Future<void> _ensureOngoingChannel(OngoingSessionCopy copy) async {
+    if (!Platform.isAndroid || _ongoingChannelEnsured) return;
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return;
+      await android.createNotificationChannel(
+        AndroidNotificationChannel(
+          _ongoingChannelId,
+          copy.channelName,
+          description: copy.channelDescription,
+          // Низкая важность и без звука: обновляется каждую минуту работы
+          // таймера, и на каждое обновление приходить со звуком или
+          // вибрацией было бы одним долгим будильником вместо статуса.
+          importance: Importance.low,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
+      _ongoingChannelEnsured = true;
+    } catch (error) {
+      debugPrint('_ensureOngoingChannel failed: $error');
+    }
+  }
+
+  /// Показывает или обновляет постоянное уведомление о ходе сессии — то, что
+  /// видно на заблокированном экране, пока таймер идёт.
+  ///
+  /// Только Android: `ongoing`-уведомление, которое нельзя смахнуть свайпом,
+  /// — понятие именно этой платформы, и на других делать вид, что оно
+  /// работает, было бы враньём интерфейса.
+  ///
+  /// Вызывающий сам решает, как часто обновлять текст (см.
+  /// `OngoingSessionNotifier` в `presentation/timer`): здесь никакого
+  /// троттлинга нет, и дёргать этот метод на каждую секунду тика было бы и
+  /// расточительно, и есть шанс упереться в системные лимиты на частоту
+  /// обновления уведомлений.
+  Future<void> showOngoingSession({
+    required String title,
+    required String body,
+    required OngoingSessionCopy copy,
+  }) async {
+    if (!Platform.isAndroid) return;
+    await init();
+    if (!_initialized) return;
+    await _ensureOngoingChannel(copy);
+
+    try {
+      await _plugin.show(
+        _ongoingSessionId,
+        title,
+        body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _ongoingChannelId,
+            copy.channelName,
+            channelDescription: copy.channelDescription,
+            importance: Importance.low,
+            priority: Priority.low,
+            // Ядро постоянного уведомления: не смахивается и не уходит по
+            // тапу — это статус, а не разовое сообщение.
+            ongoing: true,
+            autoCancel: false,
+            playSound: false,
+            enableVibration: false,
+            // Одно обновление молча заменяет предыдущее, без повторного
+            // всплытия шторки на каждую минуту.
+            onlyAlertOnce: true,
+            showWhen: false,
+            visibility: NotificationVisibility.public,
+          ),
+        ),
+      );
+    } catch (error) {
+      debugPrint('showOngoingSession failed: $error');
+    }
+  }
+
+  /// Снимает уведомление о ходе сессии — конец, отмена или уход с экрана
+  /// таймера при любом исходе.
+  Future<void> cancelOngoingSession() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await _plugin.cancel(_ongoingSessionId);
+    } catch (error) {
+      debugPrint('cancelOngoingSession failed: $error');
     }
   }
 }

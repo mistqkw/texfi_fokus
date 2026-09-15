@@ -1222,6 +1222,60 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Data'**
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups'**
+  String get backupTitle;
+
+  /// No description provided for @backupAccessRationale.
+  ///
+  /// In en, this message translates to:
+  /// **'To keep backups in shared internal storage — so they survive an uninstall, not just live in the app's own folder — Android needs the "All files access" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.'**
+  String get backupAccessRationale;
+
+  /// No description provided for @backupGrantAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'GRANT ACCESS'**
+  String get backupGrantAccess;
+
+  /// No description provided for @backupFolderPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder: {path}'**
+  String backupFolderPathHint(String path);
+
+  /// No description provided for @settingsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen'**
+  String get settingsScreenTitle;
+
+  /// No description provided for @settingsAlwaysOnClockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock screen'**
+  String get settingsAlwaysOnClockTitle;
+
+  /// No description provided for @settingsAlwaysOnClockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose'**
+  String get settingsAlwaysOnClockSubtitle;
+
+  /// No description provided for @settingsHideStatusBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the status bar in it'**
+  String get settingsHideStatusBarTitle;
+
+  /// No description provided for @settingsHideStatusBarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to the clock screen and to quiet mode during a session'**
+  String get settingsHideStatusBarHint;
+
   String get settingsData;
 
   /// No description provided for @settingsExport.
@@ -1746,6 +1800,36 @@ abstract class AppLocalizations {
   /// **'{minutes} min planned in focus. Well held.'**
   String notificationTimerSessionDoneBody(int minutes);
 
+  /// No description provided for @notificationChannelOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Session status'**
+  String get notificationChannelOngoing;
+
+  /// No description provided for @notificationChannelOngoingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'An ongoing notice while a focus session is running — visible on the lock screen'**
+  String get notificationChannelOngoingDesc;
+
+  /// No description provided for @notificationOngoingRunningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} is running'**
+  String notificationOngoingRunningTitle(String phase);
+
+  /// No description provided for @notificationOngoingPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{phase} is paused'**
+  String notificationOngoingPausedTitle(String phase);
+
+  /// No description provided for @notificationOngoingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String notificationOngoingBody(String time);
+
   /// No description provided for @navMap.
   ///
   /// In en, this message translates to:
@@ -2081,6 +2165,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Onward'**
   String get gameContinue;
+
+  /// No description provided for @gameVictoryTapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the flash {remaining} more time(s) to move on'**
+  String gameVictoryTapHint(int remaining);
+
+  /// No description provided for @shopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get shopTitle;
+
+  /// No description provided for @shopBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get shopBalance;
+
+  /// No description provided for @shopBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get shopBuy;
+
+  /// No description provided for @shopOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get shopOwned;
+
+  /// No description provided for @shopBought.
+  ///
+  /// In en, this message translates to:
+  /// **'Bought. Check your collection.'**
+  String get shopBought;
+
+  /// No description provided for @shopInsufficientFunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough currency yet — finish another session.'**
+  String get shopInsufficientFunds;
+
+  /// No description provided for @shopPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} coins'**
+  String shopPrice(int price);
+
+  /// No description provided for @shopItemEmberName.
+  ///
+  /// In en, this message translates to:
+  /// **'Ember frame'**
+  String get shopItemEmberName;
+
+  /// No description provided for @shopItemEmberDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A warm cosmetic border for your character.'**
+  String get shopItemEmberDescription;
+
+  /// No description provided for @shopItemTideName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tide frame'**
+  String get shopItemTideName;
+
+  /// No description provided for @shopItemTideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A cool cosmetic border for your character.'**
+  String get shopItemTideDescription;
+
+  /// No description provided for @shopItemMidnightName.
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight frame'**
+  String get shopItemMidnightName;
+
+  /// No description provided for @shopItemMidnightDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A dark cosmetic border for your character.'**
+  String get shopItemMidnightDescription;
+
+  /// No description provided for @shopItemNoonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Noon frame'**
+  String get shopItemNoonName;
+
+  /// No description provided for @shopItemNoonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A bright cosmetic border for your character.'**
+  String get shopItemNoonDescription;
 
   /// No description provided for @settingsAccent.
   ///

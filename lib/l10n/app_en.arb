@@ -342,6 +342,22 @@
   "@settingsSilenceDuringFocus": {
     "description": "Settings toggle: mute notifications while a focus session runs"
   },
+  "backupTitle": "Backups",
+  "backupAccessRationale": "To keep backups in shared internal storage — so they survive an uninstall, not just live in the app's own folder — Android needs the \"All files access\" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.",
+  "backupGrantAccess": "GRANT ACCESS",
+  "backupFolderPathHint": "Folder: {path}",
+  "@backupFolderPathHint": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsScreenTitle": "Screen",
+  "settingsAlwaysOnClockTitle": "Clock screen",
+  "settingsAlwaysOnClockSubtitle": "A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose",
+  "settingsHideStatusBarTitle": "Hide the status bar in it",
+  "settingsHideStatusBarHint": "Applies to the clock screen and to quiet mode during a session",
   "settingsData": "Data",
   "settingsExport": "Export data to JSON",
   "settingsExportDone": "Saved to {path}",
@@ -574,6 +590,32 @@
       }
     }
   },
+  "notificationChannelOngoing": "Session status",
+  "notificationChannelOngoingDesc": "An ongoing notice while a focus session is running — visible on the lock screen",
+  "notificationOngoingRunningTitle": "{phase} is running",
+  "@notificationOngoingRunningTitle": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationOngoingPausedTitle": "{phase} is paused",
+  "@notificationOngoingPausedTitle": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationOngoingBody": "{time} left",
+  "@notificationOngoingBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "navMap": "Map",
   "gameSectionTitle": "Game mode",
   "gameModeToggle": "Play instead of just tracking",
@@ -695,6 +737,36 @@
   "gamePlayerDefeated": "The boss caught its breath",
   "gamePlayerDefeatedBody": "It is back to full health, and so is your stamina. Come back when you are ready — nothing else was lost.",
   "gameContinue": "Onward",
+  "gameVictoryTapHint": "Tap the flash {remaining} more time(s) to move on",
+  "@gameVictoryTapHint": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "shopTitle": "Shop",
+  "shopBalance": "Balance",
+  "shopBuy": "Buy",
+  "shopOwned": "Owned",
+  "shopBought": "Bought. Check your collection.",
+  "shopInsufficientFunds": "Not enough currency yet — finish another session.",
+  "shopPrice": "{price} coins",
+  "@shopPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shopItemEmberName": "Ember frame",
+  "shopItemEmberDescription": "A warm cosmetic border for your character.",
+  "shopItemTideName": "Tide frame",
+  "shopItemTideDescription": "A cool cosmetic border for your character.",
+  "shopItemMidnightName": "Midnight frame",
+  "shopItemMidnightDescription": "A dark cosmetic border for your character.",
+  "shopItemNoonName": "Noon frame",
+  "shopItemNoonDescription": "A bright cosmetic border for your character.",
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
   "settingsImport": "Import from JSON",

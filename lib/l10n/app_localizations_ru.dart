@@ -622,6 +622,38 @@ class AppLocalizationsRu extends AppLocalizations {
       'Android спрашивает это на своём экране: найдите в списке TexFi f0kus и разрешите.';
 
   @override
+  String get backupTitle => 'Резервные копии';
+
+  @override
+  String get backupAccessRationale =>
+      'Чтобы бэкапы лежали в общем внутреннем хранилище — и переживали удаление приложения, а не жили только в его собственной папке — Android просит разрешение «Доступ ко всем файлам». Оно выдаётся не диалогом, а отдельным системным экраном: найди TexFi f0kus в списке и разреши.';
+
+  @override
+  String get backupGrantAccess => 'ДАТЬ ДОСТУП';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Папка: $path';
+  }
+
+  @override
+  String get settingsScreenTitle => 'Экран';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Экран-часы';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'Приглушённые часы во весь экран — не настоящий Always-On Display, просто тихий вид, который открывают нарочно';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Прятать статус-бар в нём';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Действует на экране-часах и в тихом режиме во время сессии';
+
+  @override
   String get settingsData => 'Данные';
 
   @override
@@ -934,6 +966,28 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Статус сессии';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'Постоянное уведомление на время фокус-сессии — видно на заблокированном экране';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase идёт';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase на паузе';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return 'Осталось $time';
+  }
+
+  @override
   String get navMap => 'Карта';
 
   @override
@@ -1130,6 +1184,63 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gameContinue => 'Дальше';
+
+  @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Тапни по вспышке ещё $remaining раз, чтобы продолжить';
+  }
+
+  @override
+  String get shopTitle => 'Магазин';
+
+  @override
+  String get shopBalance => 'Баланс';
+
+  @override
+  String get shopBuy => 'Купить';
+
+  @override
+  String get shopOwned => 'Куплено';
+
+  @override
+  String get shopBought => 'Куплено. Загляни в коллекцию.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Пока не хватает монет — заверши ещё одну сессию.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price монет';
+  }
+
+  @override
+  String get shopItemEmberName => 'Рамка «Уголёк»';
+
+  @override
+  String get shopItemEmberDescription =>
+      'Тёплая косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemTideName => 'Рамка «Прилив»';
+
+  @override
+  String get shopItemTideDescription =>
+      'Прохладная косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemMidnightName => 'Рамка «Полночь»';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'Тёмная косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemNoonName => 'Рамка «Полдень»';
+
+  @override
+  String get shopItemNoonDescription =>
+      'Яркая косметическая рамка для персонажа.';
 
   @override
   String get settingsAccent => 'Акцентный цвет';

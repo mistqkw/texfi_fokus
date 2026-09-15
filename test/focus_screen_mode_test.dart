@@ -10,6 +10,14 @@ class _FakeControls implements ScreenControls {
   /// Сколько раз яркость возвращали к системной.
   int restores = 0;
 
+  bool? immersive;
+
+  @override
+  Future<void> setImmersive(bool value) async {
+    immersive = value;
+    calls.add('immersive:$value');
+  }
+
   @override
   Future<void> keepAwake(bool enabled) async {
     awake = enabled;

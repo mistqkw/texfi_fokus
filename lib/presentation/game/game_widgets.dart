@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/haptics/haptics.dart';
 import '../../core/theme/app_colors_ext.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_radius.dart';
@@ -451,6 +453,315 @@ class PixelCountUp extends StatelessWidget {
         curve: AppMotion.standard,
       ),
       builder: (context, t, _) => builder(context, (value * t).round()),
+    );
+  }
+}
+
+/// Победный всплеск за спиной побеждённого существа: вспышка и разлёт
+/// пиксельных клеток.
+///
+/// Играет один раз при появлении и не реагирует на смену параметров — тем же
+/// способом, что и [PixelCreature]: вызывающий монтирует его ровно в момент
+/// победы (см. `defeated` в местах, где existing `_DissolvingCreature`
+/// проигрывает распад) и убирает после.
+///
+/// [tier] — ступень эскалации внутри одного «забега» (см.
+/// `sessionKillStreakProvider`), 1..[maxTier]. Каждая следующая победа в том
+/// же забеге ощутимее предыдущей: вспышка шире и дольше держится, клеток в
+/// разлёте больше, а вибро-отклик — тяжелее. Первая победа при этом не должна
+/// выглядеть бедно на фоне остальных: минимальная ступень уже полноценный
+/// эффект, а не заготовка под будущий.
+class VictoryBurst extends StatefulWidget {
+  const VictoryBurst({
+    super.key,
+    required this.color,
+    this.tier = 1,
+    this.diameter = 220,
+  });
+
+  final Color color;
+  final int tier;
+  final double diameter;
+
+  /// Дальше эффект перестаёт расти — иначе бесконечная серия побед подряд
+  /// рано или поздно нарисовала бы разлёт за пределы экрана.
+  static const int maxTier = 4;
+
+  @override
+  State<VictoryBurst> createState() => _VictoryBurstState();
+}
+
+class _VictoryBurstState extends State<VictoryBurst>
+    with SingleTickerProviderStateMixin {
+  late final int _tier = widget.tier.clamp(1, VictoryBurst.maxTier);
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 520 + _tier * 110),
+  )..forward();
+
+  /// Углы клеток разлёта. Фиксированы по индексу, а не по `Random()`: та же
+  /// ступень должна выглядеть одинаково от кадра к кадру, а не «кипеть».
+  late final List<double> _angles = [
+    for (var i = 0; i < _particleCount; i++)
+      (i / _particleCount) * 2 * math.pi + (i.isEven ? 0.18 : -0.12),
+  ];
+
+  int get _particleCount => 6 + _tier * 4;
+
+  @override
+  void initState() {
+    super.initState();
+    // Отклик нарастает вместе со ступенью: обычная победа отбивается одним
+    // ударом, а победа подряд третья и дальше — двумя, потяжелее.
+    Haptics.success();
+    if (_tier >= 3) {
+      Future.delayed(const Duration(milliseconds: 90), Haptics.cycleComplete);
+    }
+    _playSound();
+  }
+
+  /// Победный сигнал — тот же файл, что и пресет «level_up» конца сессии, но
+  /// через отдельный короткий проигрыватель на обычном потоке медиа, а не на
+  /// потоке будильника: это украшение экрана, а не сигнал, который обязан
+  /// пробить беззвучный режим.
+  Future<void> _playSound() async {
+    final player = AudioPlayer(playerId: 'texfi_victory_burst');
+    try {
+      await player.setVolume((0.5 + _tier * 0.125).clamp(0.0, 1.0));
+      await player.play(AssetSource('audio/level_up.mp3'));
+      await player.onPlayerComplete.first.timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {},
+      );
+    } catch (_) {
+      // Украшение — без него эффект всё равно состоялся визуально.
+    } finally {
+      await player.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxRadius = widget.diameter / 2;
+    return IgnorePointer(
+      child: SizedBox(
+        width: widget.diameter,
+        height: widget.diameter,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final t = _controller.value;
+            return CustomPaint(
+              painter: _VictoryBurstPainter(
+                color: widget.color,
+                progress: t,
+                angles: _angles,
+                maxRadius: maxRadius,
+                tier: _tier,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _VictoryBurstPainter extends CustomPainter {
+  const _VictoryBurstPainter({
+    required this.color,
+    required this.progress,
+    required this.angles,
+    required this.maxRadius,
+    required this.tier,
+  });
+
+  final Color color;
+  final double progress;
+  final List<double> angles;
+  final double maxRadius;
+  final int tier;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+
+    // Вспышка: расширяющееся кольцо, гаснущее к середине анимации — дальше
+    // экран занимает только разлёт клеток.
+    final flashT = (progress / 0.5).clamp(0.0, 1.0);
+    if (flashT < 1) {
+      final flashPaint = Paint()
+        ..color = color.withValues(alpha: (1 - flashT) * 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4 + tier * 1.5;
+      canvas.drawCircle(
+        center,
+        maxRadius * 0.25 + maxRadius * 0.55 * flashT,
+        flashPaint,
+      );
+    }
+
+    // Разлёт: квадратные клетки летят наружу и гаснут к концу пути — тот же
+    // язык, что у распада существа, а не мягкие круглые частицы.
+    const cell = 6.0;
+    final particlePaint = Paint()..color = color;
+    for (var i = 0; i < angles.length; i++) {
+      // Небольшой сдвиг старта по индексу — клетки уходят не строго разом,
+      // а короткой очередью, что читается живее одновременного взрыва.
+      final localT = ((progress - i * 0.015) / 0.85).clamp(0.0, 1.0);
+      if (localT <= 0) continue;
+      final angle = angles[i];
+      final distance = maxRadius * Curves.easeOut.transform(localT);
+      final pos = center +
+          Offset(math.cos(angle), math.sin(angle)) * distance +
+          // Лёгкое падение вниз под конец пути — клетки не просто гаснут
+          // в воздухе, а оседают.
+          Offset(0, maxRadius * 0.35 * localT * localT);
+      final opacity = (1 - localT) * particlePaint.color.a;
+      if (opacity <= 0) continue;
+      canvas.drawRect(
+        Rect.fromCenter(center: pos, width: cell, height: cell),
+        Paint()..color = color.withValues(alpha: opacity),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_VictoryBurstPainter old) => old.progress != progress;
+}
+
+/// Побеждённое существо на экране итога: рассыпается, а при настоящей
+/// победе (не поражении и не сорванной сессии) — ещё и сопровождается
+/// [VictoryBurst], эскалирующим со ступенью [tier].
+///
+/// Общий виджет для экрана боя и всплывающего листа итога — было два почти
+/// одинаковых приватных `_DissolvingCreature`/`_DefeatAnimation`, и правку
+/// вроде этой пришлось бы вносить дважды и однажды забыть об одном из мест.
+///
+/// Более поздняя победа в одном забеге просит больше тапов, прежде чем
+/// [onReadyChanged] отпустит кнопку «продолжить»: см. [requiredTaps] и
+/// `requiredCelebrationTaps` в `game_providers.dart`. Первая победа
+/// отпускает сразу — `requiredTaps <= 1` не показывает подсказку вовсе.
+class DefeatedCreatureDisplay extends StatefulWidget {
+  const DefeatedCreatureDisplay({
+    super.key,
+    required this.rows,
+    required this.color,
+    required this.defeated,
+    this.victory = false,
+    this.tier = 1,
+    this.requiredTaps = 1,
+    this.size = 150,
+    this.tapHint,
+    this.onReadyChanged,
+  });
+
+  final List<String> rows;
+  final Color color;
+
+  /// Существо повержено — распад проигрывается независимо от исхода
+  /// (поражение персонажа и сорванная сессия распад не показывают вовсе,
+  /// см. вызывающие места).
+  final bool defeated;
+
+  /// Настоящая победа — только тогда играет [VictoryBurst] и считаются тапы.
+  final bool victory;
+
+  final int tier;
+  final int requiredTaps;
+  final double size;
+
+  /// Подсказка «ещё N тапов» — строит вызывающий, у него есть локализация.
+  final String Function(int remaining)? tapHint;
+
+  /// `true`, когда с экрана можно уходить: либо тапы не нужны, либо все уже
+  /// сделаны. Вызывается один раз при монтировании и затем на каждый тап.
+  final ValueChanged<bool>? onReadyChanged;
+
+  @override
+  State<DefeatedCreatureDisplay> createState() =>
+      _DefeatedCreatureDisplayState();
+}
+
+class _DefeatedCreatureDisplayState extends State<DefeatedCreatureDisplay> {
+  bool _alive = true;
+  bool _showBurst = false;
+  int _tapsLeft = 0;
+
+  bool get _needsTaps => widget.victory && widget.requiredTaps > 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _tapsLeft = _needsTaps ? widget.requiredTaps : 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onReadyChanged?.call(_tapsLeft <= 0);
+    });
+    if (!widget.defeated) return;
+    Future.delayed(const Duration(milliseconds: 450), () {
+      if (!mounted) return;
+      setState(() {
+        _alive = false;
+        _showBurst = widget.victory;
+      });
+    });
+  }
+
+  void _handleTap() {
+    if (_tapsLeft <= 0) return;
+    setState(() => _tapsLeft -= 1);
+    Haptics.tap();
+    widget.onReadyChanged?.call(_tapsLeft <= 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final creature = PixelCreature(
+      rows: widget.rows,
+      color: widget.color,
+      size: widget.size,
+      alive: _alive,
+    );
+
+    return GestureDetector(
+      onTap: _needsTaps ? _handleTap : null,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: widget.size * 1.4,
+            height: widget.size * 1.4,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (_showBurst)
+                  VictoryBurst(
+                    color: widget.color,
+                    tier: widget.tier,
+                    diameter: widget.size * 1.4,
+                  ),
+                creature,
+              ],
+            ),
+          ),
+          if (_needsTaps && _tapsLeft > 0 && widget.tapHint != null) ...[
+            AppSpacing.gapSm,
+            Text(
+              widget.tapHint!(_tapsLeft),
+              textAlign: TextAlign.center,
+              style: context.text.caption,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

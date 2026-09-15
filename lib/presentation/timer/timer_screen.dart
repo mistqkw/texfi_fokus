@@ -19,6 +19,7 @@ import '../shared/pixel_button.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
+import 'ongoing_notification_sync.dart';
 import 'session_checklist.dart';
 import 'session_finish_flow.dart';
 import 'session_route.dart';
@@ -56,6 +57,12 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   late final NotificationService _notifications =
       ref.read(notificationServiceProvider);
 
+  /// Постоянное уведомление о ходе сессии — видно на заблокированном экране,
+  /// пока таймер идёт. Полем, а не провайдером, по той же причине, что и
+  /// [_notifications]: снять его нужно из `dispose()`.
+  late final OngoingSessionNotifier _ongoingNotification =
+      OngoingSessionNotifier(_notifications);
+
   /// Тишина на время сессии — по той же причине полем, что и всё выше:
   /// снимать её обязательно, а `dispose()` для чтения провайдеров поздно.
   late final FocusMode _focusMode = ref.read(focusModeProvider);
@@ -73,6 +80,13 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     });
     // На таймер смотрят — гасить экран посреди сессии незачем.
     _screen.enter();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _ongoingNotification.sync(
+        ref.read(timerControllerProvider),
+        context.l10n,
+      );
+    });
   }
 
   /// Заглушить уведомления на время сессии, если это включено в настройках.
@@ -91,6 +105,9 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   void dispose() {
     // Экран закрыт — будильников быть не должно ни при каком исходе.
     _notifications.cancelTimerAlarms();
+    // И постоянного уведомления о ходе сессии тоже — иначе оно повисло бы на
+    // заблокированном экране навсегда, показывая давно устаревшее время.
+    _ongoingNotification.cancel();
     // Снятие безусловное и без оглядки на настройку: её могли выключить
     // прямо посреди сессии, и тогда проверка оставила бы телефон в тишине
     // навсегда. Нативная сторона сама ничего не трогает, если режим ставили
@@ -105,7 +122,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
 
   Future<void> _setQuiet(bool value) async {
     Haptics.tap();
-    await _screen.setQuiet(value);
+    await _screen.setQuiet(
+      value,
+      hideStatusBar: ref.read(hideStatusBarInAodProvider),
+    );
     if (mounted) setState(() => _quiet = value);
   }
 
@@ -184,6 +204,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
       if (previous == null || previous.scheduleEpoch != next.scheduleEpoch) {
         _syncAlarms(next);
       }
+      _ongoingNotification.sync(next, l10n);
       if (next.finished && !(previous?.finished ?? false)) {
         _handleFinish(next);
       }

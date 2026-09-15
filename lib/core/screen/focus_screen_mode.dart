@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -22,6 +23,12 @@ abstract class ScreenControls {
   /// хранить снимок у себя — пользователь мог покрутить яркость шторкой,
   /// пока наш экран был открыт.
   Future<void> restoreBrightness();
+
+  /// Прячет или возвращает системную статус-бар (и навигационную панель на
+  /// платформах, где она есть) — то немногое, чем приложение может управлять
+  /// в системном UI из собственного окна. Это не то же самое, что настоящий
+  /// Always-On Display: см. комментарий у [FocusScreenMode] о том, почему.
+  Future<void> setImmersive(bool value);
 }
 
 /// Боевая реализация. Все вызовы обёрнуты: ни один из них не стоит того,
@@ -61,6 +68,17 @@ class PlatformScreenControls implements ScreenControls {
       debugPrint('restoreBrightness failed: $error');
     }
   }
+
+  @override
+  Future<void> setImmersive(bool value) async {
+    try {
+      await SystemChrome.setEnabledSystemUIMode(
+        value ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge,
+      );
+    } catch (error) {
+      debugPrint('setImmersive($value) failed: $error');
+    }
+  }
 }
 
 /// Что приложение делает с экраном, пока открыт таймер.
@@ -79,6 +97,13 @@ class PlatformScreenControls implements ScreenControls {
 /// Это не системный Always-On Display: он живёт вне приложения и требует
 /// прав, которых у обычного приложения нет. Здесь — просто вид экрана
 /// таймера, поэтому и называется он в интерфейсе «тихим режимом».
+///
+/// То немногое из системного UI, чем окно приложения всё же распоряжается, —
+/// собственная статус-бар и панель навигации над своим же окном
+/// ([ScreenControls.setImmersive]). Тихий режим прячет их вместе с яркостью:
+/// экран без чужих значков и часов сверху — ровно то, чего просят там, где
+/// говорят про «AOD-подобный» вид, и единственное, что честно можно
+/// предложить без системных прав.
 class FocusScreenMode {
   FocusScreenMode({ScreenControls? controls})
       : _controls = controls ?? const PlatformScreenControls();
@@ -103,17 +128,23 @@ class FocusScreenMode {
     await _controls.keepAwake(true);
   }
 
-  Future<void> setQuiet(bool value) async {
+  /// [hideStatusBar] — вынесенная наружу настройка (см.
+  /// `hideStatusBarInAodProvider`): тихий режим и остаётся тихим при
+  /// выключенном флаге, просто не трогает системный UI.
+  Future<void> setQuiet(bool value, {bool hideStatusBar = true}) async {
     if (_released || _quiet == value) return;
     _quiet = value;
     if (value) {
       await _controls.setBrightness(dimBrightness);
+      if (hideStatusBar) await _controls.setImmersive(true);
     } else {
       await _controls.restoreBrightness();
+      await _controls.setImmersive(false);
     }
   }
 
-  Future<void> toggleQuiet() => setQuiet(!_quiet);
+  Future<void> toggleQuiet({bool hideStatusBar = true}) =>
+      setQuiet(!_quiet, hideStatusBar: hideStatusBar);
 
   /// Единственный путь снятия. Идемпотентен: `dispose()` может прийти после
   /// того, как пользователь уже вышел из тихого режима руками, и второй
@@ -129,5 +160,10 @@ class FocusScreenMode {
     _awake = false;
     await _controls.restoreBrightness();
     await _controls.keepAwake(false);
+    // Тем же способом и по той же причине, что и яркость выше: если запрос
+    // на возврат системного UI когда-то не прошёл, состояние в приложении и
+    // состояние экрана разошлись, и убирать иммерсивный режим нужно
+    // безусловно, а не только если поле ещё помнит, что он был включён.
+    await _controls.setImmersive(false);
   }
 }

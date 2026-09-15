@@ -620,6 +620,38 @@ class AppLocalizationsPl extends AppLocalizations {
       'Android pyta o to na swoim ekranie: znajdź TexFi f0kus na liście i zezwól.';
 
   @override
+  String get backupTitle => 'Kopie zapasowe';
+
+  @override
+  String get backupAccessRationale =>
+      'Aby kopie zapasowe trafiały do wspólnej pamięci wewnętrznej — i przetrwały odinstalowanie aplikacji, a nie żyły tylko w jej własnym folderze — Android prosi o uprawnienie „Dostęp do wszystkich plików”. Przyznaje się je na osobnym ekranie systemowym, nie w oknie dialogowym: znajdź TexFi f0kus na liście i zezwól.';
+
+  @override
+  String get backupGrantAccess => 'PRZYZNAJ DOSTĘP';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Folder: $path';
+  }
+
+  @override
+  String get settingsScreenTitle => 'Ekran';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Ekran zegara';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'Przyciemniony zegar na cały ekran — to nie prawdziwy Always-On Display, tylko cichy widok włączany celowo';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Ukryj w nim pasek statusu';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Dotyczy ekranu zegara i trybu cichego podczas sesji';
+
+  @override
   String get settingsData => 'Dane';
 
   @override
@@ -934,6 +966,28 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Status sesji';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'Stałe powiadomienie na czas sesji skupienia — widoczne na ekranie blokady';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase trwa';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase wstrzymana';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return 'Zostało $time';
+  }
+
+  @override
   String get navMap => 'Mapa';
 
   @override
@@ -1130,6 +1184,63 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get gameContinue => 'Dalej';
+
+  @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Stuknij błysk jeszcze $remaining raz(y), aby kontynuować';
+  }
+
+  @override
+  String get shopTitle => 'Sklep';
+
+  @override
+  String get shopBalance => 'Saldo';
+
+  @override
+  String get shopBuy => 'Kup';
+
+  @override
+  String get shopOwned => 'Posiadane';
+
+  @override
+  String get shopBought => 'Kupiono. Zajrzyj do kolekcji.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Za mało monet — ukończ jeszcze jedną sesję.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price monet';
+  }
+
+  @override
+  String get shopItemEmberName => 'Ramka „Żar”';
+
+  @override
+  String get shopItemEmberDescription =>
+      'Ciepła kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemTideName => 'Ramka „Przypływ”';
+
+  @override
+  String get shopItemTideDescription =>
+      'Chłodna kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemMidnightName => 'Ramka „Północ”';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'Ciemna kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemNoonName => 'Ramka „Południe”';
+
+  @override
+  String get shopItemNoonDescription =>
+      'Jasna kosmetyczna ramka dla postaci.';
 
   @override
   String get settingsAccent => 'Kolor akcentu';

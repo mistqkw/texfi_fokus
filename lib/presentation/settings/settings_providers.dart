@@ -30,6 +30,7 @@ abstract final class PrefKeys {
   static const autoBackupEnabled = 'auto_backup_enabled';
   static const silenceDuringFocus = 'silence_during_focus';
   static const lastAutoBackupAt = 'last_auto_backup_at';
+  static const hideStatusBarInAod = 'hide_status_bar_in_aod';
 }
 
 /// С какого дня считается неделя. Хранится номером [DateTime.weekday], а не
@@ -416,6 +417,34 @@ class SilenceDuringFocusNotifier extends StateNotifier<bool> {
 final silenceDuringFocusProvider =
     StateNotifierProvider<SilenceDuringFocusNotifier, bool>((ref) {
   return SilenceDuringFocusNotifier(ref.watch(sharedPreferencesProvider));
+});
+
+// --- Тихий режим как AOD-подобный вид ---
+
+/// Прятать ли статус-бар (и панель навигации) вместе с яркостью в тихом
+/// режиме — и на экране сессии, и в отдельном экране-часах
+/// ([AlwaysOnClockScreen]).
+///
+/// Включено по умолчанию: экран без чужих значков сверху — то немногое, что
+/// приложение честно может предложить без системных прав на настоящий
+/// Always-On Display (см. комментарий у [FocusScreenMode]). Настройка, а не
+/// жёстко зашитое поведение, — на случай, если кому-то системные часы или
+/// индикатор заряда важнее пустого экрана.
+class HideStatusBarInAodNotifier extends StateNotifier<bool> {
+  HideStatusBarInAodNotifier(this._prefs)
+      : super(_prefs.getBool(PrefKeys.hideStatusBarInAod) ?? true);
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await _prefs.setBool(PrefKeys.hideStatusBarInAod, value);
+  }
+}
+
+final hideStatusBarInAodProvider =
+    StateNotifierProvider<HideStatusBarInAodNotifier, bool>((ref) {
+  return HideStatusBarInAodNotifier(ref.watch(sharedPreferencesProvider));
 });
 
 final focusModeProvider = Provider<FocusMode>((ref) => const FocusMode());

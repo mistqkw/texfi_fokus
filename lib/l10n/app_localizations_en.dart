@@ -622,6 +622,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Android asks for this on its own screen: find TexFi f0kus in the list and allow it.';
 
   @override
+  String get backupTitle => 'Backups';
+
+  @override
+  String get backupAccessRationale =>
+      'To keep backups in shared internal storage — so they survive an uninstall, not just live in the app\'s own folder — Android needs the \"All files access\" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.';
+
+  @override
+  String get backupGrantAccess => 'GRANT ACCESS';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Folder: $path';
+  }
+
+  @override
+  String get settingsScreenTitle => 'Screen';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Clock screen';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Hide the status bar in it';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Applies to the clock screen and to quiet mode during a session';
+
+  @override
   String get settingsData => 'Data';
 
   @override
@@ -937,6 +969,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationChannelOngoing => 'Session status';
+
+  @override
+  String get notificationChannelOngoingDesc =>
+      'An ongoing notice while a focus session is running — visible on the lock screen';
+
+  @override
+  String notificationOngoingRunningTitle(String phase) {
+    return '$phase is running';
+  }
+
+  @override
+  String notificationOngoingPausedTitle(String phase) {
+    return '$phase is paused';
+  }
+
+  @override
+  String notificationOngoingBody(String time) {
+    return '$time left';
+  }
+
+  @override
   String get navMap => 'Map';
 
   @override
@@ -1133,6 +1187,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameContinue => 'Onward';
+
+  @override
+  String gameVictoryTapHint(int remaining) {
+    return 'Tap the flash $remaining more time(s) to move on';
+  }
+
+  @override
+  String get shopTitle => 'Shop';
+
+  @override
+  String get shopBalance => 'Balance';
+
+  @override
+  String get shopBuy => 'Buy';
+
+  @override
+  String get shopOwned => 'Owned';
+
+  @override
+  String get shopBought => 'Bought. Check your collection.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Not enough currency yet — finish another session.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price coins';
+  }
+
+  @override
+  String get shopItemEmberName => 'Ember frame';
+
+  @override
+  String get shopItemEmberDescription =>
+      'A warm cosmetic border for your character.';
+
+  @override
+  String get shopItemTideName => 'Tide frame';
+
+  @override
+  String get shopItemTideDescription =>
+      'A cool cosmetic border for your character.';
+
+  @override
+  String get shopItemMidnightName => 'Midnight frame';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'A dark cosmetic border for your character.';
+
+  @override
+  String get shopItemNoonName => 'Noon frame';
+
+  @override
+  String get shopItemNoonDescription =>
+      'A bright cosmetic border for your character.';
 
   @override
   String get settingsAccent => 'Accent colour';

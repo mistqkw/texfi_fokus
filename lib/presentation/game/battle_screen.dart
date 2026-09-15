@@ -16,12 +16,14 @@ import '../../domain/entities/game_rules.dart';
 import '../../domain/entities/mood.dart';
 import '../../l10n/app_localizations.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
+import '../settings/settings_providers.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/quiet_timer_view.dart';
 import '../shared/timer_dial.dart';
+import '../timer/ongoing_notification_sync.dart';
 import '../timer/session_checklist.dart';
 import '../timer/session_finish_flow.dart';
 import '../timer/session_route.dart';
@@ -77,12 +79,21 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   late final NotificationService _notifications =
       ref.read(notificationServiceProvider);
 
+  /// Постоянное уведомление о ходе сессии — тот же механизм, что и на
+  /// обычном экране таймера: сессию можно вести и отсюда, и уведомление на
+  /// заблокированном экране обязано обновляться одинаково независимо от
+  /// того, с какого экрана её ведут.
+  late final OngoingSessionNotifier _ongoingNotification =
+      OngoingSessionNotifier(_notifications);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _syncAlarms(ref.read(timerControllerProvider));
+      final state = ref.read(timerControllerProvider);
+      _syncAlarms(state);
+      _ongoingNotification.sync(state, context.l10n);
     });
     // На бой смотрят — гасить экран посреди сессии незачем.
     _screen.enter();
@@ -91,6 +102,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   @override
   void dispose() {
     _notifications.cancelTimerAlarms();
+    _ongoingNotification.cancel();
     // Единственный путь снятия: отрабатывает при любом способе ухода с
     // экрана — жестом, кнопкой, программно после конца боя.
     _screen.release();
@@ -99,7 +111,10 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
 
   Future<void> _setQuiet(bool value) async {
     Haptics.tap();
-    await _screen.setQuiet(value);
+    await _screen.setQuiet(
+      value,
+      hideStatusBar: ref.read(hideStatusBarInAodProvider),
+    );
     if (mounted) setState(() => _quiet = value);
   }
 
@@ -184,6 +199,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
       if (previous == null || previous.scheduleEpoch != next.scheduleEpoch) {
         _syncAlarms(next);
       }
+      _ongoingNotification.sync(next, l10n);
       if (next.finished && !(previous?.finished ?? false)) {
         _handleFinish(next);
       }
@@ -312,7 +328,20 @@ class _BattleBody extends ConsumerWidget {
             // словах: разница в весе противника должна читаться до того, как
             // прочитано хоть одно описание.
             size: node.isBoss ? 168 : 132,
-            alive: hp > 0,
+            // Всегда живой, пока бой не закончен — даже если предпросмотр
+            // урона уже показывает 0 HP.
+            //
+            // Раньше здесь стояло `alive: hp > 0`, и `hp` — это
+            // [GameRules.previewHp], который считает урон так, будто сессия
+            // уже доведена до конца. На достаточно длинной сессии против
+            // относительно некрупного противника (например, боссу первого
+            // мира при часовом full f0kus: 60 минут × 2 урона — ровно 120 HP)
+            // предпросмотр достигал нуля за минуту-другую до настоящего конца
+            // сессии — и противник с ещё живой HP-полоской вдруг рассыпался
+            // на глазах посреди идущего боя, будто исчез. Настоящий распад
+            // показывает только [_ResultBody], после того как заход и правда
+            // завершён.
+            alive: true,
             // На паузе противник перестаёт «дышать». Это единственный
             // честный способ показать, что остановилось именно время, а не
             // просто перестала уменьшаться цифра: пока существо шевелится,
@@ -459,7 +488,7 @@ class _BattleBody extends ConsumerWidget {
 }
 
 /// Разбор захода: что стало с противником и что за это получено.
-class _ResultBody extends StatelessWidget {
+class _ResultBody extends ConsumerStatefulWidget {
   const _ResultBody({
     required this.node,
     required this.outcome,
@@ -469,6 +498,16 @@ class _ResultBody extends StatelessWidget {
   final MapNodeEntity node;
   final SessionFinishOutcome outcome;
   final VoidCallback onContinue;
+
+  @override
+  ConsumerState<_ResultBody> createState() => _ResultBodyState();
+}
+
+class _ResultBodyState extends ConsumerState<_ResultBody> {
+  bool _ready = true;
+
+  MapNodeEntity get node => widget.node;
+  SessionFinishOutcome get outcome => widget.outcome;
 
   /// Текст и тон исхода.
   ///
@@ -511,16 +550,32 @@ class _ResultBody extends StatelessWidget {
     final defeated = encounter.outcome == EncounterOutcome.drifterDefeated ||
         encounter.outcome == EncounterOutcome.bossDefeated;
 
+    // Ступень эскалации — это счётчик побед за весь текущий запуск
+    // приложения (см. `sessionKillStreakProvider`), уже включающий эту самую
+    // победу: `applySession` записывает исход и поднимает счётчик раньше,
+    // чем экран боя вообще успевает показать этот разбор.
+    final tier = defeated
+        ? requiredCelebrationTaps(ref.watch(sessionKillStreakProvider))
+        : 1;
+
     return ListView(
       padding: AppSpacing.screen,
       children: [
         Center(
-          child: _DissolvingCreature(
+          child: DefeatedCreatureDisplay(
             rows: node.isBoss
                 ? GameSprites.boss(node.world)
                 : GameSprites.drifter(node.species),
             color: content.good ? colors.accent : colors.textSecondary,
             defeated: defeated,
+            victory: defeated,
+            tier: tier,
+            requiredTaps: tier,
+            tapHint: l10n.gameVictoryTapHint,
+            onReadyChanged: (ready) {
+              if (ready == _ready) return;
+              setState(() => _ready = ready);
+            },
           ),
         ),
         AppSpacing.gapXxl,
@@ -571,50 +626,11 @@ class _ResultBody extends StatelessWidget {
         ],
 
         AppSpacing.gapXxl,
-        PixelButton(label: l10n.gameContinue, onPressed: onContinue),
+        PixelButton(
+          label: l10n.gameContinue,
+          onPressed: _ready ? widget.onContinue : null,
+        ),
       ],
-    );
-  }
-}
-
-/// Спрайт, который рассыпается через мгновение после появления.
-///
-/// Пауза нужна, чтобы победу было видно: мгновенный распад читается как
-/// «спрайт не загрузился», а не как «ты его добил».
-class _DissolvingCreature extends StatefulWidget {
-  const _DissolvingCreature({
-    required this.rows,
-    required this.color,
-    required this.defeated,
-  });
-
-  final List<String> rows;
-  final Color color;
-  final bool defeated;
-
-  @override
-  State<_DissolvingCreature> createState() => _DissolvingCreatureState();
-}
-
-class _DissolvingCreatureState extends State<_DissolvingCreature> {
-  bool _alive = true;
-
-  @override
-  void initState() {
-    super.initState();
-    if (!widget.defeated) return;
-    Future.delayed(const Duration(milliseconds: 450), () {
-      if (mounted) setState(() => _alive = false);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PixelCreature(
-      rows: widget.rows,
-      color: widget.color,
-      size: 150,
-      alive: _alive,
     );
   }
 }
