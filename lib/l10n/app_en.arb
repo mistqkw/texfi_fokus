@@ -342,6 +342,17 @@
   "@settingsSilenceDuringFocus": {
     "description": "Settings toggle: mute notifications while a focus session runs"
   },
+  "backupTitle": "Backups",
+  "backupAccessRationale": "To keep backups in shared internal storage — so they survive an uninstall, not just live in the app's own folder — Android needs the \"All files access\" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.",
+  "backupGrantAccess": "GRANT ACCESS",
+  "backupFolderPathHint": "Folder: {path}",
+  "@backupFolderPathHint": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "settingsData": "Data",
   "settingsExport": "Export data to JSON",
   "settingsExportDone": "Saved to {path}",

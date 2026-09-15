@@ -622,6 +622,21 @@ class AppLocalizationsRu extends AppLocalizations {
       'Android спрашивает это на своём экране: найдите в списке TexFi f0kus и разрешите.';
 
   @override
+  String get backupTitle => 'Резервные копии';
+
+  @override
+  String get backupAccessRationale =>
+      'Чтобы бэкапы лежали в общем внутреннем хранилище — и переживали удаление приложения, а не жили только в его собственной папке — Android просит разрешение «Доступ ко всем файлам». Оно выдаётся не диалогом, а отдельным системным экраном: найди TexFi f0kus в списке и разреши.';
+
+  @override
+  String get backupGrantAccess => 'ДАТЬ ДОСТУП';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Папка: $path';
+  }
+
+  @override
   String get settingsData => 'Данные';
 
   @override

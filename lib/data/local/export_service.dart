@@ -79,8 +79,28 @@ class ExportService {
   /// Как часто снимается автоматическая копия.
   static const Duration backupInterval = Duration(days: 7);
 
-  /// Имя папки внутри документов приложения.
-  static const String backupDirName = 'backups';
+  /// Имя папки — общее внутреннее хранилище на Android, документы на
+  /// десктопе. Совпадает с [BackupStorageChannel.BACKUP_FOLDER_NAME] на
+  /// нативной стороне: оттуда же строится путь, который открывает системный
+  /// «Файлы» на экране импорта.
+  ///
+  /// Именно внутреннее хранилище, а не песочница приложения
+  /// (`getExternalFilesDir`/документы приложения): песочница стирается вместе
+  /// с удалением самого приложения, а смысл резервной копии — пережить и это.
+  static const String backupDirName = 'TexFi Backup';
+
+  /// Подпапка автоматических копий внутри [backupDirName].
+  ///
+  /// Отдельно от разовых ручных экспортов: подчистка старых копий
+  /// ([_pruneBackups]) должна трогать только то, что сама туда положила, а не
+  /// файл, который человек только что нарочно экспортировал в ту же папку.
+  static const String autoBackupDirName = 'auto';
+
+  /// Путь — для показа человеку текстом, не для работы с файлами: та идёт
+  /// через [_exportDirectory], которая умеет откатиться на песочницу
+  /// приложения, если доступ к общему хранилищу ещё не выдан.
+  static String get androidBackupPathForDisplay =>
+      '$_androidInternalStorageRoot/$backupDirName';
 
   /// Дата в имени файла: `texfi-fokus-backup-2026-09-01.json`. Только день,
   /// без времени — копия за неделю одна, и секунды в имени лишь мешали бы
@@ -103,7 +123,7 @@ class ExportService {
     final json = const JsonEncoder.withIndent('  ').convert(snapshot);
 
     final root = await _exportDirectory();
-    final dir = Directory(p.join(root.path, backupDirName));
+    final dir = Directory(p.join(root.path, autoBackupDirName));
     await dir.create(recursive: true);
 
     final file = File(p.join(dir.path, backupFileName(moment)));
@@ -133,9 +153,29 @@ class ExportService {
     }
   }
 
-  /// На десктопе кладём выгрузку в «Документы», на мобильных — в доступную
-  /// приложению папку документов.
+  /// На Android — папка [backupDirName] в корне общего внутреннего
+  /// хранилища (доступна из системного «Файлы» и переживает удаление
+  /// приложения), на десктопе — «Документы».
+  ///
+  /// Путь на Android собирается вручную: `getExternalStorageDirectory()`
+  /// отдаёт песочницу приложения (`/storage/emulated/0/Android/data/…`), а
+  /// не корень хранилища, — то есть ровно то место, откуда просили уйти.
+  /// Запись в этот путь без `MANAGE_EXTERNAL_STORAGE` (или, до Android 11,
+  /// без `WRITE_EXTERNAL_STORAGE`) провалится — тогда откатываемся в
+  /// песочницу приложения, чтобы экспорт не отказал совсем: увидеть бэкап не
+  /// там, где ждал, лучше, чем не получить его вовсе.
   Future<Directory> _exportDirectory() async {
+    if (Platform.isAndroid) {
+      final shared = Directory(p.join(_androidInternalStorageRoot, backupDirName));
+      try {
+        await shared.create(recursive: true);
+        return shared;
+      } catch (_) {
+        final fallback = await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory();
+        return fallback;
+      }
+    }
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       try {
         final documents = await getApplicationDocumentsDirectory();
@@ -146,6 +186,13 @@ class ExportService {
     }
     return getApplicationDocumentsDirectory();
   }
+
+  /// Корень общего внутреннего хранилища на Android. Это условность платформы
+  /// (тот же путь, что подставляет системный проводник и любое другое
+  /// приложение с доступом к «Файлам»), а не значение, которое отдаёт какой-то
+  /// API, — `path_provider` намеренно не даёт таких путей, поощряя
+  /// scoped storage.
+  static const String _androidInternalStorageRoot = '/storage/emulated/0';
 
   /// Читает выгрузку и заливает её в базу.
   ///

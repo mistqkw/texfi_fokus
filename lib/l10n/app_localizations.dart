@@ -1222,6 +1222,30 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Data'**
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups'**
+  String get backupTitle;
+
+  /// No description provided for @backupAccessRationale.
+  ///
+  /// In en, this message translates to:
+  /// **'To keep backups in shared internal storage — so they survive an uninstall, not just live in the app's own folder — Android needs the "All files access" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.'**
+  String get backupAccessRationale;
+
+  /// No description provided for @backupGrantAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'GRANT ACCESS'**
+  String get backupGrantAccess;
+
+  /// No description provided for @backupFolderPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder: {path}'**
+  String backupFolderPathHint(String path);
+
   String get settingsData;
 
   /// No description provided for @settingsExport.

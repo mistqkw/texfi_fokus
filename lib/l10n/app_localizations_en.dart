@@ -622,6 +622,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Android asks for this on its own screen: find TexFi f0kus in the list and allow it.';
 
   @override
+  String get backupTitle => 'Backups';
+
+  @override
+  String get backupAccessRationale =>
+      'To keep backups in shared internal storage — so they survive an uninstall, not just live in the app\'s own folder — Android needs the \"All files access\" permission. It is granted on a separate system screen, not a dialog: find TexFi f0kus in the list and allow it.';
+
+  @override
+  String get backupGrantAccess => 'GRANT ACCESS';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Folder: $path';
+  }
+
+  @override
   String get settingsData => 'Data';
 
   @override

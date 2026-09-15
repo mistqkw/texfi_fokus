@@ -620,6 +620,21 @@ class AppLocalizationsPl extends AppLocalizations {
       'Android pyta o to na swoim ekranie: znajdź TexFi f0kus na liście i zezwól.';
 
   @override
+  String get backupTitle => 'Kopie zapasowe';
+
+  @override
+  String get backupAccessRationale =>
+      'Aby kopie zapasowe trafiały do wspólnej pamięci wewnętrznej — i przetrwały odinstalowanie aplikacji, a nie żyły tylko w jej własnym folderze — Android prosi o uprawnienie „Dostęp do wszystkich plików”. Przyznaje się je na osobnym ekranie systemowym, nie w oknie dialogowym: znajdź TexFi f0kus na liście i zezwól.';
+
+  @override
+  String get backupGrantAccess => 'PRZYZNAJ DOSTĘP';
+
+  @override
+  String backupFolderPathHint(String path) {
+    return 'Folder: $path';
+  }
+
+  @override
   String get settingsData => 'Dane';
 
   @override

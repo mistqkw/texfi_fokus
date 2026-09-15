@@ -47,6 +47,9 @@ dependencies:
   open_filex: ^4.7.0
   wakelock_plus: ^1.8.0
   screen_brightness: ^2.1.11
+  # Системный выбор файла для импорта резервной копии — тот же диалог, что
+  # открывает любое другое приложение через ACTION_OPEN_DOCUMENT.
+  file_picker: ^8.1.4
 
 dev_dependencies:
   flutter_test:

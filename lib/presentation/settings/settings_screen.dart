@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,6 +29,7 @@ import '../shared/pixel_radio.dart';
 import '../shared/pixel_sprite.dart';
 import '../shared/tap_streak.dart';
 import 'alarm_sound_labels.dart';
+import 'backup_screen.dart';
 import 'credits_screen.dart';
 import 'settings_providers.dart';
 import 'update_card.dart';
@@ -44,23 +43,6 @@ class SettingsScreen extends ConsumerWidget {
     'pl': 'Polski',
     'uk': 'Українська',
   };
-
-  Future<void> _export(BuildContext context, WidgetRef ref) async {
-    final l10n = context.l10n;
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final path = await ref.read(exportServiceProvider).exportToFile();
-      Haptics.success();
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.settingsExportDone(path))),
-      );
-    } catch (error) {
-      Haptics.warning();
-      messenger.showSnackBar(
-        SnackBar(content: Text('${l10n.settingsExportFailed}: $error')),
-      );
-    }
-  }
 
   /// Порог короткого перерыва перебирается по кругу тапом, без отдельного
   /// экрана: значений всего четыре, и «выключено» среди них.
@@ -99,55 +81,6 @@ class SettingsScreen extends ConsumerWidget {
   /// Импорт выгрузки. Два вопроса подряд — какой файл и что делать с тем,
   /// что уже есть, — потому что «заменить» здесь означает стереть чужую
   /// историю без возможности отката.
-  Future<void> _import(BuildContext context, WidgetRef ref) async {
-    final l10n = context.l10n;
-    final messenger = ScaffoldMessenger.of(context);
-
-    final path = await showDialog<String>(
-      context: context,
-      builder: (context) => const _ImportPathDialog(),
-    );
-    if (path == null || path.trim().isEmpty || !context.mounted) return;
-
-    final file = File(path.trim());
-    if (!file.existsSync()) {
-      Haptics.warning();
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.settingsImportNoFile)),
-      );
-      return;
-    }
-
-    final merge = await showDialog<bool>(
-      context: context,
-      builder: (context) => const _ImportModeDialog(),
-    );
-    if (merge == null || !context.mounted) return;
-
-    try {
-      final result = await ref
-          .read(exportServiceProvider)
-          .importFromFile(file, merge: merge);
-      Haptics.success();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.settingsImportDone(
-              result.habits,
-              result.tasks,
-              result.sessions,
-            ),
-          ),
-        ),
-      );
-    } catch (error) {
-      Haptics.warning();
-      messenger.showSnackBar(
-        SnackBar(content: Text('${l10n.settingsImportFailed}: $error')),
-      );
-    }
-  }
-
   Future<void> _pickSummaryTime(BuildContext context, WidgetRef ref) async {
     final current = ref.read(dailySummaryTimeProvider);
     final picked = await showTimePicker(
@@ -466,18 +399,13 @@ class SettingsScreen extends ConsumerWidget {
                       size: 20,
                       color: context.colors.accent,
                     ),
-                    title: l10n.settingsExport,
-                    onTap: () => _export(context, ref),
-                  ),
-                  PixelOptionTile(
-                    leading: PixelSprite(
-                      rows: PixelSprites.upload,
-                      size: 20,
-                      color: context.colors.accent,
-                    ),
-                    title: l10n.settingsImport,
+                    title: l10n.backupTitle,
                     subtitle: l10n.settingsImportSubtitle,
-                    onTap: () => _import(context, ref),
+                    onTap: () {
+                      Haptics.tap();
+                      Navigator.of(context)
+                          .push(pixelDissolveRoute<void>(const BackupScreen()));
+                    },
                   ),
                   PixelSwitchTile(
                     value: autoBackup,
@@ -636,115 +564,6 @@ class _AccentSwatch extends StatelessWidget {
                 color: colors.background,
               )
             : null,
-      ),
-    );
-  }
-}
-
-/// Путь к файлу вводится руками: системный файловый диалог потянул бы ещё
-/// один плагин ради одной кнопки, а путь выгрузки приложение и так
-/// показывает после экспорта.
-class _ImportPathDialog extends StatefulWidget {
-  const _ImportPathDialog();
-
-  @override
-  State<_ImportPathDialog> createState() => _ImportPathDialogState();
-}
-
-class _ImportPathDialogState extends State<_ImportPathDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.all(AppSpacing.page),
-      child: PixelCard(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.settingsImport, style: context.text.sectionTitle),
-            AppSpacing.gapMd,
-            Text(l10n.settingsImportPathHint, style: context.text.body),
-            AppSpacing.gapMd,
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: const InputDecoration(hintText: '/home/…/backup.json'),
-              onSubmitted: (value) => Navigator.of(context).pop(value),
-            ),
-            AppSpacing.gapXl,
-            PixelButton(
-              label: l10n.commonNext,
-              onPressed: () => Navigator.of(context).pop(_controller.text),
-            ),
-            AppSpacing.gapMd,
-            PixelButton(
-              label: l10n.commonCancel,
-              primary: false,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Слияние или замена. Замена подписана прямо: «сотрёт всё, что есть» —
-/// на этом экране эвфемизм стоил бы кому-то всей истории.
-class _ImportModeDialog extends StatelessWidget {
-  const _ImportModeDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final colors = context.colors;
-
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.all(AppSpacing.page),
-      child: PixelCard(
-        borderColor: colors.warning,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.settingsImportWarnTitle,
-              style: context.text.sectionTitle.copyWith(color: colors.warning),
-            ),
-            AppSpacing.gapMd,
-            Text(l10n.settingsImportWarnBody, style: context.text.body),
-            AppSpacing.gapXl,
-            PixelButton(
-              label: l10n.settingsImportMerge,
-              onPressed: () => Navigator.of(context).pop(true),
-            ),
-            AppSpacing.gapMd,
-            PixelButton(
-              label: l10n.settingsImportReplace,
-              danger: true,
-              onPressed: () => Navigator.of(context).pop(false),
-            ),
-            AppSpacing.gapMd,
-            PixelButton(
-              label: l10n.commonCancel,
-              primary: false,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
       ),
     );
   }

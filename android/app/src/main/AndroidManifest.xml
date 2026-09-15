@@ -1,7 +1,31 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Уведомления о невыполненных целях. С Android 13 разрешение
          спрашивается в рантайме — это делает NotificationService. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Резервные копии пишутся в общую папку `TexFi Backup` во внутреннем
+         хранилище, а не в песочницу приложения, — так копия переживает
+         удаление самого приложения. До Android 11 для публичной папки
+         достаточно этих двух (см. BackupStorageChannel); maxSdkVersion=28
+         оставлен по той же причине, что и remove ниже: на 29-м уже действует
+         scoped storage, и разрешение там ничего не даёт без отдельного флага
+         совместимости, а поднимать его ради переходной версии не стоит —
+         основной путь на новых устройствах идёт через
+         MANAGE_EXTERNAL_STORAGE. -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <!-- Android 11+ (API 30): единственный способ читать и писать
+         произвольную папку внутреннего хранилища вне песочницы приложения.
+         Выдаётся не диалогом, а отдельным системным экраном — приложение
+         показывает объяснение перед первым переходом на него (см. экран
+         импорта/бэкапов), а не открывает его без предупреждения. -->
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <!-- Напоминания должны переживать перезагрузку устройства. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Вибрация: кастомные паттерны mood-переключателя и таймера. -->
@@ -80,6 +104,19 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Открытие папки `TexFi Backup` в системном «Файлы» (см.
+             BackupStorageChannel.openBackupFolder) и выбор файла бэкапа при
+             импорте (пакет file_picker) — оба идут implicit-интентами, и с
+             API 30 их обработчики нужно объявить явно, иначе
+             PackageManager вернёт пустой список ещё до попытки открыть. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:mimeType="vnd.android.document/directory"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT"/>
+            <data android:mimeType="application/json"/>
         </intent>
     </queries>
 </manifest>
