@@ -14,10 +14,12 @@
          MANAGE_EXTERNAL_STORAGE. -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
+        android:maxSdkVersion="28"
+        tools:replace="android:maxSdkVersion" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
+        android:maxSdkVersion="28"
+        tools:replace="android:maxSdkVersion" />
     <!-- Android 11+ (API 30): единственный способ читать и писать
          произвольную папку внутреннего хранилища вне песочницы приложения.
          Выдаётся не диалогом, а отдельным системным экраном — приложение
