@@ -106,9 +106,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
 
-    final FilePickerResult? picked;
+    final PlatformFile? picked;
     try {
-      picked = await FilePicker.platform.pickFiles(
+      picked = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
@@ -120,7 +120,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen>
       return;
     }
 
-    final path = picked?.files.singleOrNull?.path;
+    final path = picked?.path;
     if (path == null || !context.mounted) return;
 
     final merge = await showDialog<bool>(
