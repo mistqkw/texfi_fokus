@@ -729,6 +729,28 @@
       }
     }
   },
+  "shopTitle": "Shop",
+  "shopBalance": "Balance",
+  "shopBuy": "Buy",
+  "shopOwned": "Owned",
+  "shopBought": "Bought. Check your collection.",
+  "shopInsufficientFunds": "Not enough currency yet — finish another session.",
+  "shopPrice": "{price} coins",
+  "@shopPrice": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shopItemEmberName": "Ember frame",
+  "shopItemEmberDescription": "A warm cosmetic border for your character.",
+  "shopItemTideName": "Tide frame",
+  "shopItemTideDescription": "A cool cosmetic border for your character.",
+  "shopItemMidnightName": "Midnight frame",
+  "shopItemMidnightDescription": "A dark cosmetic border for your character.",
+  "shopItemNoonName": "Noon frame",
+  "shopItemNoonDescription": "A bright cosmetic border for your character.",
   "settingsAccent": "Accent colour",
   "settingsAccentSubtitle": "Only the accent tone changes — the rest of the palette stays as it is.",
   "settingsImport": "Import from JSON",

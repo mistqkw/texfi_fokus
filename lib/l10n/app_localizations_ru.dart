@@ -1159,6 +1159,58 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get shopTitle => 'Магазин';
+
+  @override
+  String get shopBalance => 'Баланс';
+
+  @override
+  String get shopBuy => 'Купить';
+
+  @override
+  String get shopOwned => 'Куплено';
+
+  @override
+  String get shopBought => 'Куплено. Загляни в коллекцию.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Пока не хватает монет — заверши ещё одну сессию.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price монет';
+  }
+
+  @override
+  String get shopItemEmberName => 'Рамка «Уголёк»';
+
+  @override
+  String get shopItemEmberDescription =>
+      'Тёплая косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemTideName => 'Рамка «Прилив»';
+
+  @override
+  String get shopItemTideDescription =>
+      'Прохладная косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemMidnightName => 'Рамка «Полночь»';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'Тёмная косметическая рамка для персонажа.';
+
+  @override
+  String get shopItemNoonName => 'Рамка «Полдень»';
+
+  @override
+  String get shopItemNoonDescription =>
+      'Яркая косметическая рамка для персонажа.';
+
+  @override
   String get settingsAccent => 'Акцентный цвет';
 
   @override

@@ -1162,6 +1162,58 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get shopTitle => 'Shop';
+
+  @override
+  String get shopBalance => 'Balance';
+
+  @override
+  String get shopBuy => 'Buy';
+
+  @override
+  String get shopOwned => 'Owned';
+
+  @override
+  String get shopBought => 'Bought. Check your collection.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Not enough currency yet — finish another session.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price coins';
+  }
+
+  @override
+  String get shopItemEmberName => 'Ember frame';
+
+  @override
+  String get shopItemEmberDescription =>
+      'A warm cosmetic border for your character.';
+
+  @override
+  String get shopItemTideName => 'Tide frame';
+
+  @override
+  String get shopItemTideDescription =>
+      'A cool cosmetic border for your character.';
+
+  @override
+  String get shopItemMidnightName => 'Midnight frame';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'A dark cosmetic border for your character.';
+
+  @override
+  String get shopItemNoonName => 'Noon frame';
+
+  @override
+  String get shopItemNoonDescription =>
+      'A bright cosmetic border for your character.';
+
+  @override
   String get settingsAccent => 'Accent colour';
 
   @override

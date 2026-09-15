@@ -1159,6 +1159,58 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get shopTitle => 'Sklep';
+
+  @override
+  String get shopBalance => 'Saldo';
+
+  @override
+  String get shopBuy => 'Kup';
+
+  @override
+  String get shopOwned => 'Posiadane';
+
+  @override
+  String get shopBought => 'Kupiono. Zajrzyj do kolekcji.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Za mało monet — ukończ jeszcze jedną sesję.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price monet';
+  }
+
+  @override
+  String get shopItemEmberName => 'Ramka „Żar”';
+
+  @override
+  String get shopItemEmberDescription =>
+      'Ciepła kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemTideName => 'Ramka „Przypływ”';
+
+  @override
+  String get shopItemTideDescription =>
+      'Chłodna kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemMidnightName => 'Ramka „Północ”';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'Ciemna kosmetyczna ramka dla postaci.';
+
+  @override
+  String get shopItemNoonName => 'Ramka „Południe”';
+
+  @override
+  String get shopItemNoonDescription =>
+      'Jasna kosmetyczna ramka dla postaci.';
+
+  @override
   String get settingsAccent => 'Kolor akcentu';
 
   @override

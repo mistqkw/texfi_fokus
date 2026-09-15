@@ -2118,6 +2118,96 @@ abstract class AppLocalizations {
   /// **'Tap the flash {remaining} more time(s) to move on'**
   String gameVictoryTapHint(int remaining);
 
+  /// No description provided for @shopTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get shopTitle;
+
+  /// No description provided for @shopBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get shopBalance;
+
+  /// No description provided for @shopBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get shopBuy;
+
+  /// No description provided for @shopOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get shopOwned;
+
+  /// No description provided for @shopBought.
+  ///
+  /// In en, this message translates to:
+  /// **'Bought. Check your collection.'**
+  String get shopBought;
+
+  /// No description provided for @shopInsufficientFunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough currency yet — finish another session.'**
+  String get shopInsufficientFunds;
+
+  /// No description provided for @shopPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} coins'**
+  String shopPrice(int price);
+
+  /// No description provided for @shopItemEmberName.
+  ///
+  /// In en, this message translates to:
+  /// **'Ember frame'**
+  String get shopItemEmberName;
+
+  /// No description provided for @shopItemEmberDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A warm cosmetic border for your character.'**
+  String get shopItemEmberDescription;
+
+  /// No description provided for @shopItemTideName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tide frame'**
+  String get shopItemTideName;
+
+  /// No description provided for @shopItemTideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A cool cosmetic border for your character.'**
+  String get shopItemTideDescription;
+
+  /// No description provided for @shopItemMidnightName.
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight frame'**
+  String get shopItemMidnightName;
+
+  /// No description provided for @shopItemMidnightDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A dark cosmetic border for your character.'**
+  String get shopItemMidnightDescription;
+
+  /// No description provided for @shopItemNoonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Noon frame'**
+  String get shopItemNoonName;
+
+  /// No description provided for @shopItemNoonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A bright cosmetic border for your character.'**
+  String get shopItemNoonDescription;
+
   /// No description provided for @settingsAccent.
   ///
   /// In en, this message translates to:

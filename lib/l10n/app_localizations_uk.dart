@@ -1159,6 +1159,58 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get shopTitle => 'Крамниця';
+
+  @override
+  String get shopBalance => 'Баланс';
+
+  @override
+  String get shopBuy => 'Купити';
+
+  @override
+  String get shopOwned => 'Куплено';
+
+  @override
+  String get shopBought => 'Куплено. Загляни в колекцію.';
+
+  @override
+  String get shopInsufficientFunds =>
+      'Поки не вистачає монет — заверши ще одну сесію.';
+
+  @override
+  String shopPrice(int price) {
+    return '$price монет';
+  }
+
+  @override
+  String get shopItemEmberName => 'Рамка «Жарина»';
+
+  @override
+  String get shopItemEmberDescription =>
+      'Тепла косметична рамка для персонажа.';
+
+  @override
+  String get shopItemTideName => 'Рамка «Приплив»';
+
+  @override
+  String get shopItemTideDescription =>
+      'Прохолодна косметична рамка для персонажа.';
+
+  @override
+  String get shopItemMidnightName => 'Рамка «Північ»';
+
+  @override
+  String get shopItemMidnightDescription =>
+      'Темна косметична рамка для персонажа.';
+
+  @override
+  String get shopItemNoonName => 'Рамка «Полудень»';
+
+  @override
+  String get shopItemNoonDescription =>
+      'Яскрава косметична рамка для персонажа.';
+
+  @override
   String get settingsAccent => 'Акцентний колір';
 
   @override

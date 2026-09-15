@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_l10n_ext.dart';
+import '../../data/settings/currency_store.dart';
+import '../../domain/entities/currency_rules.dart';
 import '../../domain/entities/game_entities.dart';
 import '../../domain/entities/game_rules.dart';
 import '../game/game_providers.dart';
@@ -61,6 +63,17 @@ Future<SessionFinishOutcome?> finishSession(
     interruptionReason: wrapUp?.reason,
     note: wrapUp?.note,
   );
+
+  // Валюта — за саму доведённую до конца сессию, а не за противника: это
+  // награда трекера, и она начисляется независимо от игрового режима и его
+  // исхода. Прерванная сессия XP всё равно приносит (см. `gameRepository`),
+  // но валюту — нет: она за то, что человек долистал ровно до конца, а не
+  // просто поработал сколько-то.
+  if (state.completedFully) {
+    await ref.read(currencyBalanceProvider.notifier).add(
+          CurrencyRules.sessionReward,
+        );
+  }
 
   // Черновик ещё жив — из него берутся сложность и настроение, с которыми
   // сессия начиналась.
