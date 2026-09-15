@@ -637,6 +637,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get settingsScreenTitle => 'Screen';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Clock screen';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Hide the status bar in it';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Applies to the clock screen and to quiet mode during a session';
+
+  @override
   String get settingsData => 'Data';
 
   @override

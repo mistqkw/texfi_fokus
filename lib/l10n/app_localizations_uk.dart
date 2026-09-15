@@ -637,6 +637,23 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get settingsScreenTitle => 'Екран';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Екран-годинник';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'Приглушений годинник на весь екран — не справжній Always-On Display, просто тихий вигляд, який відкривають навмисно';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Ховати в ньому статус-бар';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Діє на екрані-годиннику та в тихому режимі під час сесії';
+
+  @override
   String get settingsData => 'Дані';
 
   @override

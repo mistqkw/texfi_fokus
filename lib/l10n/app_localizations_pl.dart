@@ -635,6 +635,23 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get settingsScreenTitle => 'Ekran';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Ekran zegara';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'Przyciemniony zegar na cały ekran — to nie prawdziwy Always-On Display, tylko cichy widok włączany celowo';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Ukryj w nim pasek statusu';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Dotyczy ekranu zegara i trybu cichego podczas sesji';
+
+  @override
   String get settingsData => 'Dane';
 
   @override

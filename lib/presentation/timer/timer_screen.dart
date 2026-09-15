@@ -122,7 +122,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
 
   Future<void> _setQuiet(bool value) async {
     Haptics.tap();
-    await _screen.setQuiet(value);
+    await _screen.setQuiet(
+      value,
+      hideStatusBar: ref.read(hideStatusBarInAodProvider),
+    );
     if (mounted) setState(() => _quiet = value);
   }
 

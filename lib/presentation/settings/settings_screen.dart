@@ -21,6 +21,7 @@ import '../../domain/entities/session_guards.dart';
 import '../game/character_screen.dart';
 import '../game/game_providers.dart';
 import '../game/game_sprites.dart';
+import '../shared/always_on_clock_screen.dart';
 import '../shared/notification_sync.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
@@ -111,6 +112,7 @@ class SettingsScreen extends ConsumerWidget {
     final nightCap = ref.watch(nightCapEnabledProvider);
     final nightCapHour = ref.watch(nightCapHourProvider);
     final burnoutStreak = ref.watch(burnoutStreakThresholdProvider);
+    final hideStatusBarInAod = ref.watch(hideStatusBarInAodProvider);
     final weekStart = ref.watch(weekStartDayProvider);
     final autoBackup = ref.watch(autoBackupEnabledProvider);
     final lastBackup = ref.watch(lastAutoBackupProvider);
@@ -432,6 +434,40 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                ],
+              ),
+            ),
+            AppSpacing.gapXl,
+            PixelSectionHeader(title: l10n.settingsScreenTitle),
+            PixelCard(
+              child: Column(
+                children: [
+                  PixelOptionTile(
+                    leading: PixelSprite(
+                      rows: PixelSprites.moon,
+                      size: 20,
+                      color: context.colors.accent,
+                    ),
+                    title: l10n.settingsAlwaysOnClockTitle,
+                    subtitle: l10n.settingsAlwaysOnClockSubtitle,
+                    onTap: () {
+                      Haptics.tap();
+                      Navigator.of(context).push(
+                        pixelDissolveRoute<void>(const AlwaysOnClockScreen()),
+                      );
+                    },
+                  ),
+                  PixelSwitchTile(
+                    value: hideStatusBarInAod,
+                    title: l10n.settingsHideStatusBarTitle,
+                    subtitle: l10n.settingsHideStatusBarHint,
+                    onChanged: (value) {
+                      Haptics.tap();
+                      ref
+                          .read(hideStatusBarInAodProvider.notifier)
+                          .set(value);
+                    },
+                  ),
                 ],
               ),
             ),

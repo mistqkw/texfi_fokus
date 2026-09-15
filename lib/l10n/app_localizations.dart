@@ -1246,6 +1246,36 @@ abstract class AppLocalizations {
   /// **'Folder: {path}'**
   String backupFolderPathHint(String path);
 
+  /// No description provided for @settingsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen'**
+  String get settingsScreenTitle;
+
+  /// No description provided for @settingsAlwaysOnClockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock screen'**
+  String get settingsAlwaysOnClockTitle;
+
+  /// No description provided for @settingsAlwaysOnClockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose'**
+  String get settingsAlwaysOnClockSubtitle;
+
+  /// No description provided for @settingsHideStatusBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the status bar in it'**
+  String get settingsHideStatusBarTitle;
+
+  /// No description provided for @settingsHideStatusBarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to the clock screen and to quiet mode during a session'**
+  String get settingsHideStatusBarHint;
+
   String get settingsData;
 
   /// No description provided for @settingsExport.

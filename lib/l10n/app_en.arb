@@ -353,6 +353,11 @@
       }
     }
   },
+  "settingsScreenTitle": "Screen",
+  "settingsAlwaysOnClockTitle": "Clock screen",
+  "settingsAlwaysOnClockSubtitle": "A dim full-screen clock — not a real Always-On Display, just a quiet view you open on purpose",
+  "settingsHideStatusBarTitle": "Hide the status bar in it",
+  "settingsHideStatusBarHint": "Applies to the clock screen and to quiet mode during a session",
   "settingsData": "Data",
   "settingsExport": "Export data to JSON",
   "settingsExportDone": "Saved to {path}",

@@ -637,6 +637,23 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get settingsScreenTitle => 'Экран';
+
+  @override
+  String get settingsAlwaysOnClockTitle => 'Экран-часы';
+
+  @override
+  String get settingsAlwaysOnClockSubtitle =>
+      'Приглушённые часы во весь экран — не настоящий Always-On Display, просто тихий вид, который открывают нарочно';
+
+  @override
+  String get settingsHideStatusBarTitle => 'Прятать статус-бар в нём';
+
+  @override
+  String get settingsHideStatusBarHint =>
+      'Действует на экране-часах и в тихом режиме во время сессии';
+
+  @override
   String get settingsData => 'Данные';
 
   @override

@@ -16,6 +16,7 @@ import '../../domain/entities/game_rules.dart';
 import '../../domain/entities/mood.dart';
 import '../../l10n/app_localizations.dart';
 import '../mood_checkin/mood_checkin_providers.dart';
+import '../settings/settings_providers.dart';
 import '../shared/pixel_background.dart';
 import '../shared/pixel_button.dart';
 import '../shared/pixel_card.dart';
@@ -110,7 +111,10 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
 
   Future<void> _setQuiet(bool value) async {
     Haptics.tap();
-    await _screen.setQuiet(value);
+    await _screen.setQuiet(
+      value,
+      hideStatusBar: ref.read(hideStatusBarInAodProvider),
+    );
     if (mounted) setState(() => _quiet = value);
   }
 
